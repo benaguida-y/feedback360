@@ -1,0 +1,131 @@
+cahier des charges
+
+Notre organisation douhaite améliorer le suivi qualitatif des fomraions suivies par ses collaborateurs. Actuellement, les retours sur les modules sont informets ou peu exploitables.
+Les formations sont gérées via la platform app externe (sans mentioné son nom), qui expose une API permettant de récupérer les modules suivis par les utilisateurs
+L'objectif est de créer une application web de collecter, analyser et centraliser les feedbacks des collaborateurs à la fin de chaque module. Les utilisateurs sont notifiés automatiquement par email pour fournir leur évaluation.
+
+Objectif : 
+Créer une application web permettant de collecter des feedbacks structurés et exploitables sur les modules de formation, via une intégration avec l'API app externe
+
+Utilisateurs et responsabilités : 
+-Collaborateur : Recevoir une notification email, accéder au module complété, donner un feedback structuré
+-Manager/RH : Consulter les feedbacks, analyser les résultat, visualiser les indicateurs et statistiques
+-Administrateur : Configurer les paramètres (questions, modules, integrations API), gérer les utilisateurs et superviser l'application.
+
+Entités principales : 
+-Utilisateur :  id, nom, prénom, email, role, département
+-ModuleFormation :  id, titre, description, catégorie, dateCompletion, source(App externe)
+-Feedback :  id, utilisateur, module, noteGlobale, commentaire, statut, createdAt
+-QuestionFeedback :  id, libellé, type(notation, text, choix...), obligatoire
+-RéponseFeedback :  id, feedback, question, valeur
+-Notification :  id, utilisateur, module, dateEnvoi, statut(envoyé, lu, répondu)
+-IntegrationLog : id, type, statut, message, date
+
+Fonctionalités détaillées :
+-Synchronisation App externe : réception (temps réel) automatique du module complété x collaborateur via API d'app externe
+-Notification email : Envoi automatique d'un email à l'utilisateur après complétion d'un module
+-Saisie de feedback :  Formulaire dynamique avec questions paramétrables (notes ( de 0 à 10) + commentaires obligatoire).
+-Consultation feedback : Les managers peuvent consulter les feedbacks par module, utilisateur ou période
+-Dashboard : Affichange des indicateurs clés (notes motennes, taux de réponse, etc...)
+-Relance automatique (manager + admin) : Envoi de rappels si le feedback n'est pas rempli après X jours
+-Recherche & filtrage (manager + admin) : Filtrer par module, date, département, note, statut
+-Administration : Gestion des utilisateurs, modules
+-Historisation : Traçabilité des actions (soumission feedback, modification, envoi notification)
+
+Règles de gestion : 
+-RF-FB-01 Synchronisation : Chaque module complété dans app externe doit etre importé
+-RF-FB-02 Notification : Un utilisateur reçoit une notification pour chaque module terminé
+-RF-FB-03 Unicité : Un seul feedback ext autorisé par utilisateur et par module
+-RF-FB-04 Obligations : Certaines champs sont obligatoires avant soumission
+-RF-FB-05 Statut feedback : Status possibles : Non soumis, En cours, Soumis
+-RF-FB-06 Relance : Une relance est envoyé après un délai configurable si non soumis
+-RF-FB-07 Sécurité : Accés restreint aux données selon le role
+-RF-FB-08 Intégrité : Les données provenant de app externe ne sont pas modifiables
+-RF-FB-09 Historisation : Toute action doit etre enrregistrée (date, utilisateur)
+
+Workflow cible : 
+1. un utilisateur termine un module sur app externe
+2. l'api app externe envoi/est interrogée pour récupérer l'événement
+3. le système enregistre le module complété
+4. une notification email est envoyée à l'utilisateur
+5. l'utilisateur accéde à l'application (notre app)
+6. le feedback est enregistré et devient exploitable
+7. le manager peut consulter les résultats dans le dashboard
+
+Workflow simplifié :
+Module terminé -> Notification -> Feedback en cours -> Feedback soumis
+
+Ecrans attendus : 
+-Page de connexion
+-Dashboard global
+-Liste des modules complétés
+-Formulaire de feedback
+-Détail d'un feedback
+-Tableau de bord dynamique
+-Administration des questions
+-Gestion des utilisateurs
+-Journal des intégrations (Logs API)
+
+Tableau de bord : 
+Indicateur clés : 
+-Taux de réponse aux feedbacks
+-Note moyenne par module 
+-Top modules les mieux notés
+-Modules les moins bien évalués
+-Répartition des feedbacks par département
+-Evolution des notes dans le temps
+-Nombre de feedbacks en attente
+
+Intergration API app externe :
+-Consommation d'une API REST externe
+-Authentification
+-Synchronisation périodique ou en temps réel
+-Gestion des erreurs (timeout, données invalides)
+-Logs d'integration pour audit et monitoring
+
+Exigences non fonctionnelles : 
+-Application web  responsive
+-Temps de réponse < 2 secondes
+-Sécurité (authentification, controle d'accés, HTTPS)
+-Scalabilité pour gérer plusieurs utilisateurs simultanés
+-Disponibilité élevée
+-Respect des normes RGPD (protections des données personnelles)
+
+
+Informations additionnelles ( non inclues dans le cahier des charges) : 
+API d'entrée provient de l'app externe, une premiere version de JSON qui sera envoyés depuis app externe vers notre application.
+Noter que les identifiants ne seront pas identiques pour toutes les tables : un ID utilisateur dans app externe ne correspond pas nécessairement au meme ID dans notre application (bd différentes)
+
+JSON : 
+
+```
+json:
+{
+    "user": {
+        "id": 1,
+        "email": "user@example.com",
+        "fullName": "Nicole Guy"
+    },
+    "module":{
+        "id": 192,    
+        "name": "React Fundementals",
+        "type": {
+            "id": 1,
+            "label": "Apprentissage_TU"
+        }
+    },
+    "parcours": {
+        "id": 11,
+        "name": "app externe",
+    },
+    "population": {
+        "id": 1,    
+        "name": "React"
+    }
+}
+```
+
+Je te ai partagé la format JSON à utiliser en entrée. Pas besoin d'avoir accès à l'application pour un premier temps (ne restez pas bloqué sur ça)
+Le stack technique de l'app externe repose sur java 17 et React 16
+A noter que les deux application vont intéragir exclusivement via des webservices REST
+L'integration repose sure des APIs exposées coté app externe, avec ds endpoints clairement définis et un format d'echange standarisé en JSON (en entrée pour le moement). Le JSON que te ai partagé consitue le contrat d'interface (input payload) à respecter pour assurer la compatibilités et la bonne interpérabilités entre les systèmes.
