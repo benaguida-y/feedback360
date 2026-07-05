@@ -9,8 +9,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate     # Hibernate NEVER changes the schema — only checks entities match
-    show-sql: true           # log the SQL Hibernate runs (dev only; noisy but great for learning)
+      ddl-auto: validate     # Hibernate never changes the schema — only checks entities match
+    show-sql: true           # log the SQL Hibernate runs (dev only)
     properties:
       hibernate:
         format_sql: true     # pretty-print that SQL
@@ -21,3 +21,14 @@ spring:
 
 server:
   port: 8081
+
+
+feedback360:
+  webhook:
+    api-key: dev-webhook-key-change-me
+  jwt:
+    secret: change-me-please-this-is-a-32byte-minimum-secret
+  app:
+    base-url: http://localhost:5173
+  magic-link:
+    ttl-days: 14
