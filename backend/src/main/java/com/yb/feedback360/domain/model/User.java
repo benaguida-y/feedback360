@@ -1,6 +1,5 @@
 package com.yb.feedback360.domain.model;
 
-import com.yb.feedback360.domain.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,9 +25,9 @@ public class User {
     @Column(name = "password_hash", length = 100)
     private String passwordHash; // BCrypt hash; null for collaborators (magic-link only)
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
-    private UserRole role;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     private String department;
 

@@ -1,7 +1,6 @@
 package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.enums.FeedbackStatus;
-import com.yb.feedback360.domain.enums.UserRole;
 import com.yb.feedback360.domain.model.*;
 import com.yb.feedback360.repository.*;
 import com.yb.feedback360.dto.request.ModuleCompletedRequest;
@@ -18,17 +17,20 @@ public class ModuleCompletionService {
     private final PopulationRepository populationRepository;
     private final ModuleFormationRepository moduleFormationRepository;
     private final FeedbackRepository feedbackRepository;
+    private final RoleRepository roleRepository;
 
     public ModuleCompletionService(UserRepository userRepository,
                                    ParcoursRepository parcoursRepository,
                                    PopulationRepository populationRepository,
                                    ModuleFormationRepository moduleFormationRepository,
-                                   FeedbackRepository feedbackRepository) {
+                                   FeedbackRepository feedbackRepository,
+                                   RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.parcoursRepository = parcoursRepository;
         this.populationRepository = populationRepository;
         this.moduleFormationRepository = moduleFormationRepository;
         this.feedbackRepository = feedbackRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Transactional
@@ -39,7 +41,7 @@ public class ModuleCompletionService {
         User user = upsertUser(req.user());
         // if a pending feedback for that user&module exists it's reused else new one is created
         Feedback feedback = feedbackRepository
-                .findFirstByUserAndModuleFormationAndStatus(user, module, FeedbackStatus.NOT_SUBMITTED)
+                .findByUserAndModuleFormationAndStatus(user, module, FeedbackStatus.NOT_SUBMITTED)
                 .orElseGet(() -> {
                     Feedback f = new Feedback();
                     f.setUser(user);
@@ -79,25 +81,40 @@ public class ModuleCompletionService {
         return moduleFormationRepository.save(module);
     }
 
-    private User upsertUser(ModuleCompletedRequest.UserPayload u) {
-        User user = userRepository.findByExternalUserId(u.id())
-                .orElseGet(User::new);
-        user.setExternalUserId(u.id());
-        user.setEmail(u.email());
-        String[] parts = splitName(u.fullName());
-        user.setFirstName(parts[0]);
-        user.setLastName(parts[1]);
-        if (user.getRole() == null) {
-            user.setRole(UserRole.COLLABORATOR); // webhook users are collaborators
-        }
+    private User upsertUser(ModuleCompletedRequest.UserPayload payload) {
+        User user = userRepository.findByExternalUserId(payload.id())
+                .orElseGet(() -> createUser(payload.id()));
+        updateUser(user, payload);
         return userRepository.save(user);
     }
 
-    private String[] splitName(String fullName) {
-        if (fullName == null || fullName.isBlank()) return new String[]{"", ""};
+    private User createUser(Long externalUserId) {
+        User user = new User();
+        user.setExternalUserId(externalUserId);
+        user.setRole(collaboratorRole()); // webhook users are collaborators
+        return user;
+    }
+
+    private void updateUser(User user, ModuleCompletedRequest.UserPayload payload) {
+        user.setEmail(payload.email());
+        NameParts name = splitName(payload.fullName());
+        user.setFirstName(name.firstName());
+        user.setLastName(name.lastName());
+    }
+
+    private Role collaboratorRole() {
+        return roleRepository.findByName("COLLABORATOR")
+                .orElseThrow(() -> new IllegalStateException("Role COLLABORATOR not found"));
+    }
+
+    private NameParts splitName(String fullName) {
+        if (fullName == null || fullName.isBlank()) return new NameParts("", "");
         String trimmed = fullName.trim();
         int idx = trimmed.indexOf(' ');
-        if (idx < 0) return new String[]{trimmed, ""};
-        return new String[]{trimmed.substring(0, idx), trimmed.substring(idx + 1).trim()};
+        if (idx < 0) return new NameParts(trimmed, "");
+        return new NameParts(trimmed.substring(0, idx), trimmed.substring(idx + 1).trim());
     }
+
+    /** First/last name pair — clearer than a String[] with magic indices. */
+    private record NameParts(String firstName, String lastName) {}
 }

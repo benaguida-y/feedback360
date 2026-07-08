@@ -1,3 +1,5 @@
 package com.yb.feedback360.dto.request;
 
-public record ActivateRequest(String token, String password) {}
+import jakarta.validation.constraints.NotBlank;
+
+public record ActivateRequest(@NotBlank String token, @NotBlank String password) {}

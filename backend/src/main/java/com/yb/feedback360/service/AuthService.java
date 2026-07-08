@@ -2,11 +2,15 @@ package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.model.User;
 import com.yb.feedback360.repository.UserRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.time.Instant;
 
 @Service
 public class AuthService {
@@ -14,11 +18,13 @@ public class AuthService {
     private final JwtDecoder jwtDecoder;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtEncoder jwtEncoder;
 
-    public AuthService(JwtDecoder jwtDecoder, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthService(JwtDecoder jwtDecoder, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtEncoder jwtEncoder) {
         this.jwtDecoder = jwtDecoder;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtEncoder = jwtEncoder;
     }
 
     @Transactional
@@ -32,6 +38,23 @@ public class AuthService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         user.setPasswordHash(passwordEncoder.encode(rawPassword)); // store the hash
         userRepository.save(user);
+    }
+
+    public String login(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new BadCredentialsException("Invalid Credentials"));
+        if (user.getPasswordHash() == null || !passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+            throw new BadCredentialsException("Invalid Credentials!");
+        }
+        Instant now = Instant.now();
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .subject(String.valueOf(user.getUserId()))
+                .issuedAt(now)
+                .expiresAt(now.plus(Duration.ofHours(12)))
+                .claim("scope", "access")
+                .claim("role", user.getRole().getName())
+                .build();
+        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+        return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
 
 }
