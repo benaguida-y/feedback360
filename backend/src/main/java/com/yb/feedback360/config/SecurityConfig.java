@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(ApiPaths.ERROR).permitAll()
-                        .requestMatchers(ApiPaths.AUTH_PATTERN).permitAll()
+                        .requestMatchers(ApiPaths.AUTHENTICATION_PATTERN).permitAll()
                         .requestMatchers(ApiPaths.INTEGRATIONS_PATTERN).hasRole("WEBHOOK")
                         .anyRequest().authenticated()
                 )

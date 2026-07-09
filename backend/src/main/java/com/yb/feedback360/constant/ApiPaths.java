@@ -5,13 +5,13 @@ public final class ApiPaths {
     private ApiPaths() {
     }
 
-    public static final String AUTH = "/api/auth";
+    public static final String AUTHENTICATION = "/api/auth";
     public static final String INTEGRATIONS = "/api/integrations";
     public static final String FEEDBACKS = "/api/feedbacks";
 
     public static final String ERROR = "/error";
 
-    public static final String AUTH_PATTERN = AUTH + "/**";
+    public static final String AUTHENTICATION_PATTERN = AUTHENTICATION + "/**";
     public static final String INTEGRATIONS_PATTERN = INTEGRATIONS + "/**";
 
     // endpoint sub-paths
