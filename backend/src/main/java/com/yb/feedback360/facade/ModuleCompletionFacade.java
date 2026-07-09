@@ -14,11 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Facade for the module-completion webhook: a single entry point the controller
- * calls, orchestrating validation, the transactional upsert (ModuleCompletionService),
- * and the activation link (MagicLinkService). One bad event does not stop the others.
- */
 @Service
 @RequiredArgsConstructor
 public class ModuleCompletionFacade {

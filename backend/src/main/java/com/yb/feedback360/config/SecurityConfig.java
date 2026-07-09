@@ -1,5 +1,6 @@
 package com.yb.feedback360.config;
 
+import com.yb.feedback360.constant.ApiPaths;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,9 +22,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/integrations/**").hasRole("WEBHOOK")
+                        .requestMatchers(ApiPaths.ERROR).permitAll()
+                        .requestMatchers(ApiPaths.AUTH_PATTERN).permitAll()
+                        .requestMatchers(ApiPaths.INTEGRATIONS_PATTERN).hasRole("WEBHOOK")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new ApiKeyFilter(webhookApiKey),

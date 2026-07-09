@@ -1,7 +1,8 @@
 package com.yb.feedback360.service;
 
+import com.yb.feedback360.config.MagicLinkProperties;
 import com.yb.feedback360.domain.model.User;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -13,30 +14,29 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class MagicLinkService {
-    private final JwtEncoder jwtEncoder;
-    private final String baseUrl;
-    private final Long ttlDays;
 
-    public MagicLinkService(JwtEncoder jwtEncoder,
-                            @Value("${feedback360.app.base-url}") String baseUrl,
-                            @Value("${feedback360.magic-link.ttl-days}") Long ttlDays) {
-        this.jwtEncoder = jwtEncoder;
-        this.baseUrl = baseUrl;
-        this.ttlDays = ttlDays;
-    }
+    private static final String ACTIVATION_SCOPE = "account:activate"; // what the token allows
+    private static final String ACTIVATION_PATH = "/activate";
+
+    private final JwtEncoder jwtEncoder;
+    private final MagicLinkProperties properties;
 
     public String createActivationUrl(User user) {
-        Instant now = Instant.now();
+        Instant issuedAt = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
-                .subject(String.valueOf(user.getUserId())) //who is activating
-                .issuedAt(now)
-                .expiresAt(now.plus(Duration.ofDays(ttlDays)))
-                .claim("scope", "account:activate") // what token allows
+                .subject(user.getUserId().toString()) // the user who is activating
+                .issuedAt(issuedAt)
+                .expiresAt(issuedAt.plus(Duration.ofDays(properties.ttlDays())))
+                .claim("scope", ACTIVATION_SCOPE)
                 .build();
-        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
-        String token = jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
-        return baseUrl + "/activate?token=" + token;
+        String token = jwtEncoder.encode(
+                JwtEncoderParameters.from(
+                        JwsHeader.with(MacAlgorithm.HS256).build(),
+                        claims
+                )
+        ).getTokenValue();
+        return "%s%s?token=%s".formatted(properties.baseUrl(), ACTIVATION_PATH, token);
     }
-
 }

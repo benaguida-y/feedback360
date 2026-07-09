@@ -4,12 +4,14 @@ import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.*;
 import com.yb.feedback360.repository.*;
 import com.yb.feedback360.dto.request.ModuleCompletedRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class ModuleCompletionService {
 
     private final UserRepository userRepository;
@@ -19,38 +21,31 @@ public class ModuleCompletionService {
     private final FeedbackRepository feedbackRepository;
     private final RoleRepository roleRepository;
 
-    public ModuleCompletionService(UserRepository userRepository,
-                                   ParcoursRepository parcoursRepository,
-                                   PopulationRepository populationRepository,
-                                   ModuleFormationRepository moduleFormationRepository,
-                                   FeedbackRepository feedbackRepository,
-                                   RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.parcoursRepository = parcoursRepository;
-        this.populationRepository = populationRepository;
-        this.moduleFormationRepository = moduleFormationRepository;
-        this.feedbackRepository = feedbackRepository;
-        this.roleRepository = roleRepository;
+    @Transactional
+    public Feedback handleModuleCompleted(ModuleCompletedRequest request) {
+        Parcours parcours = upsertParcours(request.parcours());
+        Population population = upsertPopulation(request.population());
+        ModuleFormation module = upsertModule(request.module(), parcours, population);
+        User user = upsertUser(request.user());
+
+        Feedback feedback = findOrCreatePendingFeedback(user, module);
+
+        return feedbackRepository.save(feedback);
     }
 
-    @Transactional
-    public Feedback handleModuleCompleted(ModuleCompletedRequest req) {
-        Parcours parcours = upsertParcours(req.parcours());
-        Population population = upsertPopulation(req.population());
-        ModuleFormation module = upsertModule(req.module(), parcours, population);
-        User user = upsertUser(req.user());
-        // if a pending feedback for that user&module exists it's reused else new one is created
-        Feedback feedback = feedbackRepository
+    private Feedback findOrCreatePendingFeedback(User user, ModuleFormation module) {
+        return feedbackRepository
                 .findByUserAndModuleFormationAndStatus(user, module, FeedbackStatus.NOT_SUBMITTED)
-                .orElseGet(() -> {
-                    Feedback f = new Feedback();
-                    f.setUser(user);
-                    f.setModuleFormation(module);
-                    f.setStatus(FeedbackStatus.NOT_SUBMITTED);
-                    f.setCreatedAt(Instant.now());
-                    return f;
-                });
-        return feedbackRepository.save(feedback);
+                .orElseGet(() -> createPendingFeedback(user, module));
+    }
+
+    private Feedback createPendingFeedback(User user, ModuleFormation module) {
+        Feedback feedback = new Feedback();
+        feedback.setUser(user);
+        feedback.setModuleFormation(module);
+        feedback.setStatus(FeedbackStatus.NOT_SUBMITTED);
+        feedback.setCreatedAt(Instant.now());
+        return feedback;
     }
 
     private Parcours upsertParcours(ModuleCompletedRequest.ParcoursPayload p) {

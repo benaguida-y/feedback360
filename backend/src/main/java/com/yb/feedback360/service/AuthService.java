@@ -2,6 +2,7 @@ package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.model.User;
 import com.yb.feedback360.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -13,6 +14,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final JwtDecoder jwtDecoder;
@@ -20,17 +22,10 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtEncoder jwtEncoder;
 
-    public AuthService(JwtDecoder jwtDecoder, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtEncoder jwtEncoder) {
-        this.jwtDecoder = jwtDecoder;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtEncoder = jwtEncoder;
-    }
-
     @Transactional
     public void activate(String token, String rawPassword) {
         Jwt jwt = jwtDecoder.decode(token); // throws if bad or expired signature
-        if (!"account:activate" .equals(jwt.getClaimAsString("scope"))) {
+        if (!"account:activate".equals(jwt.getClaimAsString("scope"))) {
             throw new IllegalArgumentException("Wrong token scope");
         }
         Long userId = Long.valueOf(jwt.getSubject());
@@ -56,5 +51,4 @@ public class AuthService {
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
         return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();
     }
-
 }

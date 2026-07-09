@@ -7,7 +7,7 @@ import com.yb.feedback360.dto.response.FeedbackDetailResponse;
 import com.yb.feedback360.repository.FeedbackAnswerRepository;
 import com.yb.feedback360.repository.FeedbackRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,15 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
     private final FeedbackAnswerRepository feedbackAnswerRepository;
-
-    public  FeedbackService(FeedbackRepository feedbackRepository,  FeedbackAnswerRepository feedbackAnswerRepository) {
-        this.feedbackRepository = feedbackRepository;
-        this.feedbackAnswerRepository = feedbackAnswerRepository;
-    }
 
     public List<FeedbackSummaryResponse> getFeedbackForUser(Long userId) {
         return feedbackRepository.findByUser_UserIdOrderByCreatedAtDesc(userId).stream()
@@ -57,5 +53,4 @@ public class FeedbackService {
                 feedback.getComment(),
                 answers);
     }
-
 }

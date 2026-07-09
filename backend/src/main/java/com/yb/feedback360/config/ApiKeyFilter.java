@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,12 +25,14 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-                String key = request.getHeader("X-API-KEY");
-                if(expectedKey.equals(key)) {
-                    var auth = new UsernamePasswordAuthenticationToken(
-                            "webhook", null, List.of(new SimpleGrantedAuthority("ROLE_WEBHOOK")));
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
-                filterChain.doFilter(request, response);
+        final String apiKey = request.getHeader("X-API-KEY");
+        if (expectedKey.equals(apiKey)) {
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    "webhook",
+                    null,
+                    List.of(new SimpleGrantedAuthority("ROLE_WEBHOOK")));
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+        filterChain.doFilter(request, response);
     }
 }

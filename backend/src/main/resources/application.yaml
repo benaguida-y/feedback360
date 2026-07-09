@@ -28,7 +28,6 @@ feedback360:
     api-key: dev-webhook-key-change-me
   jwt:
     secret: change-me-please-this-is-a-32byte-minimum-secret
-  app:
-    base-url: http://localhost:5173
   magic-link:
+    base-url: http://localhost:5173
     ttl-days: 14
