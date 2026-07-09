@@ -1,10 +1,8 @@
-package com.yb.feedback360.facade;
+package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.model.Feedback;
 import com.yb.feedback360.dto.request.ModuleCompletedRequest;
 import com.yb.feedback360.dto.response.ModuleCompletionResult;
-import com.yb.feedback360.service.MagicLinkService;
-import com.yb.feedback360.service.ModuleCompletionService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;

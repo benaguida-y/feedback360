@@ -3,7 +3,7 @@ package com.yb.feedback360.controller;
 import com.yb.feedback360.constant.ApiPaths;
 import com.yb.feedback360.dto.request.ModuleCompletedRequest;
 import com.yb.feedback360.dto.response.ModuleCompletionResult;
-import com.yb.feedback360.facade.ModuleCompletionFacade;
+import com.yb.feedback360.service.ModuleCompletionFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
