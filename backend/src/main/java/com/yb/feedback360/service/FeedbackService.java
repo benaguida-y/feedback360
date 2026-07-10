@@ -1,8 +1,10 @@
 package com.yb.feedback360.service;
 
+import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.Feedback;
 import com.yb.feedback360.domain.model.FeedbackAnswer;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
+import com.yb.feedback360.dto.request.SubmitFeedbackRequest;
 import com.yb.feedback360.dto.response.FeedbackDetailResponse;
 import com.yb.feedback360.repository.FeedbackAnswerRepository;
 import com.yb.feedback360.repository.FeedbackRepository;
@@ -53,4 +55,42 @@ public class FeedbackService {
                 feedback.getComment(),
                 answers);
     }
+
+    @Transactional
+    public FeedbackDetailResponse submitFeedback(Long userId, Long feedbackId, SubmitFeedbackRequest request) {
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
+        if (!feedback.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("This feedback is not yours");
+        }
+        if (feedback.getStatus() == FeedbackStatus.SUBMITTED) {
+            throw new IllegalStateException("Feedback already submitted");
+        }
+        applySubmission(feedback, request);
+        saveAnswers(feedback, request.answers());
+        return getFeedback(userId, feedbackId);
+    }
+
+    private void applySubmission(Feedback feedback, SubmitFeedbackRequest request) {
+        feedback.setGlobalScore(request.globalScore());
+        feedback.setComment(request.comment());
+        feedback.setStatus(FeedbackStatus.SUBMITTED);
+        feedbackRepository.save(feedback);
+    }
+
+    private void saveAnswers(Feedback feedback, List<String> answers) {
+        List<FeedbackAnswer> entities = answers.stream()
+                .map(value -> {
+                    FeedbackAnswer answer = new FeedbackAnswer();
+                    answer.setValue(value);
+                    answer.setFeedback(feedback);
+                    return answer;
+                })
+                .toList();
+        feedbackAnswerRepository.saveAll(entities);
+    }
+
+
+
+
 }

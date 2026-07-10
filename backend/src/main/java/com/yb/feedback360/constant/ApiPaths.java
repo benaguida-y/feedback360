@@ -19,4 +19,6 @@ public final class ApiPaths {
     public static final String ACTIVATE = "/activate";
     public static final String MODULE_COMPLETED = "/module-completed";
     public static final String BY_ID = "/{feedbackId}";
+
+    public static final String SUBMIT = "/{feedbackId}/submit";
 }
