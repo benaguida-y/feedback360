@@ -5,6 +5,7 @@ import com.yb.feedback360.domain.model.Feedback;
 import com.yb.feedback360.domain.model.FeedbackAnswer;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
 import com.yb.feedback360.dto.request.SubmitFeedbackRequest;
+import com.yb.feedback360.dto.response.DashboardSummaryResponse;
 import com.yb.feedback360.dto.response.FeedbackDetailResponse;
 import com.yb.feedback360.repository.FeedbackAnswerRepository;
 import com.yb.feedback360.repository.FeedbackRepository;
@@ -90,7 +91,13 @@ public class FeedbackService {
         feedbackAnswerRepository.saveAll(entities);
     }
 
+    @Transactional(readOnly = true)
+    public DashboardSummaryResponse getDashboardSummary(Long userId){
+        Long total = feedbackRepository.countByUser_UserId(userId);
+        Long submitted = feedbackRepository.countByUser_UserIdAndStatus(userId, FeedbackStatus.SUBMITTED);
+        Long notSubmitted = feedbackRepository.countByUser_UserIdAndStatus(userId, FeedbackStatus.NOT_SUBMITTED);
+        Long inProgress = feedbackRepository.countByUser_UserIdAndStatus(userId, FeedbackStatus.IN_PROGRESS);
 
-
-
+        return new DashboardSummaryResponse(total, submitted, notSubmitted, inProgress);
+    }
 }

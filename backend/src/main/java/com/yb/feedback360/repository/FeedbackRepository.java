@@ -14,4 +14,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             User user, ModuleFormation moduleFormation, FeedbackStatus status
     );
     List<Feedback> findByUser_UserIdOrderByCreatedAtDesc(Long userId);
+
+    long countByUser_UserId(Long userId);
+    long countByUser_UserIdAndStatus(Long userId, FeedbackStatus status);
 }

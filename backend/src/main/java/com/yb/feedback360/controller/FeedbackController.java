@@ -3,6 +3,7 @@ package com.yb.feedback360.controller;
 import com.yb.feedback360.constant.ApiPaths;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
 import com.yb.feedback360.dto.request.SubmitFeedbackRequest;
+import com.yb.feedback360.dto.response.DashboardSummaryResponse;
 import com.yb.feedback360.dto.response.FeedbackDetailResponse;
 import com.yb.feedback360.service.FeedbackService;
 import jakarta.validation.Valid;
@@ -37,4 +38,14 @@ public class FeedbackController {
         Long userId = Long.valueOf(jwt.getSubject());
         return feedbackService.submitFeedback(userId, feedbackId, request);
     }
+
+    @GetMapping(ApiPaths.SUMMARY)
+    public DashboardSummaryResponse summary(@AuthenticationPrincipal Jwt jwt) {
+        Long userId = Long.valueOf(jwt.getSubject());
+        return feedbackService.getDashboardSummary(userId);
+    }
+
+
+
+
 }
