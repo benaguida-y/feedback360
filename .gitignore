@@ -1,0 +1,12 @@
+# IntelliJ / IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build output (backend/.gitignore also covers target/)
+**/target/
