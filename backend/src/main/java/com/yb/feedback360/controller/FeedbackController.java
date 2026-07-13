@@ -1,6 +1,7 @@
 package com.yb.feedback360.controller;
 
 import com.yb.feedback360.constant.ApiPaths;
+import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
 import com.yb.feedback360.dto.request.SubmitFeedbackRequest;
 import com.yb.feedback360.dto.response.DashboardSummaryResponse;
@@ -22,9 +23,9 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @GetMapping
-    public List<FeedbackSummaryResponse> myFeedbacks(@AuthenticationPrincipal Jwt jwt) {
+    public List<FeedbackSummaryResponse> myFeedbacks(@AuthenticationPrincipal Jwt jwt, @RequestParam(required = false)FeedbackStatus status) {
         Long userId = Long.valueOf(jwt.getSubject());
-        return feedbackService.getFeedbackForUser(userId);
+        return feedbackService.getFeedbackForUser(userId, status);
     }
 
     @GetMapping(ApiPaths.BY_ID)

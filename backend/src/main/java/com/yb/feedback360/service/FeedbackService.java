@@ -21,8 +21,12 @@ public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
 
-    public List<FeedbackSummaryResponse> getFeedbackForUser(Long userId) {
-        return feedbackRepository.findByUser_UserIdOrderByCreatedAtDesc(userId).stream()
+    public List<FeedbackSummaryResponse> getFeedbackForUser(Long userId, FeedbackStatus status) {
+        List<Feedback> feedbacks = (status == null)
+                ? feedbackRepository.findByUser_UserIdOrderByCreatedAtDesc(userId)
+                : feedbackRepository.findByUser_UserIdAndStatusOrderByCreatedAtDesc(userId, status);
+
+        return feedbacks.stream()
                 .map(f -> new FeedbackSummaryResponse(
                         f.getFeedbackId(),
                         f.getStatus().name(),
