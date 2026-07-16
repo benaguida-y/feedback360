@@ -1,10 +1,11 @@
 package com.yb.feedback360.service;
 
+import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.Feedback;
-import com.yb.feedback360.domain.model.FeedbackAnswer;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
+import com.yb.feedback360.dto.request.SubmitFeedbackRequest;
+import com.yb.feedback360.dto.response.DashboardSummaryResponse;
 import com.yb.feedback360.dto.response.FeedbackDetailResponse;
-import com.yb.feedback360.repository.FeedbackAnswerRepository;
 import com.yb.feedback360.repository.FeedbackRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,13 @@ import java.util.List;
 public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
-    private final FeedbackAnswerRepository feedbackAnswerRepository;
 
-    public List<FeedbackSummaryResponse> getFeedbackForUser(Long userId) {
-        return feedbackRepository.findByUser_UserIdOrderByCreatedAtDesc(userId).stream()
+    public List<FeedbackSummaryResponse> getFeedbackForUser(Long userId, FeedbackStatus status) {
+        List<Feedback> feedbacks = (status == null)
+                ? feedbackRepository.findByUser_UserIdOrderByCreatedAtDesc(userId)
+                : feedbackRepository.findByUser_UserIdAndStatusOrderByCreatedAtDesc(userId, status);
+
+        return feedbacks.stream()
                 .map(f -> new FeedbackSummaryResponse(
                         f.getFeedbackId(),
                         f.getStatus().name(),
@@ -40,17 +44,44 @@ public class FeedbackService {
         if (!feedback.getUser().getUserId().equals(userId)) {
             throw new AccessDeniedException("This feedback is not yours");
         }
-        List<String> answers = feedbackAnswerRepository
-                .findByFeedback_FeedbackId(feedbackId).stream()
-                .map(FeedbackAnswer::getValue)
-                .toList();
         return new FeedbackDetailResponse(
                 feedback.getFeedbackId(),
                 feedback.getStatus().name(),
                 feedback.getModuleFormation().getTitle(),
                 feedback.getCreatedAt(),
                 feedback.getGlobalScore(),
-                feedback.getComment(),
-                answers);
+                feedback.getComment()
+                );
+    }
+
+    @Transactional
+    public FeedbackDetailResponse submitFeedback(Long userId, Long feedbackId, SubmitFeedbackRequest request) {
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
+        if (!feedback.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("This feedback is not yours");
+        }
+        if (feedback.getStatus() == FeedbackStatus.SUBMITTED) {
+            throw new IllegalStateException("Feedback already submitted");
+        }
+        applySubmission(feedback, request);
+        return getFeedback(userId, feedbackId);
+    }
+
+    private void applySubmission(Feedback feedback, SubmitFeedbackRequest request) {
+        feedback.setGlobalScore(request.globalScore());
+        feedback.setComment(request.comment());
+        feedback.setStatus(FeedbackStatus.SUBMITTED);
+        feedbackRepository.save(feedback);
+    }
+
+    @Transactional(readOnly = true)
+    public DashboardSummaryResponse getDashboardSummary(Long userId){
+        Long total = feedbackRepository.countByUser_UserId(userId);
+        Long submitted = feedbackRepository.countByUser_UserIdAndStatus(userId, FeedbackStatus.SUBMITTED);
+        Long notSubmitted = feedbackRepository.countByUser_UserIdAndStatus(userId, FeedbackStatus.NOT_SUBMITTED);
+        Long inProgress = feedbackRepository.countByUser_UserIdAndStatus(userId, FeedbackStatus.IN_PROGRESS);
+
+        return new DashboardSummaryResponse(total, submitted, notSubmitted, inProgress);
     }
 }

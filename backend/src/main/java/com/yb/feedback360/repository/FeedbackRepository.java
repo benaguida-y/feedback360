@@ -14,4 +14,10 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             User user, ModuleFormation moduleFormation, FeedbackStatus status
     );
     List<Feedback> findByUser_UserIdOrderByCreatedAtDesc(Long userId);
+
+    long countByUser_UserId(Long userId);
+    long countByUser_UserIdAndStatus(Long userId, FeedbackStatus status);
+    
+    // Spring builds the SQL from the name (... where user_id = ? and status = ? order by created_at desc)
+    List<Feedback> findByUser_UserIdAndStatusOrderByCreatedAtDesc(Long userId, FeedbackStatus status);
 }
