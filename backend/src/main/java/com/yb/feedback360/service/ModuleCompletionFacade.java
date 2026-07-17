@@ -19,6 +19,7 @@ public class ModuleCompletionFacade {
     private final Validator validator;
     private final ModuleCompletionService moduleCompletionService;
     private final MagicLinkService magicLinkService;
+    private final EmailService emailService;
 
     public List<ModuleCompletionResult> process(List<ModuleCompletedRequest> requests) {
         return requests.stream()
@@ -41,6 +42,7 @@ public class ModuleCompletionFacade {
         try {
             Feedback feedback = moduleCompletionService.handleModuleCompleted(request);
             String activationLink = magicLinkService.createActivationUrl(feedback.getUser());
+            emailService.sendActivationEmail(feedback.getUser(),  activationLink);
             return ModuleCompletionResult.success(
                     email, feedback.getFeedbackId(), feedback.getStatus().name(), activationLink);
         } catch (Exception e) {

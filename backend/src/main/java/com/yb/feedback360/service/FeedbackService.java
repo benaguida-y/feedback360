@@ -27,13 +27,7 @@ public class FeedbackService {
                 : feedbackRepository.findByUser_UserIdAndStatusOrderByCreatedAtDesc(userId, status);
 
         return feedbacks.stream()
-                .map(f -> new FeedbackSummaryResponse(
-                        f.getFeedbackId(),
-                        f.getStatus().name(),
-                        f.getModuleFormation().getTitle(),
-                        f.getCreatedAt(),
-                        f.getGlobalScore()
-                ))
+                .map(FeedbackSummaryResponse::from)
                 .toList();
     }
 
