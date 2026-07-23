@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import client from "../api/client";
+import BackButton from "../components/BackButton";
+import Layout from "../components/Layout";
 
 export default function SubmitFeedback() {
     const { feedbackId } = useParams();
@@ -18,7 +20,7 @@ export default function SubmitFeedback() {
         setLoading(true);
         try {
             await client.post(`/feedbacks/${feedbackId}/submit`, { globalScore: score, comment });
-            navigate("/");
+            navigate("/", { state: { success: "Votre feedback a bien été envoyé. Merci !" } });
         } catch {
             setError("Envoi impossible (feedback déjà soumis, introuvable, ou non autorisé).");
         } finally {
@@ -27,40 +29,45 @@ export default function SubmitFeedback() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <header className="bg-white px-6 py-4 shadow">
-                <h1 className="text-xl font-bold text-sky-700">Feedback360</h1>
-            </header>
-            <main className="mx-auto max-w-lg p-6">
-                <button onClick={() => navigate("/")} className="mb-4 text-sm text-sky-600 hover:underline">← Retour</button>
-                <div className="rounded-xl bg-white p-6 shadow">
-                    <h2 className="mb-4 text-lg font-semibold text-gray-800">Donner mon feedback</h2>
-                    <form onSubmit={handleSubmit}>
-                        <p className="mb-1 text-sm font-medium text-gray-700">Note globale</p>
-                        <div className="mb-4 flex gap-1">
-                            {[1, 2, 3, 4, 5].map((n) => (
-                                <button type="button" key={n}
-                                        onMouseEnter={() => setHover(n)} onMouseLeave={() => setHover(0)}
-                                        onClick={() => setScore(n)}
-                                        className={`text-3xl ${(hover || score) >= n ? "text-amber-400" : "text-gray-300"}`}>
-                                    ★
-                                </button>
-                            ))}
-                        </div>
-                        <label className="mb-4 block">
-                            <span className="text-sm font-medium text-gray-700">Commentaire</span>
-                            <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4}
-                                      className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                                      placeholder="Votre avis sur le module…" />
-                        </label>
-                        {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
-                        <button type="submit" disabled={loading}
-                                className="w-full rounded-lg bg-sky-600 py-2 font-medium text-white hover:bg-sky-700 disabled:opacity-60">
-                            {loading ? "Envoi…" : "Envoyer mon feedback"}
-                        </button>
-                    </form>
+        <Layout>
+            <div className="mb-6 flex items-center gap-4">
+                <BackButton />
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800">Donner mon feedback</h2>
+                    <p className="text-sm text-slate-500">Notez le module et laissez un commentaire.</p>
                 </div>
-            </main>
-        </div>
+            </div>
+
+            <div className="max-w-lg border border-slate-200 bg-white p-6 shadow-sm">
+                <form onSubmit={handleSubmit}>
+                    <p className="mb-2 text-sm font-medium text-slate-700">Note globale</p>
+                    <div className="mb-6 flex items-center gap-1">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                            <button type="button" key={n}
+                                    onMouseEnter={() => setHover(n)} onMouseLeave={() => setHover(0)}
+                                    onClick={() => setScore(n)}
+                                    className={`text-3xl transition ${(hover || score) >= n ? "text-amber-400" : "text-slate-300"}`}>
+                                ★
+                            </button>
+                        ))}
+                        {score > 0 && <span className="ml-3 text-sm text-slate-500">{score} / 5</span>}
+                    </div>
+
+                    <label className="mb-6 block">
+                        <span className="text-sm font-medium text-slate-700">Commentaire</span>
+                        <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4}
+                                  placeholder="Votre avis sur le module…"
+                                  className="mt-1.5 w-full border border-slate-300 px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+                    </label>
+
+                    {error && <p className="mb-4 border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+
+                    <button type="submit" disabled={loading}
+                            className="w-full bg-brand py-2.5 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
+                        {loading ? "Envoi…" : "Envoyer mon feedback"}
+                    </button>
+                </form>
+            </div>
+        </Layout>
     );
 }

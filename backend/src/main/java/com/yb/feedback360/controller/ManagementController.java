@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.yb.feedback360.dto.response.ManagementFeedbackDetailResponse;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -34,6 +36,11 @@ public class ManagementController {
     @GetMapping(ApiPaths.MANAGEMENT_FEEDBACKS_STATS)
     public ManagementStatsResponse stats() {
         return managementService.getStats();
+    }
+
+    @GetMapping(ApiPaths.MANAGEMENT_FEEDBACK_BY_ID)
+    public ManagementFeedbackDetailResponse feedbackDetail(@PathVariable Long feedbackId) {
+        return managementService.getFeedback(feedbackId);
     }
 
 }

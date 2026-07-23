@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import SubmitFeedback from "./pages/SubmitFeedback";
 import AdminUsers from "./pages/AdminUsers";
+import FeedbackDetail from "./pages/FeedbackDetail.tsx";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/activate" element={<Activate />} />
         <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/feedback/:feedbackId" element={<ProtectedRoute><SubmitFeedback /></ProtectedRoute>} />
+        <Route path="/feedback/:feedbackId/detail" element={<ProtectedRoute><FeedbackDetail /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

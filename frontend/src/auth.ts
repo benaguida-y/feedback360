@@ -19,6 +19,7 @@ export function isAuthenticated(): boolean {
 export interface JwtPayload {
   sub: string;
   role: string;
+  name?: string;
   exp: number;
 }
 
@@ -35,4 +36,8 @@ export function getUser(): JwtPayload | null {
 
 export function getRole(): string | null {
   return getUser()?.role ?? null;
+}
+
+export function getUserName(): string | null {
+  return getUser()?.name ?? null;
 }

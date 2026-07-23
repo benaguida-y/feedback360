@@ -40,6 +40,11 @@ public class AuthService {
         if (user.getPasswordHash() == null || !passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new BadCredentialsException("Invalid Credentials!");
         }
+        String fullName = ((user.getFirstName() != null ? user.getFirstName() : "") + " " +
+                (user.getLastName() != null ? user.getLastName() : "")).trim();
+        if (fullName.isBlank()) {
+            fullName = user.getEmail();
+        }
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .subject(String.valueOf(user.getUserId()))
@@ -47,6 +52,7 @@ public class AuthService {
                 .expiresAt(now.plus(Duration.ofHours(12)))
                 .claim("scope", "access")
                 .claim("role", user.getRole().getName())
+                .claim("name", fullName)
                 .build();
         JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
         return jwtEncoder.encode(JwtEncoderParameters.from(header, claims)).getTokenValue();

@@ -2,11 +2,14 @@ package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.Feedback;
+import com.yb.feedback360.domain.model.User;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
 import com.yb.feedback360.dto.response.DashboardSummaryResponse;
+import com.yb.feedback360.dto.response.ManagementFeedbackDetailResponse;
 import com.yb.feedback360.dto.response.ManagementStatsResponse;
 import com.yb.feedback360.dto.response.ModuleStatsResponse;
 import com.yb.feedback360.repository.FeedbackRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,5 +55,27 @@ public class ManagementService {
         Double averageScore = feedbackRepository.averageScore(FeedbackStatus.SUBMITTED);
         List<ModuleStatsResponse> perModule = feedbackRepository.moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED);
         return new ManagementStatsResponse(total, submitted, submissionRate, averageScore, perModule);
+    }
+
+    // Pas de contrôle de propriétaire ici : l'accès est déjà réservé
+    // aux rôles MANAGER/ADMIN par SecurityConfig sur /api/management/**.
+    @Transactional(readOnly = true)
+    public ManagementFeedbackDetailResponse getFeedback(Long feedbackId) {
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
+
+        User user = feedback.getUser();
+        String name = ((user.getFirstName() != null ? user.getFirstName() : "") + " " +
+                (user.getLastName() != null ? user.getLastName() : "")).trim();
+
+        return new ManagementFeedbackDetailResponse(
+                feedback.getFeedbackId(),
+                feedback.getStatus().name(),
+                feedback.getModuleFormation().getTitle(),
+                feedback.getCreatedAt(),
+                feedback.getGlobalScore(),
+                feedback.getComment(),
+                name.isBlank() ? user.getEmail() : name,
+                user.getEmail());
     }
 }

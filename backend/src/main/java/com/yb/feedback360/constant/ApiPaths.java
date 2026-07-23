@@ -30,6 +30,7 @@ public final class ApiPaths {
     public static final String MANAGEMENT_FEEDBACKS = "/feedbacks";
     public static final String MANAGEMENT_FEEDBACKS_SUMMARY = "/feedbacks/summary";
     public static final String MANAGEMENT_FEEDBACKS_STATS = "/feedbacks/stats";
+    public static final String MANAGEMENT_FEEDBACK_BY_ID = "/feedbacks/{feedbackId}";
 
     // Admin user & config management
     public static final String ADMIN = "/api/admin";
