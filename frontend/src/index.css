@@ -28,3 +28,6 @@ body {
 [class*="rounded"] {
   border-radius: 0 !important;
 }
+
+/* Exception ciblée : éléments décoratifs ronds malgré la règle d'angles droits */
+.blob { border-radius: 9999px; }
