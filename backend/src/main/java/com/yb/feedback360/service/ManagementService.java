@@ -4,11 +4,9 @@ import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.Feedback;
 import com.yb.feedback360.domain.model.User;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
-import com.yb.feedback360.dto.response.DashboardSummaryResponse;
-import com.yb.feedback360.dto.response.ManagementFeedbackDetailResponse;
-import com.yb.feedback360.dto.response.ManagementStatsResponse;
-import com.yb.feedback360.dto.response.ModuleStatsResponse;
+import com.yb.feedback360.dto.response.*;
 import com.yb.feedback360.repository.FeedbackRepository;
+import com.yb.feedback360.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagementService {
     private final FeedbackRepository feedbackRepository;
+    private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
     public DashboardSummaryResponse getGlobalSummary() {
@@ -54,7 +53,9 @@ public class ManagementService {
 
         Double averageScore = feedbackRepository.averageScore(FeedbackStatus.SUBMITTED);
         List<ModuleStatsResponse> perModule = feedbackRepository.moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED);
-        return new ManagementStatsResponse(total, submitted, submissionRate, averageScore, perModule);
+
+        int submissionRatePercent = (int) Math.round(submissionRate * 100);
+        return new ManagementStatsResponse(total, submitted, submissionRate, submissionRatePercent, averageScore, perModule);
     }
 
     // Pas de contrôle de propriétaire ici : l'accès est déjà réservé
@@ -77,5 +78,28 @@ public class ManagementService {
                 feedback.getComment(),
                 name.isBlank() ? user.getEmail() : name,
                 user.getEmail());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CollaboratorProgressResponse> getCollaborators() {
+        return feedbackRepository.collaboratorProgress(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED);
+    }
+
+    @Transactional(readOnly = true)
+    public CollaboratorDetailResponse getCollaborator(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        List<FeedbackSummaryResponse> feedbacks = feedbackRepository
+                .findByUser_UserIdOrderByCreatedAtDesc(userId).stream()
+                .map(FeedbackSummaryResponse::from)
+                .toList();
+
+        String fullName = ((user.getFirstName() != null ? user.getFirstName() : "") + " " +
+                (user.getLastName() != null ? user.getLastName() : "")).trim();
+        if (fullName.isBlank()) {
+            fullName = user.getEmail();
+        }
+        return new CollaboratorDetailResponse(user.getUserId(), fullName, user.getEmail(), feedbacks);
     }
 }

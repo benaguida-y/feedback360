@@ -4,6 +4,7 @@ import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.Feedback;
 import com.yb.feedback360.domain.model.ModuleFormation;
 import com.yb.feedback360.domain.model.User;
+import com.yb.feedback360.dto.response.CollaboratorProgressResponse;
 import com.yb.feedback360.dto.response.ModuleStatsResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -42,5 +43,23 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             order by m.title
             """)
     List<ModuleStatsResponse> moduleStats(@Param("submitted") FeedbackStatus submitted, @Param("notSubmitted") FeedbackStatus unsubmitted);
+
+    @Query("""
+            select new com.yb.feedback360.dto.response.CollaboratorProgressResponse(
+                u.userId,
+                trim(concat(concat(coalesce(u.firstName, ''), ' '), coalesce(u.lastName, ''))),
+                u.email,
+                count(f),
+                sum(case when f.status = :submitted then 1 else 0 end),
+                sum(case when f.status = :notSubmitted then 1 else 0 end),
+                (sum(case when f.status = :submitted then 1 else 0 end) * 100) / count(f),
+                avg(case when f.status = :submitted then f.globalScore else null end))
+            from Feedback f join f.user u
+            group by u.userId, u.firstName, u.lastName, u.email
+            order by u.firstName, u.lastName
+            """)
+    List<CollaboratorProgressResponse> collaboratorProgress(@Param("submitted") FeedbackStatus submitted,
+                                                            @Param("notSubmitted") FeedbackStatus notSubmitted);
+
 
 }

@@ -3,12 +3,16 @@ package com.yb.feedback360.service;
 import com.yb.feedback360.domain.model.Role;
 import com.yb.feedback360.domain.model.User;
 import com.yb.feedback360.dto.request.CreateUserRequest;
+import com.yb.feedback360.dto.response.AdminUserResponse;
 import com.yb.feedback360.dto.response.CreatedUserResponse;
 import com.yb.feedback360.repository.RoleRepository;
 import com.yb.feedback360.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,32 @@ public class AdminService {
 
         return new CreatedUserResponse(saved.getUserId(),
                 saved.getEmail(), role.getName(), activationLink);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AdminUserResponse> listUsers() {
+        return userRepository.findAllByOrderByUserIdAsc().stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional
+    public AdminUserResponse setUserActive(Long userId, boolean active) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        user.setActive(active);
+        return toResponse(userRepository.save(user));
+    }
+
+    private AdminUserResponse toResponse(User u) {
+        String fullName = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
+                (u.getLastName() != null ? u.getLastName() : "")).trim();
+        if (fullName.isBlank()) {
+            fullName = u.getEmail();
+        }
+        return new AdminUserResponse(
+                u.getUserId(), u.getEmail(), fullName,
+                u.getRole().getName(), u.isActive(), u.getPasswordHash() != null);
     }
 
 }

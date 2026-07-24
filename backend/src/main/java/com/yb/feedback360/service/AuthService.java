@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.authentication.DisabledException;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -39,6 +40,9 @@ public class AuthService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new BadCredentialsException("Invalid Credentials"));
         if (user.getPasswordHash() == null || !passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             throw new BadCredentialsException("Invalid Credentials!");
+        }
+        if (!user.isActive()) {
+            throw new DisabledException("Account is disabled");
         }
         String fullName = ((user.getFirstName() != null ? user.getFirstName() : "") + " " +
                 (user.getLastName() != null ? user.getLastName() : "")).trim();

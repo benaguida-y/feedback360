@@ -2,6 +2,7 @@ package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.Feedback;
+import com.yb.feedback360.dto.request.DraftFeedbackRequest;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
 import com.yb.feedback360.dto.request.SubmitFeedbackRequest;
 import com.yb.feedback360.dto.response.DashboardSummaryResponse;
@@ -67,6 +68,25 @@ public class FeedbackService {
         feedback.setComment(request.comment());
         feedback.setStatus(FeedbackStatus.SUBMITTED);
         feedbackRepository.save(feedback);
+    }
+
+    // Enregistre un brouillon : conserve la note/commentaire partiels sans finaliser.
+    // Le feedback passe en IN_PROGRESS tant qu'il n'est pas soumis.
+    @Transactional
+    public FeedbackDetailResponse saveDraft(Long userId, Long feedbackId, DraftFeedbackRequest request) {
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
+        if (!feedback.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("This feedback is not yours");
+        }
+        if (feedback.getStatus() == FeedbackStatus.SUBMITTED) {
+            throw new IllegalStateException("Feedback already submitted");
+        }
+        feedback.setGlobalScore(request.globalScore());
+        feedback.setComment(request.comment());
+        feedback.setStatus(FeedbackStatus.IN_PROGRESS);
+        feedbackRepository.save(feedback);
+        return getFeedback(userId, feedbackId);
     }
 
     @Transactional(readOnly = true)
