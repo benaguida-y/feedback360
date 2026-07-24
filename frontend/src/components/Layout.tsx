@@ -4,11 +4,11 @@ import Header from "./Header";
 
 export default function Layout({ children }: { children: ReactNode }) {
     return (
-        <div className="flex min-h-screen">
+        <div className="flex h-screen overflow-hidden bg-slate-50">
             <Sidebar />
-            <div className="flex flex-1 flex-col">
+            <div className="flex flex-1 flex-col overflow-hidden">
                 <Header />
-                <main className="flex-1 p-8">{children}</main>
+                <main className="flex-1 overflow-y-auto p-8">{children}</main>
             </div>
         </div>
     );

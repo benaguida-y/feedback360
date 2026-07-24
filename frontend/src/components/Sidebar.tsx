@@ -103,8 +103,17 @@ import { clearToken, getRole, getUserName } from "../auth";
 function IconDashboard() {
     return <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 shrink-0"><path d="M3 3h6v6H3V3zm8 0h6v4h-6V3zM3 11h6v6H3v-6zm8 2h6v4h-6v-4z" /></svg>;
 }
+function IconList() {
+    return <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 shrink-0"><path d="M3 4h14v2H3V4zm0 5h14v2H3V9zm0 5h14v2H3v-2z" /></svg>;
+}
+function IconChart() {
+    return <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 shrink-0"><path d="M3 3h2v14H3V3zm4 8h2v6H7v-6zm4-4h2v10h-2V7zm4-3h2v13h-2V4z" /></svg>;
+}
 function IconUsers() {
     return <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 shrink-0"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 8a7 7 0 1114 0H3z" /></svg>;
+}
+function IconTeam() {
+    return <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 shrink-0"><path d="M7 9a3 3 0 100-6 3 3 0 000 6zm6 0a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.5 17a5.5 5.5 0 0111 0H1.5zm11.2 0a6.5 6.5 0 00-1.9-3.6A4 4 0 0118.5 17h-5.8z" /></svg>;
 }
 
 export default function Sidebar() {
@@ -126,8 +135,14 @@ export default function Sidebar() {
         navigate("/login");
     }
 
+    const isManager = role === "MANAGER" || role === "ADMIN";
     const items = [
         { to: "/", end: true, label: "Tableau de bord", icon: <IconDashboard /> },
+        ...(isManager  ? [
+            { to: "/management/feedbacks", end: false, label: "Feedbacks", icon: <IconList /> },
+            { to: "/management/collaborators", end: false, label: "Collaborateurs", icon: <IconTeam /> },
+            { to: "/management/modules", end: false, label: "Par module", icon: <IconChart /> },
+        ] : []),
         ...(role === "ADMIN" ? [{ to: "/admin/users", end: false, label: "Administration", icon: <IconUsers /> }] : []),
     ];
 

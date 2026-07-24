@@ -85,18 +85,18 @@ export default function CollaboratorDashboard() {
                                 <td className="px-5 py-3.5 text-slate-600">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
                                 <td className="px-5 py-3.5 text-slate-500">{new Date(f.createdAt).toLocaleDateString("fr-FR")}</td>
                                 <td className="px-5 py-3.5">
-                                    {f.status === "NOT_SUBMITTED" ? (
+                                    {f.status === "SUBMITTED" ? (
+                                        <Link to={`/feedback/${f.feedbackId}/detail`}
+                                              className="rounded-lg inline-flex items-center border border-slate-300 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand hover:text-brand">
+                                            Consulter
+                                        </Link>
+                                    ) : (
                                         <Link to={`/feedback/${f.feedbackId}`}
-                                              className="inline-flex items-center gap-1.5 bg-brand px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark">
-                                            Donner mon avis
+                                              className="rounded-lg inline-flex items-center gap-1.5 bg-brand px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark">
+                                            {f.status === "IN_PROGRESS" ? "Continuer" : "Donner mon avis"}
                                             <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                                 <path d="M9 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
                                             </svg>
-                                        </Link>
-                                    ) : (
-                                        <Link to={`/feedback/${f.feedbackId}/detail`}
-                                              className="inline-flex items-center border border-slate-300 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand hover:text-brand">
-                                            Consulter
                                         </Link>
                                     )}
                                 </td>

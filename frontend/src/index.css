@@ -25,9 +25,48 @@ body {
   color: #1e293b;
 }
 
-[class*="rounded"] {
-  border-radius: 0 !important;
+/*[class*="rounded"] {*/
+/*  border-radius: 0 !important;*/
+/*}*/
+
+/* Coins arrondis par défaut dans toute l'application */
+button,
+input,
+select,
+textarea,
+[class*="border"] {
+  border-radius: 0.5rem;
 }
 
+/* Exception : éléments décoratifs parfaitement ronds (halos, anneaux, pastilles) */
+.blob { border-radius: 9999px; }
+
+
 /* Exception ciblée : éléments décoratifs ronds malgré la règle d'angles droits */
+.blob { border-radius: 9999px; }
+
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #0070ad;
+  --color-brand-dark: #005180;
+  --color-brand-light: #12abdb;
+  --font-sans: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background-color: #f7f9fb;
+  color: #1e293b;
+}
+
+/* Coins arrondis par défaut dans toute l'application */
+button,
+input,
+select,
+textarea,
+[class*="border"] {
+  border-radius: 0.5rem;
+}
+
+/* Exception : éléments décoratifs parfaitement ronds (halos, anneaux, pastilles) */
 .blob { border-radius: 9999px; }

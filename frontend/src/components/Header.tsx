@@ -41,7 +41,7 @@ export default function Header() {
     // function logout() { clearToken(); navigate("/login"); }
 
     return (
-        <header className="sticky top-0 z-10 flex items-center justify-end gap-4 border-b border-slate-200 bg-white px-8 py-3">
+        <header className="flex shrink-0 items-center justify-end gap-4 border-b border-slate-200 bg-white px-8 py-3">
         </header>
     );
 }
