@@ -26,6 +26,7 @@ public final class ApiPaths {
 
     // Manager/RH global views
     public static final String MANAGEMENT = "/api/management";
+    public static final String MANAGEMENT_HIGHLIGHTS = "/highlights";
     public static final String MANAGEMENT_PATTERN = MANAGEMENT + "/**";
     public static final String MANAGEMENT_FEEDBACKS = "/feedbacks";
     public static final String MANAGEMENT_FEEDBACKS_SUMMARY = "/feedbacks/summary";
@@ -36,7 +37,9 @@ public final class ApiPaths {
 
     // Admin user & config management
     public static final String ADMIN = "/api/admin";
+    public static final String ADMIN_LOGS = "/logs";
     public static final String ADMIN_PATTERN = ADMIN + "/**";
     public static final String ADMIN_USERS = "/users";
+    public static final String ADMIN_STATS = "/stats";
     public static final String ADMIN_USER_STATUS = "/users/{userId}/status";
 }

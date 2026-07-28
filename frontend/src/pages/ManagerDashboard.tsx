@@ -1,20 +1,41 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import client from "../api/client";
 import StatCard from "../components/StatCard";
+import NavCard from "../components/NavCard.tsx";
+import { Medal, Star } from 'lucide-react';
+import PageHeader from "../components/PageHeader.tsx";
 
-interface Summary { total: number; submitted: number; notSubmitted: number; inProgress: number; }
-interface Stats { submissionRatePercent: number; averageScore: number | null; }
+interface Summary {
+    total: number;
+    submitted: number;
+    notSubmitted: number;
+    inProgress: number;
+}
+interface Stats {
+    submissionRatePercent: number;
+    averageScore: number | null;
+}
+interface Highlights {
+    topCollaboratorName: string | null;
+    topCollaboratorCount: number | null;
+    bestModuleTitle: string | null;
+    bestModuleAverage: number | null;
+}
 
 export default function ManagerDashboard() {
     const [summary, setSummary] = useState<Summary | null>(null);
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [highlights, setHighlights] = useState<Highlights | null>(null);
 
     useEffect(() => {
-        Promise.all([client.get<Summary>("/management/feedbacks/summary"), client.get<Stats>("/management/feedbacks/stats")])
-            .then(([s, st]) => { setSummary(s.data); setStats(st.data); })
+        Promise.all([
+            client.get<Summary>("/management/feedbacks/summary"),
+            client.get<Stats>("/management/feedbacks/stats"),
+            client.get<Highlights>("/management/highlights"),
+        ])
+            .then(([s, st, hl]) => { setSummary(s.data); setStats(st.data); setHighlights(hl.data); })
             .catch(() => setError("Impossible de charger les statistiques."))
             .finally(() => setLoading(false));
     }, []);
@@ -27,8 +48,7 @@ export default function ManagerDashboard() {
 
     return (
         <div>
-            <h2 className="mb-1 text-2xl font-bold text-slate-800">Vue d'ensemble</h2>
-            <p className="mb-6 text-sm text-slate-500">Indicateurs globaux des feedbacks.</p>
+            <PageHeader title="Vue d'ensemble" subtitle="Indicateurs globaux des feedbacks." />
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <StatCard label="Total" value={summary!.total} />
@@ -40,6 +60,21 @@ export default function ManagerDashboard() {
             <div className="mt-4 grid grid-cols-2 gap-4">
                 <StatCard label="Note moyenne" value={avg != null ? `${avg.toFixed(1)} / 5` : "—"} accent="text-brand" />
                 <StatCard label="Taux de soumission" value={`${rate} %`} accent="text-emerald-600" />
+            </div>
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <HighlightCard
+                    label="Collaborateur le plus actif"
+                    value={highlights?.topCollaboratorName ?? "—"}
+                    sub={highlights?.topCollaboratorCount ? `${highlights.topCollaboratorCount} feedback(s) soumis` : "Aucune soumission"}
+                    icon=<Medal/>
+                />
+                <HighlightCard
+                    label="Module le mieux noté"
+                    value={highlights?.bestModuleTitle ?? "—"}
+                    sub={highlights?.bestModuleAverage != null ? `${highlights.bestModuleAverage.toFixed(1)} / 5 de moyenne` : "Pas encore de note"}
+                    icon=<Star/>
+                />
             </div>
 
             {/* Emplacement des futurs graphiques */}
@@ -56,17 +91,15 @@ export default function ManagerDashboard() {
     );
 }
 
-function NavCard({ to, title, subtitle }: { to: string; title: string; subtitle: string }) {
+function HighlightCard({ label, value, sub, icon }: { label: string; value: string; sub: string; icon?: any }) {
     return (
-        <Link to={to}
-              className="group flex items-center justify-between border border-slate-200 bg-white p-5 shadow-sm transition hover:border-brand hover:shadow">
-            <div>
-                <p className="font-semibold text-slate-800">{title}</p>
-                <p className="mt-1 text-sm text-slate-500">{subtitle}</p>
+        <div className="flex items-start gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <span className="text-2xl">{icon}</span>
+            <div className="min-w-0">
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
+                <p className="mt-1 truncate text-lg font-semibold text-slate-800">{value}</p>
+                <p className="text-sm text-slate-500">{sub}</p>
             </div>
-            <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-brand">
-                <path fillRule="evenodd" d="M7 4l6 6-6 6-1.4-1.4L10.2 10 5.6 5.4 7 4z" clipRule="evenodd" />
-            </svg>
-        </Link>
+        </div>
     );
 }

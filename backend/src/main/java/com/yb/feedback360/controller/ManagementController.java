@@ -27,7 +27,7 @@ public class ManagementController {
     }
 
     @GetMapping(ApiPaths.MANAGEMENT_FEEDBACKS)
-    public List<FeedbackSummaryResponse> allFeedbacks(@RequestParam(required = false) FeedbackStatus status) {
+    public List<ManagementFeedbackSummaryResponse> allFeedbacks(@RequestParam(required = false) FeedbackStatus status) {
         return managementService.getAllFeedbacks(status);
     }
 
@@ -49,6 +49,11 @@ public class ManagementController {
     @GetMapping(ApiPaths.MANAGEMENT_COLLABORATOR_BY_ID)
     public CollaboratorDetailResponse collaborator(@PathVariable Long userId) {
         return managementService.getCollaborator(userId);
+    }
+
+    @GetMapping(ApiPaths.MANAGEMENT_HIGHLIGHTS)
+    public DashboardHighlightsResponse highlights() {
+        return managementService.getHighlights();
     }
 
 }

@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import client from "../api/client";
 import { getRole } from "../auth";
-import BackButton from "../components/BackButton";
 import Layout from "../components/Layout";
+import PageHeader from "../components/PageHeader.tsx";
+import Card from "../components/Card.tsx";
+import Table from "../components/Table.tsx";
 
 interface Collab {
     userId: number;
@@ -31,31 +33,17 @@ export default function ManagerCollaborators() {
 
     return (
         <Layout>
-            <div className="mb-6 flex items-center gap-4">
-                <BackButton />
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-800">Collaborateurs</h2>
-                    <p className="text-sm text-slate-500">Progression des retours par personne.</p>
-                </div>
-            </div>
+            <PageHeader title="Collaborateurs"
+                        subtitle="Progression des retours par personne."
+                        backTo="/"
+            />
 
             {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
-            <div className="overflow-hidden border border-slate-200 bg-white shadow-sm">
-                <table className="w-full text-left text-sm">
-                    <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
-                    <tr>
-                        <th className="px-5 py-3 font-medium">Collaborateur</th>
-                        <th className="px-5 py-3 font-medium">Progression</th>
-                        <th className="px-5 py-3 font-medium">Note moyenne</th>
-                        <th className="px-5 py-3 font-medium">Action</th>
-                    </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                    {rows.length === 0 ? (
-                        <tr><td colSpan={4} className="px-5 py-8 text-center text-slate-400">Aucun collaborateur.</td></tr>
-                    ) : (
-                        rows.map((c) => (
+            <Card>
+                <Table columns={["Collaborateur", "Progression", "Note moyenne", "Action"]}
+                       isEmpty={rows.length === 0} emptyLabel="Aucun collaborateur.">
+                    {rows.map((c) => (
                             <tr key={c.userId} className="hover:bg-slate-50/60">
                                 <td className="px-5 py-3.5">
                                     <p className="font-medium text-slate-800">{c.fullName}</p>
@@ -77,11 +65,9 @@ export default function ManagerCollaborators() {
                                     </Link>
                                 </td>
                             </tr>
-                        ))
-                    )}
-                    </tbody>
-                </table>
-            </div>
+                        ))}
+                </Table>
+            </Card>
         </Layout>
     );
 }

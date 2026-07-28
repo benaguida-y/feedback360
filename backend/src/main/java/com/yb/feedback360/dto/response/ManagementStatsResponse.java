@@ -1,5 +1,7 @@
 package com.yb.feedback360.dto.response;
 
+import org.hibernate.annotations.Imported;
+
 import java.util.List;
 
 public record ManagementStatsResponse(

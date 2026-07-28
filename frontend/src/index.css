@@ -70,3 +70,5 @@ textarea,
 
 /* Exception : éléments décoratifs parfaitement ronds (halos, anneaux, pastilles) */
 .blob { border-radius: 9999px; }
+
+@custom-variant dark (&:where(.dark, .dark *));

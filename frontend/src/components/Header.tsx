@@ -1,47 +1,46 @@
-/*
-import { Link, useNavigate } from "react-router-dom";
-import { clearToken, getRole } from "../auth";
+import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
+
+const LANGS = ["FR", "EN"] as const;
+type Lang = (typeof LANGS)[number];
 
 export default function Header() {
-    const navigate = useNavigate();
-    const role = getRole();
+    const [lang, setLang] = useState<Lang>(() => (localStorage.getItem("lang") as Lang) ?? "FR");
+    const [dark, setDark] = useState(() => localStorage.getItem("theme") === "dark");
 
-    function logout() {
-        clearToken();
-        navigate("/login");
-    }
+    // Pose la classe sur <html> : les styles sombres viendront s'y accrocher.
+    useEffect(() => {
+        document.documentElement.classList.toggle("dark", dark);
+        localStorage.setItem("theme", dark ? "dark" : "light");
+    }, [dark]);
+
+    // Prépare l'internationalisation : la langue choisie est mémorisée.
+    useEffect(() => {
+        document.documentElement.lang = lang.toLowerCase();
+        localStorage.setItem("lang", lang);
+    }, [lang]);
 
     return (
-        <header className="flex items-center justify-between bg-white px-6 py-3 shadow">
-            <Link to="/" className="flex items-center gap-3">
-                <img src="/logo.png" alt="Feedback360" className="h-8" />
-                <span className="text-lg font-bold text-sky-700">Feedback360</span>
-            </Link>
-            <div className="flex items-center gap-4">
-                {role === "ADMIN" && (
-                    <Link to="/admin/users" className="text-sm font-medium text-sky-600 hover:underline">
-                        Administration
-                    </Link>
-                )}
-                <span className="text-sm text-gray-600">Rôle : <b>{role}</b></span>
-                <button onClick={logout}
-                        className="rounded-lg bg-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-300">
-                    Se déconnecter
-                </button>
+        <header className="flex shrink-0 items-center justify-end gap-3 border-b border-slate-200 bg-white px-8 py-3">
+            {/* Sélecteur de langue */}
+            <div className="flex overflow-hidden rounded-lg border border-slate-300">
+                {LANGS.map((l) => (
+                    <button key={l} onClick={() => setLang(l)} aria-pressed={lang === l}
+                            className={`rounded-none px-3 py-1.5 text-xs font-semibold transition ${
+                                lang === l ? "bg-brand text-white" : "bg-white text-slate-600 hover:bg-slate-50"
+                            }`}>
+                        {l}
+                    </button>
+                ))}
             </div>
-        </header>
-    );
-}*/
-// import { useNavigate } from "react-router-dom";
-// import { clearToken, getRole } from "../auth";
 
-export default function Header() {
-    // const navigate = useNavigate();
-    // const role = getRole();
-    // function logout() { clearToken(); navigate("/login"); }
-
-    return (
-        <header className="flex shrink-0 items-center justify-end gap-4 border-b border-slate-200 bg-white px-8 py-3">
+            {/* Bascule clair / sombre */}
+            <button onClick={() => setDark((d) => !d)}
+                    title={dark ? "Passer en thème clair" : "Passer en thème sombre"}
+                    aria-label={dark ? "Passer en thème clair" : "Passer en thème sombre"}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-600 transition hover:border-brand hover:text-brand">
+                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
         </header>
     );
 }

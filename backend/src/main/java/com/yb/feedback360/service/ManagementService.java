@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -31,14 +31,23 @@ public class ManagementService {
         return new DashboardSummaryResponse(total, submitted, notSubmitted, inProgress);
     }
 
-    public List<FeedbackSummaryResponse> getAllFeedbacks(FeedbackStatus status) {
+    @Transactional(readOnly = true)
+    public List<ManagementFeedbackSummaryResponse> getAllFeedbacks(FeedbackStatus status) {
         List<Feedback> feedbacks = (status == null)
                 ? feedbackRepository.findAllByOrderByCreatedAtDesc()
                 : feedbackRepository.findByStatusOrderByCreatedAtDesc(status);
 
-        return feedbacks.stream()
-                .map(FeedbackSummaryResponse::from)
-                .toList();
+        return feedbacks.stream().map(f -> {
+            User u = f.getUser();
+            String name = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
+                    (u.getLastName() != null ? u.getLastName() : "")).trim();
+            if (name.isBlank()) {
+                name = u.getEmail();
+            }
+            return new ManagementFeedbackSummaryResponse(
+                    f.getFeedbackId(), f.getStatus().name(), f.getModuleFormation().getTitle(),
+                    f.getCreatedAt(), f.getGlobalScore(), name);
+        }).toList();
     }
 
     @Transactional
@@ -101,5 +110,28 @@ public class ManagementService {
             fullName = user.getEmail();
         }
         return new CollaboratorDetailResponse(user.getUserId(), fullName, user.getEmail(), feedbacks);
+    }
+
+    @Transactional(readOnly = true)
+    public DashboardHighlightsResponse getHighlights() {
+        // Collaborateur le plus actif : le plus de feedbacks soumis
+        var top = feedbackRepository.collaboratorProgress(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED)
+                .stream()
+                .filter(c -> c.submitted() != null && c.submitted() > 0)
+                .max(Comparator.comparingLong(CollaboratorProgressResponse::submitted))
+                .orElse(null);
+
+        // Module le mieux noté : meilleure note moyenne
+        ModuleStatsResponse best = feedbackRepository.moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED)
+                .stream()
+                .filter(m -> m.averageScore() != null)
+                .max(Comparator.comparingDouble(ModuleStatsResponse::averageScore))
+                .orElse(null);
+
+        return new DashboardHighlightsResponse(
+                top != null ? top.fullName() : null,
+                top != null ? top.submitted() : null,
+                best != null ? best.moduleTitle() : null,
+                best != null ? best.averageScore() : null);
     }
 }

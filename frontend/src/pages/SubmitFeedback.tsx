@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import client from "../api/client";
 import { getToken } from "../auth";
-import BackButton from "../components/BackButton";
 import Layout from "../components/Layout";
+import PageHeader from "../components/PageHeader.tsx";
 
 interface Detail {
     feedbackId: number;
@@ -130,13 +130,10 @@ export default function SubmitFeedback() {
 
     return (
         <Layout>
-            <div className="mb-6 flex items-center gap-4">
-                <BackButton />
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-800">Donner mon feedback</h2>
-                    <p className="text-sm text-slate-500">{detail ? detail.moduleTitle : "Chargement du module…"}</p>
-                </div>
-            </div>
+            <PageHeader title="Donner mon feedback"
+                        subtitle={detail ? detail.moduleTitle : "Chargement du module…"}
+                        backTo="/"
+            />
 
             {loadError && <p className="text-red-600">{loadError}</p>}
 

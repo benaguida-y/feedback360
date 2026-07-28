@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import com.yb.feedback360.repository.IntegrationLogRepository;
 
 import java.util.List;
 import java.util.Set;
@@ -37,13 +38,16 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(MockitoExtension.class)
 class ModuleCompletionFacadeTest {
-
     @Mock
     Validator validator;
     @Mock
     ModuleCompletionService moduleCompletionService;
     @Mock
     MagicLinkService magicLinkService;
+    @Mock
+    EmailService emailService;
+    @Mock
+    IntegrationLogRepository integrationLogRepository;
 
     @InjectMocks
     ModuleCompletionFacade facade;

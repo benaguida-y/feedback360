@@ -3,9 +3,9 @@ import type { ReactNode } from "react";
 import { useParams } from "react-router-dom";
 import client from "../api/client";
 import { getRole } from "../auth";
-import BackButton from "../components/BackButton";
 import Layout from "../components/Layout";
 import StatusBadge from "../components/StatusBadge";
+import PageHeader from "../components/PageHeader.tsx";
 
 interface Detail {
     feedbackId: number;
@@ -41,13 +41,10 @@ export default function FeedbackDetail() {
 
     return (
         <Layout>
-            <div className="mb-6 flex items-center gap-4">
-                <BackButton />
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-800">{detail.moduleTitle}</h2>
-                    <p className="text-sm text-slate-500">Détail du feedback</p>
-                </div>
-            </div>
+            <PageHeader title={detail.moduleTitle}
+                        subtitle="Détail du feedback"
+                        backTo="/"
+            />
 
             <div className="max-w-2xl border border-slate-200 bg-white shadow-sm">
                 <dl className="divide-y divide-slate-100">

@@ -32,8 +32,9 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
     @Query("select avg(f.globalScore) from Feedback f where f.status = :status")
     Double averageScore(@Param("status") FeedbackStatus status);
+
     @Query("""
-            select new com.yb.feedback360.dto.response.ModuleStatsResponse(
+            select new ModuleStatsResponse(
                 m.title, 
                 sum(case when f.status = :submitted then 1 else 0 end),
                 sum(case when f.status = :notSubmitted then 1 else 0 end),
@@ -45,7 +46,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     List<ModuleStatsResponse> moduleStats(@Param("submitted") FeedbackStatus submitted, @Param("notSubmitted") FeedbackStatus unsubmitted);
 
     @Query("""
-            select new com.yb.feedback360.dto.response.CollaboratorProgressResponse(
+            select new CollaboratorProgressResponse(
                 u.userId,
                 trim(concat(concat(coalesce(u.firstName, ''), ' '), coalesce(u.lastName, ''))),
                 u.email,
