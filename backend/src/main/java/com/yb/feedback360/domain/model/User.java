@@ -31,4 +31,7 @@ public class User {
 
     private String department;
 
+    @Column(nullable = false)
+    private boolean active = true;
+
 }

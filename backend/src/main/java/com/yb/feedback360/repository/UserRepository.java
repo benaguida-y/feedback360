@@ -3,10 +3,16 @@ package com.yb.feedback360.repository;
 import com.yb.feedback360.domain.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByExternalUserId(Long externalUserId);
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
+    List<User> findAllByOrderByUserIdAsc();
+
+    long countByRole_Name(String roleName);
+    long countByActive(boolean active);
+    long countByPasswordHashIsNull();
 }
