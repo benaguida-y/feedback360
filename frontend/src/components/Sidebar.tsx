@@ -28,6 +28,9 @@ export default function Sidebar() {
     const isManager = role === "MANAGER" || role === "ADMIN";
     const items = [
         { to: "/", end: true, label: "Tableau de bord", icon: <LayoutDashboard className="h-5 w-5 shrink-0" /> },
+        ...(role === "COLLABORATOR" ? [
+            { to: "/feedbacks", end: false, label: "Feedbacks", icon: <MessageSquareText className="h-5 w-5 shrink-0" /> },
+        ] : []),
         ...(isManager ? [
             { to: "/management/feedbacks", end: false, label: "Feedbacks", icon: <MessageSquareText className="h-5 w-5 shrink-0" /> },
             { to: "/management/collaborators", end: false, label: "Collaborateurs", icon: <Users className="h-5 w-5 shrink-0" /> },

@@ -16,29 +16,34 @@ export default function CollaboratorDetail() {
     const role = getRole();
     const [detail, setDetail] = useState<Detail | null>(null);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
 
     if (role !== "MANAGER" && role !== "ADMIN") return <Navigate to="/" replace />;
 
     useEffect(() => {
+        setLoading(true);
         client.get<Detail>(`/management/collaborators/${userId}`)
             .then((r) => setDetail(r.data))
-            .catch(() => setError("Collaborateur introuvable."));
+            .catch(() => setError("Collaborateur introuvable."))
+            .finally(() => setLoading(false));
     }, [userId]);
 
     if (error) return <Layout><p className="text-red-600">{error}</p></Layout>;
-    if (!detail) return <Layout><p className="text-slate-500">Chargement…</p></Layout>;
+
+    const feedbacks = detail?.feedbacks ?? [];
 
     return (
         <Layout>
-            <PageHeader title={detail.fullName}
-                        subtitle={detail.email}
+            <PageHeader title={detail ? detail.fullName : "Collaborateur"}
+                        subtitle={detail?.email}
                         backTo="/management/collaborators" />
 
             <h3 className="mb-3 text-lg font-semibold text-slate-800">Modules & feedbacks</h3>
             <Card>
                 <Table columns={["Module", "Statut", "Note", "Date", "Action"]}
-                       isEmpty={detail.feedbacks.length === 0} emptyLabel="Aucun module.">
-                    {detail.feedbacks.map((f) => (
+                       loading={loading}
+                       isEmpty={feedbacks.length === 0} emptyLabel="Aucun module.">
+                    {feedbacks.map((f) => (
                         <tr key={f.feedbackId} className="hover:bg-slate-50/60">
                             <td className="px-5 py-3.5 font-medium text-slate-800">{f.moduleTitle}</td>
                             <td className="px-5 py-3.5"><StatusBadge status={f.status} /></td>
