@@ -1,15 +1,16 @@
 package com.yb.feedback360.controller;
 
 import com.yb.feedback360.constant.ApiPaths;
+import com.yb.feedback360.domain.enums.LogStatus;
+import com.yb.feedback360.domain.enums.LogType;
 import com.yb.feedback360.dto.request.CreateUserRequest;
 import com.yb.feedback360.dto.request.UpdateUserStatusRequest;
-import com.yb.feedback360.dto.response.AdminStatsResponse;
-import com.yb.feedback360.dto.response.AdminUserResponse;
-import com.yb.feedback360.dto.response.CreatedUserResponse;
-import com.yb.feedback360.dto.response.IntegrationLogResponse;
+import com.yb.feedback360.dto.response.*;
 import com.yb.feedback360.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,8 +29,11 @@ public class AdminController {
     }
 
     @GetMapping(ApiPaths.ADMIN_USERS)
-    public List<AdminUserResponse> listUsers() {
-        return adminService.listUsers();
+    public PageResponse<AdminUserResponse> listUsers(@RequestParam(required = false) String role,
+                                                     @RequestParam(required = false) String status,
+                                                     @RequestParam(required = false) String search,
+                                                     @PageableDefault(size = 10) Pageable pageable) {
+        return adminService.listUsers(role, status, search, pageable);
     }
 
     @GetMapping(ApiPaths.ADMIN_STATS)
@@ -44,8 +48,11 @@ public class AdminController {
     }
 
     @GetMapping(ApiPaths.ADMIN_LOGS)
-    public List<IntegrationLogResponse> logs() {
-        return adminService.getIntegrationLogs();
+    public PageResponse<IntegrationLogResponse> logs(@RequestParam(required = false) LogType type,
+                                                     @RequestParam(required = false) LogStatus status,
+                                                     @RequestParam(required = false) String search,
+                                                     @PageableDefault(size = 10) Pageable pageable) {
+        return adminService.getIntegrationLogs(type, status, search, pageable);
     }
 
 

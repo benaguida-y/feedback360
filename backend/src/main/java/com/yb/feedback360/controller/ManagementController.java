@@ -2,15 +2,16 @@ package com.yb.feedback360.controller;
 
 import com.yb.feedback360.constant.ApiPaths;
 import com.yb.feedback360.domain.enums.FeedbackStatus;
-import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
 import com.yb.feedback360.dto.response.*;
 import com.yb.feedback360.service.ManagementService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -27,8 +28,10 @@ public class ManagementController {
     }
 
     @GetMapping(ApiPaths.MANAGEMENT_FEEDBACKS)
-    public List<ManagementFeedbackSummaryResponse> allFeedbacks(@RequestParam(required = false) FeedbackStatus status) {
-        return managementService.getAllFeedbacks(status);
+    public PageResponse<ManagementFeedbackSummaryResponse> allFeedbacks(@RequestParam(required = false) FeedbackStatus status,
+                                                                        @RequestParam(required = false) String search,
+                                                                        @PageableDefault(size = 10) Pageable pageable) {
+        return managementService.getAllFeedbacks(status, search, pageable);
     }
 
     @GetMapping(ApiPaths.MANAGEMENT_FEEDBACKS_STATS)
@@ -42,8 +45,15 @@ public class ManagementController {
     }
 
     @GetMapping(ApiPaths.MANAGEMENT_COLLABORATORS)
-    public List<CollaboratorProgressResponse> collaborators() {
-        return managementService.getCollaborators();
+    public PageResponse<CollaboratorProgressResponse> collaborators(@RequestParam(required = false) String search,
+                                                                    @PageableDefault(size = 10) Pageable pageable) {
+        return managementService.getCollaborators(search, pageable);
+    }
+
+    @GetMapping(ApiPaths.MANAGEMENT_MODULES)
+    public PageResponse<ModuleStatsResponse> modules(@RequestParam(required = false) String search,
+                                                     @PageableDefault(size = 10) Pageable pageable) {
+        return managementService.getModules(search, pageable);
     }
 
     @GetMapping(ApiPaths.MANAGEMENT_COLLABORATOR_BY_ID)
@@ -55,5 +65,4 @@ public class ManagementController {
     public DashboardHighlightsResponse highlights() {
         return managementService.getHighlights();
     }
-
 }

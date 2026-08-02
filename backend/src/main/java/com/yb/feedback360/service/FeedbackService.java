@@ -7,9 +7,11 @@ import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
 import com.yb.feedback360.dto.request.SubmitFeedbackRequest;
 import com.yb.feedback360.dto.response.DashboardSummaryResponse;
 import com.yb.feedback360.dto.response.FeedbackDetailResponse;
+import com.yb.feedback360.dto.response.PageResponse;
 import com.yb.feedback360.repository.FeedbackRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,14 +24,13 @@ public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
 
-    public List<FeedbackSummaryResponse> getFeedbackForUser(Long userId, FeedbackStatus status) {
-        List<Feedback> feedbacks = (status == null)
-                ? feedbackRepository.findByUser_UserIdOrderByCreatedAtDesc(userId)
-                : feedbackRepository.findByUser_UserIdAndStatusOrderByCreatedAtDesc(userId, status);
-
-        return feedbacks.stream()
-                .map(FeedbackSummaryResponse::from)
-                .toList();
+    @Transactional(readOnly = true)
+    public PageResponse<FeedbackSummaryResponse> getFeedbackForUser(Long userId, FeedbackStatus status, String search, Pageable pageable) {
+        String searchParam = (search == null || search.isBlank())
+                ? null : "%" + search.trim().toLowerCase() + "%";
+        return PageResponse.from(
+                feedbackRepository.findUserFeedbacks(userId, status, searchParam, pageable)
+                        .map(FeedbackSummaryResponse::from));
     }
 
     @Transactional(readOnly = true)

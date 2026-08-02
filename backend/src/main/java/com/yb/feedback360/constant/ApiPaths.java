@@ -34,6 +34,7 @@ public final class ApiPaths {
     public static final String MANAGEMENT_FEEDBACK_BY_ID = "/feedbacks/{feedbackId}";
     public static final String MANAGEMENT_COLLABORATORS = "/collaborators";
     public static final String MANAGEMENT_COLLABORATOR_BY_ID = "/collaborators/{userId}";
+    public static final String MANAGEMENT_MODULES = "/modules";
 
     // Admin user & config management
     public static final String ADMIN = "/api/admin";
