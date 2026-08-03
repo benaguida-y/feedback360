@@ -7,6 +7,7 @@ import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import StatusBadge from "../components/StatusBadge";
 import Table from "../components/Table";
+import { useTranslation } from "react-i18next";
 
 interface Feedback { feedbackId: number; status: string; moduleTitle: string; createdAt: string; globalScore: number | null; }
 interface Detail { userId: number; fullName: string; email: string; feedbacks: Feedback[]; }
@@ -14,6 +15,7 @@ interface Detail { userId: number; fullName: string; email: string; feedbacks: F
 export default function CollaboratorDetail() {
     const { userId } = useParams();
     const role = getRole();
+    const { t, i18n } = useTranslation();
     const [detail, setDetail] = useState<Detail | null>(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(true);
@@ -24,7 +26,7 @@ export default function CollaboratorDetail() {
         setLoading(true);
         client.get<Detail>(`/management/collaborators/${userId}`)
             .then((r) => setDetail(r.data))
-            .catch(() => setError("Collaborateur introuvable."))
+            .catch(() => setError(t("collaboratorDetail.notFound")))
             .finally(() => setLoading(false));
     }, [userId]);
 
@@ -34,31 +36,31 @@ export default function CollaboratorDetail() {
 
     return (
         <Layout>
-            <PageHeader title={detail ? detail.fullName : "Collaborateur"}
+            <PageHeader title={detail ? detail.fullName : t("common.collaborator")}
                         subtitle={detail?.email}
                         backTo="/management/collaborators" />
 
-            <h3 className="mb-3 text-lg font-semibold text-slate-800">Modules & feedbacks</h3>
+            <h3 className="mb-3 text-lg font-semibold text-slate-800 dark:text-slate-100">{t("collaboratorDetail.modulesFeedbacks")}</h3>
             <Card>
-                <Table columns={["Module", "Statut", "Note", "Date", "Action"]}
+                <Table columns={[t("common.module"), t("common.status"), t("common.score"), t("common.date"), t("common.action")]}
                        loading={loading}
-                       isEmpty={feedbacks.length === 0} emptyLabel="Aucun module.">
+                       isEmpty={feedbacks.length === 0} emptyLabel={t("collaboratorDetail.empty")}>
                     {feedbacks.map((f) => (
                         <tr key={f.feedbackId} className="hover:bg-slate-50/60">
-                            <td className="px-5 py-3.5 font-medium text-slate-800">{f.moduleTitle}</td>
+                            <td className="px-5 py-3.5 font-medium text-slate-800 dark:text-slate-100">{f.moduleTitle}</td>
                             <td className="px-5 py-3.5"><StatusBadge status={f.status} /></td>
-                            <td className="px-5 py-3.5 text-slate-600">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
-                            <td className="px-5 py-3.5 text-slate-500">{new Date(f.createdAt).toLocaleDateString("fr-FR")}</td>
+                            <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
+                            <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{new Date(f.createdAt).toLocaleDateString(i18n.language === "en" ? "en-GB" : "fr-FR")}</td>
                             <td className="px-5 py-3.5">
                                 {f.status === "NOT_SUBMITTED" ? (
-                                    <span title="Feedback pas encore soumis"
-                                          className="inline-flex cursor-not-allowed items-center rounded-lg border border-slate-200 px-3.5 py-1.5 text-xs font-semibold text-slate-300">
-                                        Consulter
+                                    <span title={t("common.notSubmittedTooltip")}
+                                          className="inline-flex cursor-not-allowed items-center rounded-lg border border-slate-200 dark:border-cap-border px-3.5 py-1.5 text-xs font-semibold text-slate-300 dark:text-slate-600">
+                                        {t("common.view")}
                                     </span>
                                 ) : (
                                     <Link to={`/feedback/${f.feedbackId}/detail`}
-                                          className="inline-flex items-center rounded-lg border border-slate-300 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand hover:text-brand">
-                                        Consulter
+                                          className="inline-flex items-center rounded-lg border border-slate-300 dark:border-cap-border px-3.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 transition hover:border-brand hover:text-brand">
+                                        {t("common.view")}
                                     </Link>
                                 )}
                             </td>

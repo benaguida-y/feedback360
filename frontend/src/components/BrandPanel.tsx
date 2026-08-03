@@ -1,5 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 // Panneau de marque (gauche) partagé par les écrans Login et Activate.
 export default function BrandPanel() {
+    const { t } = useTranslation();
     return (
         <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-brand-dark via-brand to-brand-light p-14 text-white lg:flex">
             {/* halos flous ronds */}
@@ -23,18 +26,18 @@ export default function BrandPanel() {
                 <img src="/logo.png" alt="Feedback360" className="relative w-70 brightness-0 invert" />
                 <span className="mb-6 inline-flex items-center gap-2 border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium tracking-wide text-white/90 backdrop-blur-sm">
                     <span className="blob h-1.5 w-1.5 bg-emerald-400" />
-                    Plateforme interne · Capgemini
+                    {t("brandPanel.badge")}
                 </span>
             </div>
 
             <div className="relative">
                 <h1 className="text-5xl font-bold leading-tight tracking-tight">Feedback360</h1>
                 <h1 className="mt-6 text-5xl leading-[1.05] tracking-tight">
-                    Vos retours,<br />
-                    <span className="text-white/70">notre progrès.</span>
+                    {t("brandPanel.taglineLine1")}<br />
+                    <span className="text-white/70">{t("brandPanel.taglineLine2")}</span>
                 </h1>
                 <p className="mt-6 max-w-md text-lg leading-relaxed text-white/75">
-                    Collectez et analysez les feedbacks de formation, simplement et en un seul endroit.
+                    {t("brandPanel.description")}
                 </p>
             </div>
 

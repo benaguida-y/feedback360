@@ -1,74 +1,57 @@
 @import "tailwindcss";
 
-@theme {
-  --color-brand: #0070ad;
-  --color-brand-dark: #005180;
-  --color-brand-light: #12abdb;
-  --font-sans: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
-}
-
-body {
-  background-color: #f7f9fb;
-  color: #1e293b;
-}
-
-@import "tailwindcss";
-
-@theme {
-  --color-brand: #0070ad;
-  --color-brand-dark: #005180;
-  --color-brand-light: #12abdb;
-}
-
-body {
-  background-color: #f7f9fb;
-  color: #1e293b;
-}
-
-/*[class*="rounded"] {*/
-/*  border-radius: 0 !important;*/
-/*}*/
-
-/* Coins arrondis par défaut dans toute l'application */
-button,
-input,
-select,
-textarea,
-[class*="border"] {
-  border-radius: 0.5rem;
-}
-
-/* Exception : éléments décoratifs parfaitement ronds (halos, anneaux, pastilles) */
-.blob { border-radius: 9999px; }
-
-
-/* Exception ciblée : éléments décoratifs ronds malgré la règle d'angles droits */
-.blob { border-radius: 9999px; }
-
-@import "tailwindcss";
-
-@theme {
-  --color-brand: #0070ad;
-  --color-brand-dark: #005180;
-  --color-brand-light: #12abdb;
-  --font-sans: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
-}
-
-body {
-  background-color: #f7f9fb;
-  color: #1e293b;
-}
-
-/* Coins arrondis par défaut dans toute l'application */
-button,
-input,
-select,
-textarea,
-[class*="border"] {
-  border-radius: 0.5rem;
-}
-
-/* Exception : éléments décoratifs parfaitement ronds (halos, anneaux, pastilles) */
-.blob { border-radius: 9999px; }
-
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand: #0070ad;
+  --color-brand-dark: #005180;
+  --color-brand-light: #12abdb;
+  --font-sans: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
+
+  /* Charte sombre Capgemini */
+  --color-cap-bg: #12151d;
+  --color-cap-panel: #1b1f27;
+  --color-cap-panel2: #21252d;
+  --color-cap-border: #2b303a;
+  --color-cap-deep: #1d365a;
+}
+
+body {
+  background-color: #f7f9fb;
+  color: #1e293b;
+}
+
+/* Thème sombre : fond et texte de base */
+.dark body {
+  background-color: #12151d;
+  color: #e5e9f0;
+}
+
+/* Coins arrondis par défaut dans toute l'application */
+button,
+input,
+select,
+textarea,
+[class*="border"] {
+  border-radius: 0.5rem;
+}
+
+/* Exception : éléments décoratifs parfaitement ronds (halos, anneaux, pastilles) */
+.blob { border-radius: 9999px; }
+
+/* Coins précis mis à angle droit ; les autres coins gardent leur arrondi */
+header[class*="border"] {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+aside[class*="border"] {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Survol des lignes de tableau en thème sombre (toutes les listes) */
+.dark tbody tr:hover {
+  background-color: rgba(33, 37, 45, 0.55); /* cap-panel2 */
+}

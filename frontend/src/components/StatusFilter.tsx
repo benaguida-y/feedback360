@@ -1,20 +1,23 @@
+import { useTranslation } from "react-i18next";
+
 // Pastilles de filtre par statut, partagées par les listes de feedbacks.
 const FILTERS = [
-    { key: "", label: "Tous" },
-    { key: "SUBMITTED", label: "Soumis" },
-    { key: "NOT_SUBMITTED", label: "En attente" },
-    { key: "IN_PROGRESS", label: "En cours" },
+    { key: "", labelKey: "common.all" },
+    { key: "SUBMITTED", labelKey: "status.SUBMITTED" },
+    { key: "NOT_SUBMITTED", labelKey: "status.NOT_SUBMITTED" },
+    { key: "IN_PROGRESS", labelKey: "status.IN_PROGRESS" },
 ];
 
 export default function StatusFilter({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+    const { t } = useTranslation();
     return (
         <div className="flex gap-2">
             {FILTERS.map((f) => (
                 <button key={f.key} onClick={() => onChange(f.key)}
                         className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition ${
-                            value === f.key ? "bg-brand text-white" : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                            value === f.key ? "bg-brand text-white" : "border border-slate-200 dark:border-cap-border bg-white dark:bg-cap-panel text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-cap-panel2"
                         }`}>
-                    {f.label}
+                    {t(f.labelKey)}
                 </button>
             ))}
         </div>

@@ -10,7 +10,9 @@ export default function SidebarLink({ to, end, label, icon, collapsed }: {
                  className={({ isActive }) =>
                      `mx-1 my-1 flex items-center rounded-lg py-3 text-sm font-medium transition-colors ${
                          collapsed ? "justify-center px-0" : "gap-3 px-[22px]"
-                     } ${isActive ? "bg-brand text-white" : "text-slate-600 hover:bg-slate-100"}`}>
+                     } ${isActive
+                         ? "bg-brand text-white"
+                         : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-cap-panel2"}`}>
             {icon}
             <span className={`flex-1 text-left ${labelClass(collapsed)}`}>{label}</span>
         </NavLink>

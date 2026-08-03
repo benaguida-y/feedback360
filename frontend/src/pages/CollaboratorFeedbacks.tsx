@@ -11,6 +11,7 @@ import StatusBadge from "../components/StatusBadge";
 import StatusFilter from "../components/StatusFilter";
 import Table from "../components/Table";
 import {ChevronRight} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Feedback { feedbackId: number; status: string; moduleTitle: string; createdAt: string; globalScore: number | null; }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
@@ -26,6 +27,7 @@ export default function CollaboratorFeedbacks() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const { t, i18n } = useTranslation();
 
     if (role !== "COLLABORATOR") return <Navigate to="/" replace />;
 
@@ -33,7 +35,7 @@ export default function CollaboratorFeedbacks() {
 
     useEffect(() => {
         setLoading(true);
-        const t = setTimeout(() => {
+        const timer = setTimeout(() => {
             const params = new URLSearchParams();
             if (filter) params.set("status", filter);
             if (search.trim()) params.set("search", search.trim());
@@ -41,35 +43,35 @@ export default function CollaboratorFeedbacks() {
             params.set("size", String(SIZE));
             client.get<Page<Feedback>>(`/feedbacks?${params.toString()}`)
                 .then((r) => { setFeedbacks(r.data.content); setTotalPages(r.data.totalPages); })
-                .catch(() => setError("Erreur de chargement."))
+                .catch(() => setError(t("common.loadError")))
                 .finally(() => setLoading(false));
         }, 300);
-        return () => clearTimeout(t);
+        return () => clearTimeout(timer);
     }, [filter, search, page]);
 
     return (
         <Layout>
-            <PageHeader title="Mes feedbacks" subtitle="Tous vos retours de formation." backTo="/" />
+            <PageHeader title={t("collaboratorFeedbacks.title")} subtitle={t("collaboratorFeedbacks.subtitle")} backTo="/" />
 
             {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
 
             <div className="mb-3 flex flex-wrap items-center gap-3">
                 <StatusFilter value={filter} onChange={setFilter} />
                 <div className="ml-auto">
-                    <SearchInput value={search} onChange={setSearch} placeholder="Rechercher un module…" />
+                    <SearchInput value={search} onChange={setSearch} placeholder={t("search.module")} />
                 </div>
             </div>
 
             <Card>
-                <Table columns={["Module", "Statut", "Note", "Date", "Action"]}
+                <Table columns={[t("common.module"), t("common.status"), t("common.score"), t("common.date"), t("common.action")]}
                        loading={loading}
-                       isEmpty={feedbacks.length === 0} emptyLabel="Aucun feedback.">
+                       isEmpty={feedbacks.length === 0} emptyLabel={t("common.noFeedback")}>
                     {feedbacks.map((f) => (
                         <tr key={f.feedbackId} className="hover:bg-slate-50/60">
-                            <td className="px-5 py-3.5 font-medium text-slate-800">{f.moduleTitle}</td>
+                            <td className="px-5 py-3.5 font-medium text-slate-800 dark:text-slate-100">{f.moduleTitle}</td>
                             <td className="px-5 py-3.5"><StatusBadge status={f.status} /></td>
-                            <td className="px-5 py-3.5 text-slate-600">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
-                            <td className="px-5 py-3.5 text-slate-500">{new Date(f.createdAt).toLocaleDateString("fr-FR")}</td>
+                            <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
+                            <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{new Date(f.createdAt).toLocaleDateString(i18n.language === "en" ? "en-GB" : "fr-FR")}</td>
                             <td className="px-5 py-3.5"><FeedbackAction f={f} /></td>
                         </tr>
                     ))}
@@ -83,18 +85,19 @@ export default function CollaboratorFeedbacks() {
 
 // Bouton d'action selon le statut (réutilisé par le dashboard).
 export function FeedbackAction({ f }: { f: { feedbackId: number; status: string } }) {
+    const { t } = useTranslation();
     if (f.status === "SUBMITTED") {
         return (
             <Link to={`/feedback/${f.feedbackId}/detail`}
-                  className="inline-flex items-center rounded-lg border border-slate-300 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand hover:text-brand">
-                Consulter
+                  className="inline-flex items-center rounded-lg border border-slate-300 dark:border-cap-border px-3.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 transition hover:border-brand hover:text-brand">
+                {t("common.view")}
             </Link>
         );
     }
     return (
         <Link to={`/feedback/${f.feedbackId}`}
               className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark">
-            {f.status === "IN_PROGRESS" ? "Continuer" : "Donner mon avis"}
+            {f.status === "IN_PROGRESS" ? t("common.continue") : t("common.giveFeedback")}
             <ChevronRight className="h-3.5 w-3.5" />
         </Link>
     );

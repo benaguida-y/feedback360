@@ -4,6 +4,7 @@ import StatCard from "../components/StatCard";
 import NavCard from "../components/NavCard.tsx";
 import { Medal, Star } from 'lucide-react';
 import PageHeader from "../components/PageHeader.tsx";
+import { useTranslation } from "react-i18next";
 
 interface Summary {
     total: number;
@@ -23,6 +24,7 @@ interface Highlights {
 }
 
 export default function ManagerDashboard() {
+    const { t } = useTranslation();
     const [summary, setSummary] = useState<Summary | null>(null);
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -36,11 +38,11 @@ export default function ManagerDashboard() {
             client.get<Highlights>("/management/highlights"),
         ])
             .then(([s, st, hl]) => { setSummary(s.data); setStats(st.data); setHighlights(hl.data); })
-            .catch(() => setError("Impossible de charger les statistiques."))
+            .catch(() => setError(t("common.statsError")))
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) return <p className="text-slate-500">Chargement…</p>;
+    if (loading) return <p className="text-slate-500 dark:text-slate-400">{t("common.loading")}</p>;
     if (error) return <p className="text-red-600">{error}</p>;
 
     const avg = stats!.averageScore;
@@ -48,44 +50,44 @@ export default function ManagerDashboard() {
 
     return (
         <div>
-            <PageHeader title="Vue d'ensemble" subtitle="Indicateurs globaux des feedbacks." />
+            <PageHeader title={t("common.overview")} subtitle={t("managerDashboard.subtitle")} />
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                <StatCard label="Total" value={summary!.total} />
-                <StatCard label="Soumis" value={summary!.submitted} accent="text-emerald-600" />
-                <StatCard label="En attente" value={summary!.notSubmitted} accent="text-amber-600" />
-                <StatCard label="En cours" value={summary!.inProgress} accent="text-sky-600" />
+                <StatCard label={t("common.total")} value={summary!.total} />
+                <StatCard label={t("status.SUBMITTED")} value={summary!.submitted} accent="text-emerald-600" />
+                <StatCard label={t("status.NOT_SUBMITTED")} value={summary!.notSubmitted} accent="text-amber-600" />
+                <StatCard label={t("status.IN_PROGRESS")} value={summary!.inProgress} accent="text-sky-600" />
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-4">
-                <StatCard label="Note moyenne" value={avg != null ? `${avg.toFixed(1)} / 5` : "—"} accent="text-brand" />
-                <StatCard label="Taux de soumission" value={`${rate} %`} accent="text-emerald-600" />
+                <StatCard label={t("common.averageScore")} value={avg != null ? `${avg.toFixed(1)} / 5` : "—"} accent="text-brand" />
+                <StatCard label={t("managerDashboard.submissionRate")} value={`${rate} %`} accent="text-emerald-600" />
             </div>
 
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <HighlightCard
-                    label="Collaborateur le plus actif"
+                    label={t("managerDashboard.topCollaborator")}
                     value={highlights?.topCollaboratorName ?? "—"}
-                    sub={highlights?.topCollaboratorCount ? `${highlights.topCollaboratorCount} feedback(s) soumis` : "Aucune soumission"}
+                    sub={highlights?.topCollaboratorCount ? t("managerDashboard.feedbacksSubmitted", { n: highlights.topCollaboratorCount }) : t("managerDashboard.noSubmission")}
                     icon=<Medal/>
                 />
                 <HighlightCard
-                    label="Module le mieux noté"
+                    label={t("managerDashboard.bestModule")}
                     value={highlights?.bestModuleTitle ?? "—"}
-                    sub={highlights?.bestModuleAverage != null ? `${highlights.bestModuleAverage.toFixed(1)} / 5 de moyenne` : "Pas encore de note"}
+                    sub={highlights?.bestModuleAverage != null ? t("managerDashboard.averageOf", { avg: highlights.bestModuleAverage.toFixed(1) }) : t("managerDashboard.noRating")}
                     icon=<Star/>
                 />
             </div>
 
             {/* Emplacement des futurs graphiques */}
-            <div className="mt-6 flex h-40 items-center justify-center border border-dashed border-slate-300 bg-white text-sm text-slate-400">
-                Graphiques à venir
+            <div className="mt-6 flex h-40 items-center justify-center border border-dashed border-slate-300 dark:border-cap-border bg-white dark:bg-cap-panel text-sm text-slate-400 dark:text-slate-500">
+                {t("managerDashboard.chartsSoon")}
             </div>
 
             {/* Accès aux vues détaillées */}
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                <NavCard to="/management/feedbacks" title="Tous les feedbacks" subtitle="Liste filtrable et consultation détaillée" />
-                <NavCard to="/management/modules" title="Détail par module" subtitle="Taux de retour et note moyenne par module" />
+                <NavCard to="/management/feedbacks" title={t("managerFeedbacks.title")} subtitle={t("managerDashboard.navFeedbacksSub")} />
+                <NavCard to="/management/modules" title={t("managerModules.title")} subtitle={t("managerDashboard.navModulesSub")} />
             </div>
         </div>
     );
@@ -93,12 +95,12 @@ export default function ManagerDashboard() {
 
 function HighlightCard({ label, value, sub, icon }: { label: string; value: string; sub: string; icon?: any }) {
     return (
-        <div className="flex items-start gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="flex items-start gap-4 rounded-lg border border-slate-200 dark:border-cap-border bg-white dark:bg-cap-panel p-5 shadow-sm">
             <span className="text-2xl">{icon}</span>
             <div className="min-w-0">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-400">{label}</p>
-                <p className="mt-1 truncate text-lg font-semibold text-slate-800">{value}</p>
-                <p className="text-sm text-slate-500">{sub}</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">{label}</p>
+                <p className="mt-1 truncate text-lg font-semibold text-slate-800 dark:text-slate-100">{value}</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{sub}</p>
             </div>
         </div>
     );

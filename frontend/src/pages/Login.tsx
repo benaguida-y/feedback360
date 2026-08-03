@@ -6,9 +6,11 @@ import BrandPanel from "../components/BrandPanel";
 import FormField from "../components/FormField.tsx";
 import ErrorBanner from "../components/ErrorBanner.tsx";
 import { Mail, Lock, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -22,7 +24,7 @@ export default function Login() {
             setToken(res.data.accessToken);
             await redirectAfterLogin();
         } catch {
-            setError("Email ou mot de passe incorrect.");
+            setError(t("login.error"));
             setLoading(false);
         }
     }
@@ -43,7 +45,7 @@ export default function Login() {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-50">
+        <div className="flex min-h-screen bg-slate-50 dark:bg-cap-bg">
             <BrandPanel />
 
             {/* Formulaire (droite) */}
@@ -51,27 +53,27 @@ export default function Login() {
                 <form onSubmit={handleSubmit} className="w-full max-w-sm">
                     <img src="/logo.png" alt="Feedback360" className="mb-8 h-9 w-auto lg:hidden" />
 
-                    <h2 className="text-3xl font-bold tracking-tight text-slate-800">Bon retour !</h2>
-                    <p className="mt-2 mb-8 text-sm text-slate-500">Connectez-vous pour accéder à votre espace.</p>
+                    <h2 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100">{t("login.welcome")}</h2>
+                    <p className="mt-2 mb-8 text-sm text-slate-500 dark:text-slate-400">{t("login.subtitle")}</p>
 
-                    <FormField label="Email" icon={Mail} type="email" value={email}
-                               onChange={setEmail} placeholder="vous@exemple.com" />
+                    <FormField label={t("common.email")} icon={Mail} type="email" value={email}
+                               onChange={setEmail} placeholder={t("login.emailPlaceholder")} />
 
-                    <FormField label="Mot de passe" icon={Lock} type="password" value={password}
+                    <FormField label={t("login.password")} icon={Lock} type="password" value={password}
                                onChange={setPassword} placeholder="••••••••" />
 
                     {error && <ErrorBanner message={error} />}
 
                     <button type="submit" disabled={loading}
                             className="group flex w-full items-center justify-center gap-2 bg-brand py-3 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
-                        {loading ? "Connexion…" : "Se connecter"}
+                        {loading ? t("login.loggingIn") : t("login.signIn")}
                         {!loading &&
                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                         }
                     </button>
 
-                    <p className="mt-8 text-center text-xs text-slate-400">
-                        Accès réservé — contactez votre administrateur en cas de problème.
+                    <p className="mt-8 text-center text-xs text-slate-400 dark:text-slate-500">
+                        {t("login.footer")}
                     </p>
                 </form>
             </div>
