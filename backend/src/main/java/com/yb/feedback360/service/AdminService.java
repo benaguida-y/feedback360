@@ -1,18 +1,17 @@
 package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.enums.LogStatus;
+import com.yb.feedback360.domain.enums.LogType;
 import com.yb.feedback360.domain.model.Role;
 import com.yb.feedback360.domain.model.User;
 import com.yb.feedback360.dto.request.CreateUserRequest;
-import com.yb.feedback360.dto.response.AdminStatsResponse;
-import com.yb.feedback360.dto.response.AdminUserResponse;
-import com.yb.feedback360.dto.response.CreatedUserResponse;
-import com.yb.feedback360.dto.response.IntegrationLogResponse;
+import com.yb.feedback360.dto.response.*;
 import com.yb.feedback360.repository.IntegrationLogRepository;
 import com.yb.feedback360.repository.RoleRepository;
 import com.yb.feedback360.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,17 +44,28 @@ public class AdminService {
         User saved = userRepository.save(user);
 
         String activationLink = magicLinkService.createActivationUrl(saved);
-        emailService.sendActivationEmail(saved, activationLink);
+        emailService.sendActivationEmail(saved, activationLink, null);
 
         return new CreatedUserResponse(saved.getUserId(),
                 saved.getEmail(), role.getName(), activationLink);
     }
 
     @Transactional(readOnly = true)
-    public List<AdminUserResponse> listUsers() {
-        return userRepository.findAllByOrderByUserIdAsc().stream()
-                .map(this::toResponse)
-                .toList();
+    public PageResponse<AdminUserResponse> listUsers(String role, String status, String search, Pageable pageable) {
+        String roleParam = (role == null || role.isBlank()) ? null : role;
+
+        Boolean active = null;
+        boolean pendingOnly = false;
+        if ("ACTIVE".equals(status))        active = true;
+        else if ("INACTIVE".equals(status)) active = false;
+        else if ("PENDING".equals(status))  pendingOnly = true;
+
+        String searchParam = (search == null || search.isBlank())
+                ? null : "%" + search.trim().toLowerCase() + "%";
+
+        return PageResponse.from(
+                userRepository.search(roleParam, active, pendingOnly, searchParam, pageable)
+                        .map(this::toResponse));
     }
 
     @Transactional
@@ -78,14 +88,17 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public List<IntegrationLogResponse> getIntegrationLogs() {
-        return integrationLogRepository.findTop100ByOrderByReceivedAtDesc().stream()
-                .map(l -> new IntegrationLogResponse(
-                        l.getLogId(), l.getType().name(), l.getStatus().name(),
-                        l.getReceivedAt(), l.getProcessedAt(),
-                        l.getUser() != null ? l.getUser().getEmail() : null,
-                        l.getModuleFormation() != null ? l.getModuleFormation().getTitle() : null))
-                .toList();
+    public PageResponse<IntegrationLogResponse> getIntegrationLogs(LogType type, LogStatus status, String search, Pageable pageable) {
+        String searchParam = (search == null || search.isBlank())
+                ? null : "%" + search.trim().toLowerCase() + "%";
+
+        return PageResponse.from(
+                integrationLogRepository.search(type, status, searchParam, pageable).map(l ->
+                        new IntegrationLogResponse(
+                                l.getLogId(), l.getType().name(), l.getStatus().name(),
+                                l.getReceivedAt(), l.getProcessedAt(),
+                                l.getUser() != null ? l.getUser().getEmail() : null,
+                                l.getModuleFormation() != null ? l.getModuleFormation().getTitle() : null)));
     }
 
     @Transactional(readOnly = true)

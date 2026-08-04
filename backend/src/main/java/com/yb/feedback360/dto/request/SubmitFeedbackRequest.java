@@ -8,6 +8,7 @@ public record SubmitFeedbackRequest(
         @DecimalMax(value = "5.0", message = "globalScore must be <= 5")
         Double globalScore,
 
+        @NotBlank
         @Size(max = 2000, message = "comment must be at most 2000 characters")
         String comment
 

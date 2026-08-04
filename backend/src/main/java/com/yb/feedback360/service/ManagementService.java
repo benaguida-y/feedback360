@@ -9,6 +9,7 @@ import com.yb.feedback360.repository.FeedbackRepository;
 import com.yb.feedback360.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,26 +33,26 @@ public class ManagementService {
     }
 
     @Transactional(readOnly = true)
-    public List<ManagementFeedbackSummaryResponse> getAllFeedbacks(FeedbackStatus status) {
-        List<Feedback> feedbacks = (status == null)
-                ? feedbackRepository.findAllByOrderByCreatedAtDesc()
-                : feedbackRepository.findByStatusOrderByCreatedAtDesc(status);
+    public PageResponse<ManagementFeedbackSummaryResponse> getAllFeedbacks(FeedbackStatus status, String search, Pageable pageable) {
+        String searchParam = (search == null || search.isBlank())
+                ? null : "%" + search.trim().toLowerCase() + "%";
 
-        return feedbacks.stream().map(f -> {
-            User u = f.getUser();
-            String name = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
-                    (u.getLastName() != null ? u.getLastName() : "")).trim();
-            if (name.isBlank()) {
-                name = u.getEmail();
-            }
-            return new ManagementFeedbackSummaryResponse(
-                    f.getFeedbackId(), f.getStatus().name(), f.getModuleFormation().getTitle(),
-                    f.getCreatedAt(), f.getGlobalScore(), name);
-        }).toList();
+        return PageResponse.from(
+                feedbackRepository.searchFeedbacks(status, searchParam, pageable).map(f -> {
+                    User u = f.getUser();
+                    String name = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
+                            (u.getLastName() != null ? u.getLastName() : "")).trim();
+                    if (name.isBlank()) {
+                        name = u.getEmail();
+                    }
+                    return new ManagementFeedbackSummaryResponse(
+                            f.getFeedbackId(), f.getStatus().name(), f.getModuleFormation().getTitle(),
+                            f.getCreatedAt(), f.getGlobalScore(), name);
+                }));
     }
 
     @Transactional
-    public ManagementStatsResponse getStats(){
+    public ManagementStatsResponse getStats() {
         long total = feedbackRepository.count();
         long submitted = feedbackRepository.countByStatus(FeedbackStatus.SUBMITTED);
 
@@ -61,7 +62,11 @@ public class ManagementService {
         }
 
         Double averageScore = feedbackRepository.averageScore(FeedbackStatus.SUBMITTED);
-        List<ModuleStatsResponse> perModule = feedbackRepository.moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED);
+
+        // Le dashboard a besoin de TOUS les modules → requête non paginée.
+        List<ModuleStatsResponse> perModule = feedbackRepository
+                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, null, Pageable.unpaged())
+                .getContent();
 
         int submissionRatePercent = (int) Math.round(submissionRate * 100);
         return new ManagementStatsResponse(total, submitted, submissionRate, submissionRatePercent, averageScore, perModule);
@@ -89,9 +94,22 @@ public class ManagementService {
                 user.getEmail());
     }
 
+    // Liste paginée + recherche (nom / email), filtrée en base.
     @Transactional(readOnly = true)
-    public List<CollaboratorProgressResponse> getCollaborators() {
-        return feedbackRepository.collaboratorProgress(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED);
+    public PageResponse<CollaboratorProgressResponse> getCollaborators(String search, Pageable pageable) {
+        String searchParam = (search == null || search.isBlank())
+                ? null : "%" + search.trim().toLowerCase() + "%";
+        return PageResponse.from(feedbackRepository.collaboratorProgress(
+                FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, searchParam, pageable));
+    }
+
+    // Liste paginée + recherche (titre du module), filtrée en base.
+    @Transactional(readOnly = true)
+    public PageResponse<ModuleStatsResponse> getModules(String search, Pageable pageable) {
+        String searchParam = (search == null || search.isBlank())
+                ? null : "%" + search.trim().toLowerCase() + "%";
+        return PageResponse.from(feedbackRepository.moduleStats(
+                FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, searchParam, pageable));
     }
 
     @Transactional(readOnly = true)
@@ -114,16 +132,18 @@ public class ManagementService {
 
     @Transactional(readOnly = true)
     public DashboardHighlightsResponse getHighlights() {
-        // Collaborateur le plus actif : le plus de feedbacks soumis
-        var top = feedbackRepository.collaboratorProgress(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED)
-                .stream()
+        // Collaborateur le plus actif : le plus de feedbacks soumis (sur TOUS les collaborateurs).
+        var top = feedbackRepository
+                .collaboratorProgress(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, null, Pageable.unpaged())
+                .getContent().stream()
                 .filter(c -> c.submitted() != null && c.submitted() > 0)
                 .max(Comparator.comparingLong(CollaboratorProgressResponse::submitted))
                 .orElse(null);
 
-        // Module le mieux noté : meilleure note moyenne
-        ModuleStatsResponse best = feedbackRepository.moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED)
-                .stream()
+        // Module le mieux noté : meilleure note moyenne (sur TOUS les modules).
+        ModuleStatsResponse best = feedbackRepository
+                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, null, Pageable.unpaged())
+                .getContent().stream()
                 .filter(m -> m.averageScore() != null)
                 .max(Comparator.comparingDouble(ModuleStatsResponse::averageScore))
                 .orElse(null);

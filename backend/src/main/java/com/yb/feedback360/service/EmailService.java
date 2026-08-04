@@ -19,43 +19,58 @@ public class EmailService {
 
     private static final String LOGO_CID = "logo";
     private static final String LOGO_PATH = "mail/cap_logo.png";
-    private static final String TEMPLATE_PATH = "mail/activation-email.html";
+
+    // Le contenu HTML des e-mails vit dans resources/mail/ ; ce service ne gère que l'envoi.
+    private static final String TEMPLATE = "mail/activation-email.html";
+    private static final String INTRO_MODULE = "mail/activation-module.html";
+    private static final String INTRO_GENERIC = "mail/activation-generic.html";
+    private static final String STYLES = "mail/email.css";
 
     private final JavaMailSender mailSender;
     private final MailProperties mailProperties;
 
-    public void sendActivationEmail(User user, String activationLink) {
+    // moduleTitle est null pour un compte créé par l'admin (aucun module lié).
+    public void sendActivationEmail(User user, String activationLink, String moduleTitle) {
+        boolean hasModule = moduleTitle != null && !moduleTitle.isBlank();
         mailSender.send(mimeMessage -> {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // multipart
 
             helper.setFrom(mailProperties.from());
             helper.setTo(user.getEmail());
-            helper.setSubject("Activate your Feedback360 account");
-            helper.setText(buildBody(user, activationLink), true); // html = true
+            helper.setSubject(hasModule
+                    ? "Votre avis sur « " + moduleTitle + " » — Feedback360"
+                    : "Activez votre compte Feedback360");
+            helper.setText(buildBody(user, activationLink, moduleTitle), true); // html = true
 
-            // Attach as a DataSource (no filename) so Gmail renders it inline via cid,
-            // instead of treating it as an attachment.
+            // Attach as a DataSource (no filename) so Gmail renders it inline via cid.
             byte[] logo = new ClassPathResource(LOGO_PATH).getContentAsByteArray();
             helper.addInline(LOGO_CID, new ByteArrayDataSource(logo, "image/png"));
         });
     }
 
-    // Charge le gabarit HTML depuis resources/mail/ et remplace les placeholders {{...}}.
-    // Le contenu de l'email vit dans un fichier à part ; ce service ne gère que l'envoi.
-    private String buildBody(User user, String activationLink) {
+    private String buildBody(User user, String activationLink, String moduleTitle) {
         String name = user.getFirstName() != null ? user.getFirstName() : "";
-        return loadTemplate()
+        boolean hasModule = moduleTitle != null && !moduleTitle.isBlank();
+
+        String intro = hasModule
+                ? loadTemplate(INTRO_MODULE).replace("{{module}}", moduleTitle)
+                : loadTemplate(INTRO_GENERIC);
+
+        return loadTemplate(TEMPLATE)
+                .replace("{{styles}}", loadTemplate(STYLES))
                 .replace("{{name}}", name)
+                .replace("{{intro}}", intro)
                 .replace("{{link}}", activationLink)
                 .replace("{{logoCid}}", LOGO_CID);
     }
 
-    private String loadTemplate() {
+    // Charge un template depuis le classpath (resources/) en UTF-8.
+    private String loadTemplate(String path) {
         try {
-            byte[] bytes = new ClassPathResource(TEMPLATE_PATH).getContentAsByteArray();
+            byte[] bytes = new ClassPathResource(path).getContentAsByteArray();
             return new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            throw new UncheckedIOException("Cannot load email template: " + TEMPLATE_PATH, e);
+            throw new UncheckedIOException("Impossible de charger le template e-mail : " + path, e);
         }
     }
 }

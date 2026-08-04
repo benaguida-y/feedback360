@@ -111,6 +111,7 @@ export default function SubmitFeedback() {
         e.preventDefault();
         setError("");
         if (score < 1) { setError("Merci de donner une note."); return; }
+        if (!comment.trim()) { setError("Merci de laisser un commentaire."); return; }
         setLoading(true);
         try {
             await client.post(`/feedbacks/${feedbackId}/submit`, { globalScore: score, comment });
@@ -171,7 +172,7 @@ export default function SubmitFeedback() {
                         </div>
 
                         <label className="mb-6 block">
-                            <span className="text-sm font-medium text-slate-700">Commentaire</span>
+                            <span className="text-sm font-medium text-slate-700">Commentaire <span className="text-red-500">*</span></span>
                             <textarea value={comment} onChange={(e) => { setComment(e.target.value); markTouched(); }} rows={4}
                                       placeholder="Votre avis sur le module…"
                                       className="mt-1.5 w-full border border-slate-300 px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />

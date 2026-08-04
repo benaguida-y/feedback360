@@ -13,6 +13,7 @@ import ManagerCollaborators from "./pages/ManagerCollaborators.tsx";
 import CollaboratorDetail from "./pages/CollaboratorDetail.tsx";
 import AdminLogs from "./pages/AdminLogs.tsx";
 import AdminCreateUser from "./pages/AdminCreateUser.tsx";
+import CollaboratorFeedbacks from "./pages/CollaboratorFeedbacks.tsx";
 
 export default function App() {
     return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/activate" element={<Activate />} />
 
+            <Route path="/feedbacks" element={<ProtectedRoute><CollaboratorFeedbacks /></ProtectedRoute>} />
             <Route path="/feedback/:feedbackId" element={<ProtectedRoute><SubmitFeedback /></ProtectedRoute>} />
             <Route path="/feedback/:feedbackId/detail" element={<ProtectedRoute><FeedbackDetail /></ProtectedRoute>} />
 
@@ -35,6 +37,6 @@ export default function App() {
             <Route path="/management/collaborators/:userId" element={<ProtectedRoute><CollaboratorDetail /></ProtectedRoute>} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-  )
+        </Routes>
+    );
 }

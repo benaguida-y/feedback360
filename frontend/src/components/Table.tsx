@@ -1,12 +1,16 @@
 import type { ReactNode } from "react";
+import Skeleton from "./Skeleton";
 
-// Tableau de données : les en-têtes sont déclarés par `columns`, les lignes passées en enfants.
-// Le message « vide » est rendu automatiquement, avec le bon colSpan.
-export default function Table({ columns, children, isEmpty, emptyLabel = "Aucune donnée." }: {
+// Largeurs variées pour que le squelette paraisse naturel (cycle sur les colonnes).
+const WIDTHS = ["70%", "55%", "80%", "45%", "60%", "50%"];
+
+export default function Table({ columns, children, isEmpty, emptyLabel = "Aucune donnée.", loading, skeletonRows = 5 }: {
     columns: string[];
     children: ReactNode;
     isEmpty?: boolean;
     emptyLabel?: string;
+    loading?: boolean;
+    skeletonRows?: number;
 }) {
     return (
         <table className="w-full text-left text-sm">
@@ -18,9 +22,19 @@ export default function Table({ columns, children, isEmpty, emptyLabel = "Aucune
             </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-            {isEmpty
-                ? <tr><td colSpan={columns.length} className="px-5 py-8 text-center text-slate-400">{emptyLabel}</td></tr>
-                : children}
+            {loading ? (
+                Array.from({ length: skeletonRows }).map((_, r) => (
+                    <tr key={r}>
+                        {columns.map((c, i) => (
+                            <td key={c} className="px-5 py-3.5">
+                                <Skeleton className="h-4" style={{ width: WIDTHS[i % WIDTHS.length] }} />
+                            </td>
+                        ))}
+                    </tr>
+                ))
+            ) : isEmpty ? (
+                <tr><td colSpan={columns.length} className="px-5 py-8 text-center text-slate-400">{emptyLabel}</td></tr>
+            ) : children}
             </tbody>
         </table>
     );

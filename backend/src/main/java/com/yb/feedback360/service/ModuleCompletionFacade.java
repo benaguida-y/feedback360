@@ -55,7 +55,7 @@ public class ModuleCompletionFacade {
         try {
             Feedback feedback = moduleCompletionService.handleModuleCompleted(request);
             String activationLink = magicLinkService.createActivationUrl(feedback.getUser());
-            emailService.sendActivationEmail(feedback.getUser(), activationLink);
+            emailService.sendActivationEmail(feedback.getUser(), activationLink, feedback.getModuleFormation().getTitle());
             saveLog(log, LogStatus.SUCCESS, feedback);
             return ModuleCompletionResult.success(
                     email, feedback.getFeedbackId(), feedback.getStatus().name(), activationLink);

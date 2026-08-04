@@ -6,6 +6,8 @@ import { getRole } from "../auth";
 import Card from "../components/Card";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
+import Pagination from "../components/Pagination";
+import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
 
 interface AdminUser {
@@ -16,11 +18,18 @@ interface AdminUser {
     active: boolean;
     activated: boolean;
 }
+interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
+
+const SIZE = 10;
 
 export default function AdminUsers() {
     const [users, setUsers] = useState<AdminUser[]>([]);
+    const [page, setPage] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [listError, setListError] = useState("");
     const [busyId, setBusyId] = useState<number | null>(null);
+    const [loading, setLoading] = useState(true);
 
     const [filterRole, setFilterRole] = useState("");
     const [filterStatus, setFilterStatus] = useState("");
@@ -28,13 +37,29 @@ export default function AdminUsers() {
 
     if (getRole() !== "ADMIN") return <Navigate to="/" replace />;
 
-    function loadUsers() {
-        client.get<AdminUser[]>("/admin/users")
-            .then((r) => setUsers(r.data))
-            .catch(() => setListError("Impossible de charger les utilisateurs."));
-    }
+    // Un changement de filtre/recherche ramène à la 1ʳᵉ page.
+    useEffect(() => { setPage(0); }, [filterRole, filterStatus, search]);
 
-    useEffect(loadUsers, []);
+    useEffect(() => {
+        setLoading(true);
+        const t = setTimeout(() => {
+            const params = new URLSearchParams();
+            if (filterRole) params.set("role", filterRole);
+            if (filterStatus) params.set("status", filterStatus);
+            if (search.trim()) params.set("search", search.trim());
+            params.set("page", String(page));
+            params.set("size", String(SIZE));
+            client.get<Page<AdminUser>>(`/admin/users?${params.toString()}`)
+                .then((r) => {
+                    setUsers(r.data.content);
+                    setTotalPages(r.data.totalPages);
+                    setTotal(r.data.totalElements);
+                })
+                .catch(() => setListError("Impossible de charger les utilisateurs."))
+                .finally(() => setLoading(false));
+        }, 300);
+        return () => clearTimeout(t);
+    }, [filterRole, filterStatus, search, page]);
 
     async function toggleActive(u: AdminUser) {
         setBusyId(u.userId);
@@ -57,16 +82,6 @@ export default function AdminUsers() {
         }
     }
 
-    const filtered = users.filter((u) => {
-        if (filterRole && u.role !== filterRole) return false;
-        if (filterStatus === "ACTIVE" && !u.active) return false;
-        if (filterStatus === "INACTIVE" && u.active) return false;
-        if (filterStatus === "PENDING" && u.activated) return false;
-        const q = search.trim().toLowerCase();
-        if (q && !u.fullName.toLowerCase().includes(q) && !u.email.toLowerCase().includes(q)) return false;
-        return true;
-    });
-
     return (
         <Layout>
             <PageHeader title="Administration"
@@ -84,9 +99,6 @@ export default function AdminUsers() {
 
             {/* Filtres */}
             <div className="mb-3 flex flex-wrap items-center gap-3">
-                <input value={search} onChange={(e) => setSearch(e.target.value)}
-                       placeholder="Rechercher un nom ou un email…"
-                       className="w-64 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20" />
                 <select value={filterRole} onChange={(e) => setFilterRole(e.target.value)}
                         className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none focus:border-brand">
                     <option value="">Tous les rôles</option>
@@ -101,13 +113,17 @@ export default function AdminUsers() {
                     <option value="INACTIVE">Désactivé</option>
                     <option value="PENDING">En attente d'activation</option>
                 </select>
-                <span className="ml-auto text-xs text-slate-400">{filtered.length} / {users.length}</span>
+                <div className="ml-auto flex items-center gap-3">
+                    <span className="text-xs bg-white rounded-lg px-3 py-1.5 font-medium border border-slate-300 flex items-center gap-1.5 text-slate-500">{total} résultat(s)</span>
+                    <SearchInput value={search} onChange={setSearch} placeholder="Rechercher un nom ou un email…" />
+                </div>
             </div>
 
             <Card>
                 <Table columns={["Nom", "Email", "Rôle", "Statut", "Action"]}
-                       isEmpty={filtered.length === 0} emptyLabel="Aucun utilisateur.">
-                    {filtered.map((u) => (
+                       loading={loading}
+                       isEmpty={users.length === 0} emptyLabel="Aucun utilisateur.">
+                    {users.map((u) => (
                         <tr key={u.userId} className={`hover:bg-slate-50/60 ${!u.active ? "opacity-60" : ""}`}>
                             <td className="px-5 py-3.5 font-medium text-slate-800">{u.fullName}</td>
                             <td className="px-5 py-3.5 text-slate-600">{u.email}</td>
@@ -140,6 +156,8 @@ export default function AdminUsers() {
                     ))}
                 </Table>
             </Card>
+
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
         </Layout>
     );
 }
