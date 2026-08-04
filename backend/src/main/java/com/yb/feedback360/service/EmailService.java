@@ -24,6 +24,7 @@ public class EmailService {
     private static final String TEMPLATE = "mail/activation-email.html";
     private static final String INTRO_MODULE = "mail/activation-module.html";
     private static final String INTRO_GENERIC = "mail/activation-generic.html";
+    private static final String STYLES = "mail/email.css";
 
     private final JavaMailSender mailSender;
     private final MailProperties mailProperties;
@@ -56,6 +57,7 @@ public class EmailService {
                 : loadTemplate(INTRO_GENERIC);
 
         return loadTemplate(TEMPLATE)
+                .replace("{{styles}}", loadTemplate(STYLES))
                 .replace("{{name}}", name)
                 .replace("{{intro}}", intro)
                 .replace("{{link}}", activationLink)
