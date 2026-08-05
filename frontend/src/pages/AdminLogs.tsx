@@ -25,10 +25,10 @@ const SIZE = 10;
 
 function statusBadge(status: string) {
     switch (status) {
-        case "SUCCESS":     return "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-300";
-        case "FAILURE":     return "bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300";
-        case "IN_PROGRESS": return "bg-sky-50 dark:bg-sky-500/15 text-sky-700 dark:text-sky-300";
-        default:            return "bg-slate-100 dark:bg-cap-panel2 text-slate-600 dark:text-slate-300";
+        case "SUCCESS":     return "log-success";
+        case "FAILURE":     return "log-failure";
+        case "IN_PROGRESS": return "log-progress";
+        default:            return "log-default";
     }
 }
 
@@ -74,17 +74,15 @@ export default function AdminLogs() {
                         subtitle={t("adminLogs.subtitle")}
                         backTo="/" />
 
-            {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+            {error && <p className="error-line">{error}</p>}
 
-            <div className="mb-3 flex flex-wrap items-center gap-3">
-                <select value={type} onChange={(e) => setType(e.target.value)}
-                        className="rounded-lg border border-slate-300 dark:border-cap-border px-3 py-2 text-sm text-slate-700 dark:text-slate-300 dark:bg-cap-panel outline-none focus:border-brand">
+            <div className="filter-bar">
+                <select value={type} onChange={(e) => setType(e.target.value)} className="form-select">
                     <option value="">{t("adminLogs.allTypes")}</option>
                     <option value="MODULE_SYNC">MODULE_SYNC</option>
                     <option value="REMINDER">REMINDER</option>
                 </select>
-                <select value={status} onChange={(e) => setStatus(e.target.value)}
-                        className="rounded-lg border border-slate-300 dark:border-cap-border px-3 py-2 text-sm text-slate-700 dark:text-slate-300 dark:bg-cap-panel outline-none focus:border-brand">
+                <select value={status} onChange={(e) => setStatus(e.target.value)} className="form-select">
                     <option value="">{t("adminLogs.allStatuses")}</option>
                     <option value="SUCCESS">{t("adminLogs.logStatus.SUCCESS")}</option>
                     <option value="FAILURE">{t("adminLogs.logStatus.FAILURE")}</option>
@@ -100,15 +98,15 @@ export default function AdminLogs() {
                        loading={loading}
                        isEmpty={logs.length === 0} emptyLabel={t("adminLogs.empty")}>
                     {logs.map((l) => (
-                        <tr key={l.logId} className="hover:bg-slate-50/60">
-                            <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{l.type}</td>
-                            <td className="px-5 py-3.5">
-                                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusBadge(l.status)}`}>{t(`adminLogs.logStatus.${l.status}`, { defaultValue: l.status })}</span>
+                        <tr key={l.logId} className="table-row">
+                            <td className="table-cell cell-default">{l.type}</td>
+                            <td className="table-cell">
+                                <span className={`log-badge ${statusBadge(l.status)}`}>{t(`adminLogs.logStatus.${l.status}`, { defaultValue: l.status })}</span>
                             </td>
-                            <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{fmt(l.receivedAt)}</td>
-                            <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{fmt(l.processedAt)}</td>
-                            <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{l.userEmail ?? "—"}</td>
-                            <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{l.moduleTitle ?? "—"}</td>
+                            <td className="table-cell cell-muted">{fmt(l.receivedAt)}</td>
+                            <td className="table-cell cell-muted">{fmt(l.processedAt)}</td>
+                            <td className="table-cell cell-default">{l.userEmail ?? "—"}</td>
+                            <td className="table-cell cell-default">{l.moduleTitle ?? "—"}</td>
                         </tr>
                     ))}
                 </Table>

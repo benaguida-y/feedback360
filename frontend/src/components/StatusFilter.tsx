@@ -14,9 +14,7 @@ export default function StatusFilter({ value, onChange }: { value: string; onCha
         <div className="flex gap-2">
             {FILTERS.map((f) => (
                 <button key={f.key} onClick={() => onChange(f.key)}
-                        className={`rounded-lg px-3.5 py-1.5 text-sm font-medium transition ${
-                            value === f.key ? "bg-brand text-white" : "border border-slate-200 dark:border-cap-border bg-white dark:bg-cap-panel text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-cap-panel2"
-                        }`}>
+                        className={`filter-pill ${value === f.key ? "filter-pill-active" : "filter-pill-idle"}`}>
                     {t(f.labelKey)}
                 </button>
             ))}

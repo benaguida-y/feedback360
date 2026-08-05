@@ -139,68 +139,66 @@ export default function SubmitFeedback() {
                         backTo="/"
             />
 
-            {loadError && <p className="text-red-600">{loadError}</p>}
+            {loadError && <p className="error-text">{loadError}</p>}
 
             {detail && detail.status === "SUBMITTED" ? (
-                <div className="max-w-lg border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/15 p-6 text-emerald-800 dark:text-emerald-300">
+                <div className="notice-success max-w-lg p-6">
                     <p className="font-semibold">{t("submitFeedback.alreadySubmitted")}</p>
                     <p className="mt-2 text-sm">{t("submitFeedback.ratingValue", { score: detail.globalScore })}</p>
                     {detail.comment && <p className="mt-1 text-sm">{t("submitFeedback.commentValue", { comment: detail.comment })}</p>}
                 </div>
             ) : detail ? (
-                <div className="max-w-lg border border-slate-200 dark:border-cap-border bg-white dark:bg-cap-panel shadow-sm">
-                    <div className="flex items-start justify-between border-b border-slate-100 dark:border-cap-border bg-slate-50 dark:bg-cap-panel2 p-5">
+                <div className="card max-w-lg">
+                    <div className="module-strip">
                         <div>
-                            <p className="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">{t("submitFeedback.trainingModule")}</p>
-                            <p className="mt-1 text-lg font-semibold text-slate-800 dark:text-slate-100">{detail.moduleTitle}</p>
-                            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t("submitFeedback.completedOn", { date: createdLabel })}</p>
+                            <p className="highlight-label">{t("submitFeedback.trainingModule")}</p>
+                            <p className="strip-title">{detail.moduleTitle}</p>
+                            <p className="strip-sub">{t("submitFeedback.completedOn", { date: createdLabel })}</p>
                         </div>
                         {detail.status === "IN_PROGRESS" && (
-                            <span className="bg-sky-50 dark:bg-sky-500/15 px-2 py-0.5 text-xs font-medium text-sky-700 dark:text-sky-300">{t("submitFeedback.draft")}</span>
+                            <span className="draft-badge">{t("submitFeedback.draft")}</span>
                         )}
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-6">
-                        <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">{t("common.globalScore")}</p>
+                        <p className="form-label mb-2">{t("common.globalScore")}</p>
                         <div className="mb-6 flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map((n) => (
                                 <button type="button" key={n}
                                         onMouseEnter={() => setHover(n)} onMouseLeave={() => setHover(0)}
                                         onClick={() => { setScore(n); markTouched(); }}
-                                        className={`text-3xl transition ${(hover || score) >= n ? "text-amber-400" : "text-slate-300 dark:text-slate-600"}`}>
+                                        className={`star-btn ${(hover || score) >= n ? "star-filled" : "star-idle"}`}>
                                     ★
                                 </button>
                             ))}
-                            {score > 0 && <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">{score} / 5</span>}
+                            {score > 0 && <span className="ml-3 text-sm cell-muted">{score} / 5</span>}
                         </div>
 
                         <label className="mb-6 block">
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t("common.comment")} <span className="text-red-500">*</span></span>
+                            <span className="form-label">{t("common.comment")} <span className="required-mark">*</span></span>
                             <textarea value={comment} onChange={(e) => { setComment(e.target.value); markTouched(); }} rows={4}
                                       placeholder={t("submitFeedback.commentPlaceholder")}
-                                      className="mt-1.5 w-full border border-slate-300 dark:border-cap-border px-3 py-2 dark:bg-cap-panel outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+                                      className="form-input-plain transition" />
                         </label>
 
-                        {error && <p className="mb-4 border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/15 px-3 py-2 text-sm text-red-700 dark:text-red-300">{error}</p>}
+                        {error && <p className="error-banner">{error}</p>}
 
                         <div className="flex items-center gap-3">
-                            <button type="button" onClick={() => saveDraft(false)} disabled={saving}
-                                    className="border border-slate-300 dark:border-cap-border px-4 py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 transition hover:border-brand hover:text-brand disabled:opacity-60">
+                            <button type="button" onClick={() => saveDraft(false)} disabled={saving} className="btn-secondary">
                                 {saving ? t("submitFeedback.saving") : t("submitFeedback.saveDraft")}
                             </button>
-                            <button type="submit" disabled={loading}
-                                    className="flex-1 bg-brand py-2.5 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
+                            <button type="submit" disabled={loading} className="btn-primary-lg flex-1">
                                 {loading ? t("submitFeedback.sending") : t("submitFeedback.submit")}
                             </button>
                         </div>
 
-                        <p className="mt-3 h-4 text-xs text-slate-400 dark:text-slate-500">
+                        <p className="mt-3 h-4 text-xs text-faint">
                             {saving ? t("submitFeedback.savingDraft") : savedAt ? t("submitFeedback.draftSavedAt", { time: savedLabel }) : ""}
                         </p>
                     </form>
                 </div>
             ) : (
-                !loadError && <p className="text-slate-500 dark:text-slate-400">{t("common.loading")}</p>
+                !loadError && <p className="loading-text">{t("common.loading")}</p>
             )}
         </Layout>
     );

@@ -14,27 +14,27 @@ export default function Table({ columns, children, isEmpty, emptyLabel, loading,
 }) {
     const { t } = useTranslation();
     return (
-        <table className="w-full text-left text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:border-cap-border dark:bg-cap-panel2 dark:text-slate-400">
+        <table className="table">
+            <thead className="table-head">
             <tr>
                 {columns.map((c) => (
-                    <th key={c} className="px-5 py-3 font-medium">{c}</th>
+                    <th key={c} className="table-th">{c}</th>
                 ))}
             </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-cap-border">
+            <tbody className="table-body">
             {loading ? (
                 Array.from({ length: skeletonRows }).map((_, r) => (
                     <tr key={r}>
                         {columns.map((c, i) => (
-                            <td key={c} className="px-5 py-3.5">
+                            <td key={c} className="table-cell">
                                 <Skeleton className="h-4" style={{ width: WIDTHS[i % WIDTHS.length] }} />
                             </td>
                         ))}
                     </tr>
                 ))
             ) : isEmpty ? (
-                <tr><td colSpan={columns.length} className="px-5 py-8 text-center text-slate-400 dark:text-slate-500">{emptyLabel ?? t("common.noData")}</td></tr>
+                <tr><td colSpan={columns.length} className="table-empty">{emptyLabel ?? t("common.noData")}</td></tr>
             ) : children}
             </tbody>
         </table>

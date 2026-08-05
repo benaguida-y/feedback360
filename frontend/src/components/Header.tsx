@@ -24,16 +24,12 @@ export default function Header() {
     }, [lang]);
 
     return (
-        <header className="flex shrink-0 items-center justify-end gap-3 border-b border-slate-200 bg-white px-8 py-3 dark:border-cap-border dark:bg-cap-bg">
+        <header className="app-header">
             {/* Sélecteur de langue */}
-            <div className="flex overflow-hidden rounded-lg border border-slate-300 dark:border-cap-border">
+            <div className="lang-toggle">
                 {LANGS.map((l) => (
                     <button key={l} onClick={() => setLang(l)} aria-pressed={lang === l}
-                            className={`rounded-none px-3 py-1.5 text-xs font-semibold transition ${
-                                lang === l
-                                    ? "bg-brand text-white"
-                                    : "bg-white text-slate-600 hover:bg-slate-50 dark:bg-cap-panel dark:text-slate-300 dark:hover:bg-cap-panel2"
-                            }`}>
+                            className={`lang-btn ${lang === l ? "lang-btn-active" : "lang-btn-idle"}`}>
                         {l}
                     </button>
                 ))}
@@ -43,7 +39,7 @@ export default function Header() {
             <button onClick={() => setDark((d) => !d)}
                     title={dark ? t("header.switchToLight") : t("header.switchToDark")}
                     aria-label={dark ? t("header.switchToLight") : t("header.switchToDark")}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-600 transition hover:border-brand hover:text-brand dark:border-cap-border dark:text-slate-300">
+                    className="theme-toggle">
                 {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
         </header>

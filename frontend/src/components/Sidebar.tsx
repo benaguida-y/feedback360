@@ -45,7 +45,7 @@ export default function Sidebar() {
     ];
 
     return (
-        <aside className={`sticky top-0 z-20 flex h-screen shrink-0 flex-col border-r border-slate-200 bg-white transition-[width] duration-300 ease-in-out dark:border-cap-border dark:bg-cap-bg ${collapsed ? "w-16" : "w-60"}`}>
+        <aside className={`sidebar ${collapsed ? "w-16" : "w-60"}`}>
             <SidebarBrand collapsed={collapsed} onToggle={toggle} />
 
             <nav className="flex flex-1 flex-col py-3">

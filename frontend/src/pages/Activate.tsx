@@ -36,26 +36,26 @@ export default function Activate() {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-50 dark:bg-cap-bg">
+        <div className="auth-page">
             <BrandPanel />
 
-            <div className="flex w-full items-center justify-center p-8 lg:w-1/2">
+            <div className="auth-form-col">
                 <div className="w-full max-w-sm">
-                    <img src="/logo.png" alt="Feedback360" className="mb-8 h-9 w-auto lg:hidden" />
+                    <img src="/logo.png" alt="Feedback360" className="auth-logo" />
 
                     {!token ? (
-                        <div className="border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/15 px-4 py-3 text-sm text-red-700 dark:text-red-300">
+                        <div className="auth-alert-error">
                             {t("activate.tokenMissing")}
                         </div>
                     ) : success ? (
-                        <div className="flex items-center gap-2 border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/15 px-4 py-3 text-sm text-emerald-800 dark:text-emerald-300">
+                        <div className="auth-alert-success">
                             <CheckCircle2 className="h-5 w-5 flex-none" />
                             {t("activate.success")}
                         </div>
                     ) : (
                         <>
-                            <h2 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100">{t("activate.title")}</h2>
-                            <p className="mt-2 mb-8 text-sm text-slate-500 dark:text-slate-400">{t("activate.subtitle")}</p>
+                            <h2 className="auth-title">{t("activate.title")}</h2>
+                            <p className="auth-subtitle">{t("activate.subtitle")}</p>
 
                             <form onSubmit={handleSubmit}>
                                 {/* Mot de passe */}
@@ -68,8 +68,7 @@ export default function Activate() {
 
                                 {error && <ErrorBanner message={error} />}
 
-                                <button type="submit" disabled={loading}
-                                        className="w-full bg-brand py-3 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
+                                <button type="submit" disabled={loading} className="btn-block">
                                     {loading ? t("activate.activating") : t("activate.submit")}
                                 </button>
                             </form>

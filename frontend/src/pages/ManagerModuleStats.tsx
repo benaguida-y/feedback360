@@ -50,7 +50,7 @@ export default function ManagerModuleStats() {
                         subtitle={t("managerModules.subtitle")}
                         backTo="/" />
 
-            {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+            {error && <p className="error-line">{error}</p>}
 
             <div className="mb-3 flex justify-end">
                 <SearchInput value={search} onChange={setSearch} placeholder={t("search.module")} />
@@ -61,11 +61,11 @@ export default function ManagerModuleStats() {
                        loading={loading}
                        isEmpty={modules.length === 0} emptyLabel={t("common.noData")}>
                     {modules.map((m) => (
-                        <tr key={m.moduleTitle} className="hover:bg-slate-50/60">
-                            <td className="px-5 py-3.5 font-medium text-slate-800 dark:text-slate-100">{m.moduleTitle}</td>
-                            <td className="px-5 py-3.5 text-emerald-700 dark:text-emerald-300">{m.submittedCount}</td>
-                            <td className="px-5 py-3.5 text-amber-700 dark:text-amber-300">{m.notSubmittedCount}</td>
-                            <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{m.averageScore != null ? m.averageScore.toFixed(1) : "—"}</td>
+                        <tr key={m.moduleTitle} className="table-row">
+                            <td className="table-cell cell-strong">{m.moduleTitle}</td>
+                            <td className="table-cell cell-positive">{m.submittedCount}</td>
+                            <td className="table-cell cell-negative">{m.notSubmittedCount}</td>
+                            <td className="table-cell cell-default">{m.averageScore != null ? m.averageScore.toFixed(1) : "—"}</td>
                         </tr>
                     ))}
                 </Table>

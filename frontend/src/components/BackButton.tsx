@@ -10,7 +10,7 @@ export default function BackButton({ to = "/" }: { to?: string }) {
             type="button"
             onClick={() => navigate(to)}
             aria-label={t("common.back")}
-            className="flex h-10 w-10 flex-none items-center justify-center border border-slate-300 bg-white text-slate-500 transition hover:border-brand hover:text-brand dark:border-cap-border dark:bg-cap-panel dark:text-slate-300"
+            className="icon-btn"
         >
             <ChevronLeft className="h-4 w-4" />
         </button>

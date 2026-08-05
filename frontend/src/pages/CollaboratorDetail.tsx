@@ -30,7 +30,7 @@ export default function CollaboratorDetail() {
             .finally(() => setLoading(false));
     }, [userId]);
 
-    if (error) return <Layout><p className="text-red-600">{error}</p></Layout>;
+    if (error) return <Layout><p className="error-text">{error}</p></Layout>;
 
     const feedbacks = detail?.feedbacks ?? [];
 
@@ -40,26 +40,24 @@ export default function CollaboratorDetail() {
                         subtitle={detail?.email}
                         backTo="/management/collaborators" />
 
-            <h3 className="mb-3 text-lg font-semibold text-slate-800 dark:text-slate-100">{t("collaboratorDetail.modulesFeedbacks")}</h3>
+            <h3 className="section-title mb-3">{t("collaboratorDetail.modulesFeedbacks")}</h3>
             <Card>
                 <Table columns={[t("common.module"), t("common.status"), t("common.score"), t("common.date"), t("common.action")]}
                        loading={loading}
                        isEmpty={feedbacks.length === 0} emptyLabel={t("collaboratorDetail.empty")}>
                     {feedbacks.map((f) => (
-                        <tr key={f.feedbackId} className="hover:bg-slate-50/60">
-                            <td className="px-5 py-3.5 font-medium text-slate-800 dark:text-slate-100">{f.moduleTitle}</td>
-                            <td className="px-5 py-3.5"><StatusBadge status={f.status} /></td>
-                            <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
-                            <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">{new Date(f.createdAt).toLocaleDateString(i18n.language === "en" ? "en-GB" : "fr-FR")}</td>
-                            <td className="px-5 py-3.5">
+                        <tr key={f.feedbackId} className="table-row">
+                            <td className="table-cell cell-strong">{f.moduleTitle}</td>
+                            <td className="table-cell"><StatusBadge status={f.status} /></td>
+                            <td className="table-cell cell-default">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
+                            <td className="table-cell cell-muted">{new Date(f.createdAt).toLocaleDateString(i18n.language === "en" ? "en-GB" : "fr-FR")}</td>
+                            <td className="table-cell">
                                 {f.status === "NOT_SUBMITTED" ? (
-                                    <span title={t("common.notSubmittedTooltip")}
-                                          className="inline-flex cursor-not-allowed items-center rounded-lg border border-slate-200 dark:border-cap-border px-3.5 py-1.5 text-xs font-semibold text-slate-300 dark:text-slate-600">
+                                    <span title={t("common.notSubmittedTooltip")} className="btn-action-disabled">
                                         {t("common.view")}
                                     </span>
                                 ) : (
-                                    <Link to={`/feedback/${f.feedbackId}/detail`}
-                                          className="inline-flex items-center rounded-lg border border-slate-300 dark:border-cap-border px-3.5 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 transition hover:border-brand hover:text-brand">
+                                    <Link to={`/feedback/${f.feedbackId}/detail`} className="btn-action">
                                         {t("common.view")}
                                     </Link>
                                 )}

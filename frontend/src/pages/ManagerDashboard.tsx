@@ -42,8 +42,8 @@ export default function ManagerDashboard() {
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) return <p className="text-slate-500 dark:text-slate-400">{t("common.loading")}</p>;
-    if (error) return <p className="text-red-600">{error}</p>;
+    if (loading) return <p className="loading-text">{t("common.loading")}</p>;
+    if (error) return <p className="error-text">{error}</p>;
 
     const avg = stats!.averageScore;
     const rate = stats!.submissionRatePercent;
@@ -54,14 +54,14 @@ export default function ManagerDashboard() {
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <StatCard label={t("common.total")} value={summary!.total} />
-                <StatCard label={t("status.SUBMITTED")} value={summary!.submitted} accent="text-emerald-600" />
-                <StatCard label={t("status.NOT_SUBMITTED")} value={summary!.notSubmitted} accent="text-amber-600" />
-                <StatCard label={t("status.IN_PROGRESS")} value={summary!.inProgress} accent="text-sky-600" />
+                <StatCard label={t("status.SUBMITTED")} value={summary!.submitted} accent="accent-emerald" />
+                <StatCard label={t("status.NOT_SUBMITTED")} value={summary!.notSubmitted} accent="accent-amber" />
+                <StatCard label={t("status.IN_PROGRESS")} value={summary!.inProgress} accent="accent-sky" />
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-4">
-                <StatCard label={t("common.averageScore")} value={avg != null ? `${avg.toFixed(1)} / 5` : "—"} accent="text-brand" />
-                <StatCard label={t("managerDashboard.submissionRate")} value={`${rate} %`} accent="text-emerald-600" />
+                <StatCard label={t("common.averageScore")} value={avg != null ? `${avg.toFixed(1)} / 5` : "—"} accent="accent-brand" />
+                <StatCard label={t("managerDashboard.submissionRate")} value={`${rate} %`} accent="accent-emerald" />
             </div>
 
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -80,7 +80,7 @@ export default function ManagerDashboard() {
             </div>
 
             {/* Emplacement des futurs graphiques */}
-            <div className="mt-6 flex h-40 items-center justify-center border border-dashed border-slate-300 dark:border-cap-border bg-white dark:bg-cap-panel text-sm text-slate-400 dark:text-slate-500">
+            <div className="chart-placeholder">
                 {t("managerDashboard.chartsSoon")}
             </div>
 
@@ -95,12 +95,12 @@ export default function ManagerDashboard() {
 
 function HighlightCard({ label, value, sub, icon }: { label: string; value: string; sub: string; icon?: any }) {
     return (
-        <div className="flex items-start gap-4 rounded-lg border border-slate-200 dark:border-cap-border bg-white dark:bg-cap-panel p-5 shadow-sm">
-            <span className="text-2xl">{icon}</span>
+        <div className="highlight-card">
+            <span className="highlight-icon">{icon}</span>
             <div className="min-w-0">
-                <p className="text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500">{label}</p>
-                <p className="mt-1 truncate text-lg font-semibold text-slate-800 dark:text-slate-100">{value}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{sub}</p>
+                <p className="highlight-label">{label}</p>
+                <p className="highlight-value">{value}</p>
+                <p className="highlight-sub">{sub}</p>
             </div>
         </div>
     );

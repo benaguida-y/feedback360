@@ -45,16 +45,16 @@ export default function Login() {
     }
 
     return (
-        <div className="flex min-h-screen bg-slate-50 dark:bg-cap-bg">
+        <div className="auth-page">
             <BrandPanel />
 
             {/* Formulaire (droite) */}
-            <div className="flex w-full items-center justify-center p-8 lg:w-1/2">
+            <div className="auth-form-col">
                 <form onSubmit={handleSubmit} className="w-full max-w-sm">
-                    <img src="/logo.png" alt="Feedback360" className="mb-8 h-9 w-auto lg:hidden" />
+                    <img src="/logo.png" alt="Feedback360" className="auth-logo" />
 
-                    <h2 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100">{t("login.welcome")}</h2>
-                    <p className="mt-2 mb-8 text-sm text-slate-500 dark:text-slate-400">{t("login.subtitle")}</p>
+                    <h2 className="auth-title">{t("login.welcome")}</h2>
+                    <p className="auth-subtitle">{t("login.subtitle")}</p>
 
                     <FormField label={t("common.email")} icon={Mail} type="email" value={email}
                                onChange={setEmail} placeholder={t("login.emailPlaceholder")} />
@@ -64,15 +64,12 @@ export default function Login() {
 
                     {error && <ErrorBanner message={error} />}
 
-                    <button type="submit" disabled={loading}
-                            className="group flex w-full items-center justify-center gap-2 bg-brand py-3 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
+                    <button type="submit" disabled={loading} className="btn-block">
                         {loading ? t("login.loggingIn") : t("login.signIn")}
-                        {!loading &&
-                            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                        }
+                        {!loading && <ArrowRight className="arrow-slide" />}
                     </button>
 
-                    <p className="mt-8 text-center text-xs text-slate-400 dark:text-slate-500">
+                    <p className="auth-footer">
                         {t("login.footer")}
                     </p>
                 </form>
