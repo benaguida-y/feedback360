@@ -14,6 +14,7 @@ import CollaboratorDetail from "./pages/CollaboratorDetail.tsx";
 import AdminLogs from "./pages/AdminLogs.tsx";
 import AdminCreateUser from "./pages/AdminCreateUser.tsx";
 import CollaboratorFeedbacks from "./pages/CollaboratorFeedbacks.tsx";
+import MagicLogin from "./pages/MagicLogin.tsx";
 
 export default function App() {
     return (
@@ -22,6 +23,7 @@ export default function App() {
 
             <Route path="/login" element={<Login />} />
             <Route path="/activate" element={<Activate />} />
+            <Route path="/magic-login" element={<MagicLogin />} />
 
             <Route path="/feedbacks" element={<ProtectedRoute><CollaboratorFeedbacks /></ProtectedRoute>} />
             <Route path="/feedback/:feedbackId" element={<ProtectedRoute><SubmitFeedback /></ProtectedRoute>} />

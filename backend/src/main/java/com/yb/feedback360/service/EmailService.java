@@ -24,47 +24,57 @@ public class EmailService {
     private static final String TEMPLATE = "mail/activation-email.html";
     private static final String INTRO_MODULE = "mail/activation-module.html";
     private static final String INTRO_GENERIC = "mail/activation-generic.html";
+    private static final String INTRO_NEW_FEEDBACK = "mail/new-feedback.html";
     private static final String STYLES = "mail/email.css";
 
     private final JavaMailSender mailSender;
     private final MailProperties mailProperties;
 
-    // moduleTitle est null pour un compte créé par l'admin (aucun module lié).
-    public void sendActivationEmail(User user, String activationLink, String moduleTitle) {
+    // 1re fois : email d'activation (le collaborateur définit son mot de passe).
+    public void sendActivationEmail(User user, String link, String moduleTitle) {
         boolean hasModule = moduleTitle != null && !moduleTitle.isBlank();
-        mailSender.send(mimeMessage -> {
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8"); // multipart
+        String intro = hasModule
+                ? loadTemplate(INTRO_MODULE).replace("{{module}}", moduleTitle)
+                : loadTemplate(INTRO_GENERIC);
+        String subject = hasModule
+                ? "Votre avis sur « " + moduleTitle + " » — Feedback360"
+                : "Activez votre compte Feedback360";
+        send(user, link, subject, "Bienvenue sur Feedback360", intro, "Activer mon compte");
+    }
 
+    // Compte déjà activé : email invitant à donner un nouveau feedback (connexion directe).
+    public void sendNewFeedbackEmail(User user, String link, String moduleTitle) {
+        String intro = loadTemplate(INTRO_NEW_FEEDBACK).replace("{{module}}", moduleTitle != null ? moduleTitle : "");
+        String subject = "Votre avis sur « " + moduleTitle + " » — Feedback360";
+        send(user, link, subject, "Un nouveau feedback à donner", intro, "Donner mon feedback");
+    }
+
+    // Envoi générique (multipart HTML + logo inline).
+    private void send(User user, String link, String subject, String title, String intro, String cta) {
+        mailSender.send(mimeMessage -> {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setFrom(mailProperties.from());
             helper.setTo(user.getEmail());
-            helper.setSubject(hasModule
-                    ? "Votre avis sur « " + moduleTitle + " » — Feedback360"
-                    : "Activez votre compte Feedback360");
-            helper.setText(buildBody(user, activationLink, moduleTitle), true); // html = true
+            helper.setSubject(subject);
+            helper.setText(buildBody(user, link, title, intro, cta), true); // html = true
 
-            // Attach as a DataSource (no filename) so Gmail renders it inline via cid.
             byte[] logo = new ClassPathResource(LOGO_PATH).getContentAsByteArray();
             helper.addInline(LOGO_CID, new ByteArrayDataSource(logo, "image/png"));
         });
     }
 
-    private String buildBody(User user, String activationLink, String moduleTitle) {
+    private String buildBody(User user, String link, String title, String intro, String cta) {
         String name = user.getFirstName() != null ? user.getFirstName() : "";
-        boolean hasModule = moduleTitle != null && !moduleTitle.isBlank();
-
-        String intro = hasModule
-                ? loadTemplate(INTRO_MODULE).replace("{{module}}", moduleTitle)
-                : loadTemplate(INTRO_GENERIC);
-
         return loadTemplate(TEMPLATE)
                 .replace("{{styles}}", loadTemplate(STYLES))
+                .replace("{{title}}", title)
                 .replace("{{name}}", name)
                 .replace("{{intro}}", intro)
-                .replace("{{link}}", activationLink)
+                .replace("{{cta}}", cta)
+                .replace("{{link}}", link)
                 .replace("{{logoCid}}", LOGO_CID);
     }
 
-    // Charge un template depuis le classpath (resources/) en UTF-8.
     private String loadTemplate(String path) {
         try {
             byte[] bytes = new ClassPathResource(path).getContentAsByteArray();
