@@ -9,7 +9,10 @@ import com.yb.feedback360.repository.FeedbackRepository;
 import com.yb.feedback360.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +36,12 @@ public class ManagementService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ManagementFeedbackSummaryResponse> getAllFeedbacks(FeedbackStatus status, String search, Pageable pageable) {
+    public PageResponse<ManagementFeedbackSummaryResponse> getAllFeedbacks(FeedbackStatus status, Integer score, String search, Pageable pageable) {
         String searchParam = (search == null || search.isBlank())
                 ? null : "%" + search.trim().toLowerCase() + "%";
 
         return PageResponse.from(
-                feedbackRepository.searchFeedbacks(status, searchParam, pageable).map(f -> {
+                feedbackRepository.searchFeedbacks(status, score, searchParam, pageable).map(f -> {
                     User u = f.getUser();
                     String name = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
                             (u.getLastName() != null ? u.getLastName() : "")).trim();
@@ -47,7 +50,7 @@ public class ManagementService {
                     }
                     return new ManagementFeedbackSummaryResponse(
                             f.getFeedbackId(), f.getStatus().name(), f.getModuleFormation().getTitle(),
-                            f.getCreatedAt(), f.getGlobalScore(), name);
+                            f.getCreatedAt(), f.getGlobalScore(), name, u.getEmail());
                 }));
     }
 
@@ -94,22 +97,82 @@ public class ManagementService {
                 user.getEmail());
     }
 
-    // Liste paginée + recherche (nom / email), filtrée en base.
+    // Liste + recherche (nom / email). Les colonnes sont des agrégats non triables en JPQL :
+    // on récupère tout, on trie en mémoire selon le tri demandé, puis on pagine.
     @Transactional(readOnly = true)
-    public PageResponse<CollaboratorProgressResponse> getCollaborators(String search, Pageable pageable) {
+    public PageResponse<CollaboratorProgressResponse> getCollaborators(String search, Integer score, Pageable pageable) {
         String searchParam = (search == null || search.isBlank())
                 ? null : "%" + search.trim().toLowerCase() + "%";
-        return PageResponse.from(feedbackRepository.collaboratorProgress(
-                FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, searchParam, pageable));
+        List<CollaboratorProgressResponse> all = feedbackRepository
+                .collaboratorProgress(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, searchParam, Pageable.unpaged())
+                .getContent().stream()
+                .filter(c -> matchesRange(c.averageScore(), score))
+                .toList();
+        return paginate(sortCollaborators(all, pageable.getSort()), pageable);
     }
 
-    // Liste paginée + recherche (titre du module), filtrée en base.
+    // Idem : agrégats par module, triés en mémoire puis paginés.
     @Transactional(readOnly = true)
-    public PageResponse<ModuleStatsResponse> getModules(String search, Pageable pageable) {
+    public PageResponse<ModuleStatsResponse> getModules(String search, Integer score, Pageable pageable) {
         String searchParam = (search == null || search.isBlank())
                 ? null : "%" + search.trim().toLowerCase() + "%";
-        return PageResponse.from(feedbackRepository.moduleStats(
-                FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, searchParam, pageable));
+        List<ModuleStatsResponse> all = feedbackRepository
+                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, searchParam, Pageable.unpaged())
+                .getContent().stream()
+                .filter(m -> matchesStar(m.averageScore(), score))
+                .toList();
+        return paginate(sortModules(all, pageable.getSort()), pageable);
+    }
+
+    // Modules : la note est une étoile. Filtre par étoile exacte (arrondi) :
+    // 1-5 = étoile, 0 = sans note, null = toutes.
+    private boolean matchesStar(Double avg, Integer star) {
+        if (star == null) return true;
+        if (star == 0) return avg == null;
+        return avg != null && (int) Math.round(avg) == star;
+    }
+
+    // Collaborateurs : la note est un flottant. Filtre par plage [floor, floor+1[
+    // (4 = plage haute 4–5 inclus), 0 = sans note, null = toutes.
+    private boolean matchesRange(Double avg, Integer floor) {
+        if (floor == null) return true;
+        if (floor == 0) return avg == null;
+        if (avg == null) return false;
+        if (floor >= 4) return avg >= 4.0;
+        return avg >= floor && avg < floor + 1;
+    }
+
+    private List<ModuleStatsResponse> sortModules(List<ModuleStatsResponse> list, Sort sort) {
+        if (sort.isUnsorted()) return list; // ordre par défaut (titre) donné par la requête
+        Sort.Order o = sort.iterator().next();
+        Comparator<ModuleStatsResponse> cmp = switch (o.getProperty()) {
+            case "submittedCount"    -> Comparator.comparing(ModuleStatsResponse::submittedCount, Comparator.nullsLast(Comparator.naturalOrder()));
+            case "notSubmittedCount" -> Comparator.comparing(ModuleStatsResponse::notSubmittedCount, Comparator.nullsLast(Comparator.naturalOrder()));
+            case "averageScore"      -> Comparator.comparing(ModuleStatsResponse::averageScore, Comparator.nullsLast(Comparator.naturalOrder()));
+            default                  -> Comparator.comparing(ModuleStatsResponse::moduleTitle, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+        };
+        return list.stream().sorted(o.isDescending() ? cmp.reversed() : cmp).toList();
+    }
+
+    private List<CollaboratorProgressResponse> sortCollaborators(List<CollaboratorProgressResponse> list, Sort sort) {
+        if (sort.isUnsorted()) return list; // ordre par défaut (nom) donné par la requête
+        Sort.Order o = sort.iterator().next();
+        Comparator<CollaboratorProgressResponse> cmp = switch (o.getProperty()) {
+            case "submittedPercent" -> Comparator.comparing(CollaboratorProgressResponse::submittedPercent, Comparator.nullsLast(Comparator.naturalOrder()));
+            case "averageScore"     -> Comparator.comparing(CollaboratorProgressResponse::averageScore, Comparator.nullsLast(Comparator.naturalOrder()));
+            default                 -> Comparator.comparing(CollaboratorProgressResponse::fullName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+        };
+        return list.stream().sorted(o.isDescending() ? cmp.reversed() : cmp).toList();
+    }
+
+    // Pagination en mémoire d'une liste déjà triée.
+    private <T> PageResponse<T> paginate(List<T> all, Pageable pageable) {
+        if (pageable.isUnpaged()) return PageResponse.from(new PageImpl<>(all));
+        int total = all.size();
+        int from = (int) Math.min(pageable.getOffset(), total);
+        int to = Math.min(from + pageable.getPageSize(), total);
+        Page<T> page = new PageImpl<>(all.subList(from, to), pageable, total);
+        return PageResponse.from(page);
     }
 
     @Transactional(readOnly = true)

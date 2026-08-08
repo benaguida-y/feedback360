@@ -13,6 +13,7 @@ import ManagerCollaborators from "./pages/ManagerCollaborators.tsx";
 import CollaboratorDetail from "./pages/CollaboratorDetail.tsx";
 import AdminLogs from "./pages/AdminLogs.tsx";
 import AdminCreateUser from "./pages/AdminCreateUser.tsx";
+import AdminReminders from "./pages/AdminReminders.tsx";
 import CollaboratorFeedbacks from "./pages/CollaboratorFeedbacks.tsx";
 import MagicLogin from "./pages/MagicLogin.tsx";
 
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
             <Route path="/admin/users/new" element={<ProtectedRoute><AdminCreateUser /></ProtectedRoute>} />
             <Route path="/admin/logs" element={<ProtectedRoute><AdminLogs /></ProtectedRoute>} />
+            <Route path="/admin/reminders" element={<ProtectedRoute><AdminReminders /></ProtectedRoute>} />
 
             <Route path="/management/feedbacks" element={<ProtectedRoute><ManagerFeedbacks /></ProtectedRoute>} />
             <Route path="/management/modules" element={<ProtectedRoute><ManagerModuleStats /></ProtectedRoute>} />

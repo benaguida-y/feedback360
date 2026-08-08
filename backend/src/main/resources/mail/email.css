@@ -1,15 +1,43 @@
-body { font-family: Arial, sans-serif; color: #2b2b2b; }
-.wrap { max-width: 480px; }
-.title { margin: 0 0 12px; }
-.btn-wrap { margin: 24px 0; }
-.btn {
-    display: inline-block;
-    background: #0070ad;
-    color: #ffffff !important;
-    padding: 12px 20px;
-    border-radius: 6px;
-    text-decoration: none;
+/* Police de l'app (clients compatibles ; sinon repli sur la pile) */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
+
+/* --- Resets compatibilité clients --- */
+body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+body { margin: 0 !important; padding: 0 !important; width: 100% !important;
+    background-color: #f7f9fb;
+    font-family: 'Ubuntu', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+
+/* --- Module mis en avant : callout façon accent Capgemini --- */
+.module-title {
+    display: block;
+    margin: 16px 0 18px;
+    padding: 14px 18px;
+    background-color: #eef6fb;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #005180;
 }
-.muted { font-size: 12px; color: #777777; }
-.module-title { font-size: 16px; font-weight: bold; color: #0070ad; margin: 6px 0 16px; }
-.logo { height: 48px; margin-bottom: 24px; }
+
+/* --- Paragraphes de l'intro --- */
+.intro p { margin: 0 0 14px; }
+
+/* --- Liens & survol du bouton (brand-dark, comme l'app) --- */
+a { color: #0070ad; }
+
+
+/* --- Mobile --- */
+@media only screen and (max-width: 620px) {
+    .card { width: 100% !important; border-radius: 12px !important; }
+    .px   { padding-left: 22px !important; padding-right: 22px !important; }
+    .title { font-size: 21px !important; }
+}
+
+/* --- Verrouillage clair (évite l'inversion cassée en dark mode) --- */
+@media (prefers-color-scheme: dark) {
+    body  { background-color: #f7f9fb !important; }
+    .card { background-color: #ffffff !important; }
+}

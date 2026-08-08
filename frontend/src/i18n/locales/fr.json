@@ -5,6 +5,7 @@
     "collaborators": "Collaborateurs",
     "modules": "Modules",
     "administration": "Administration",
+    "reminders": "Relances",
     "supervision": "Supervision"
   },
   "common": {
@@ -47,12 +48,22 @@
     "viewAll": "Voir tout",
     "overview": "Vue d'ensemble",
     "statsError": "Impossible de charger les statistiques.",
-    "back": "Retour au tableau de bord"
+    "back": "Retour",
+    "perPage": "{{n}} par page",
+    "allScores": "Toutes les notes",
+    "noRating": "Sans note"
   },
   "status": {
     "SUBMITTED": "Soumis",
     "NOT_SUBMITTED": "En attente",
     "IN_PROGRESS": "En cours"
+  },
+  "relance": {
+    "action": "Relancer",
+    "sending": "Envoi…",
+    "sent": "Relancé",
+    "error": "Échec",
+    "tooltip": "Renvoyer l'e-mail d'invitation au feedback"
   },
   "search": {
     "module": "Rechercher un module…",
@@ -115,6 +126,11 @@
   },
   "managerDashboard": {
     "subtitle": "Indicateurs globaux des feedbacks.",
+    "sectionFeedbacks": "Feedbacks",
+    "sectionIndicators": "Indicateurs clés",
+    "sectionHighlights": "Points forts",
+    "sectionCharts": "Graphiques",
+    "sectionAccess": "Accès rapides",
     "submissionRate": "Taux de soumission",
     "topCollaborator": "Collaborateur le plus actif",
     "feedbacksSubmitted": "{{n}} feedback(s) soumis",
@@ -133,7 +149,7 @@
     "managers": "Managers",
     "activeUsers": "Actifs",
     "inactiveUsers": "Désactivés",
-    "integrations": "Intégrations (webhook)",
+    "integrations": "Intégrations",
     "callsReceived": "Appels reçus",
     "successes": "Succès",
     "failures": "Échecs",
@@ -145,6 +161,25 @@
     "notFound": "Collaborateur introuvable.",
     "modulesFeedbacks": "Modules & feedbacks",
     "empty": "Aucun module."
+  },
+  "adminReminders": {
+    "title": "Relances automatiques",
+    "subtitle": "Renvoi automatique des invitations aux feedbacks non soumis.",
+    "autoLabel": "Activer la relance automatique",
+    "autoHelp": "Le système renvoie l'e-mail d'invitation aux collaborateurs qui n'ont pas encore donné leur feedback.",
+    "delayLabel": "Délai avant relance (jours)",
+    "delayHelp": "Temps d'attente depuis la dernière sollicitation avant de relancer.",
+    "maxLabel": "Nombre maximum de relances",
+    "maxHelp": "Au-delà, le système arrête d'insister pour un même feedback.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Réglages enregistrés",
+    "loadError": "Impossible de charger les réglages.",
+    "saveError": "Impossible d'enregistrer les réglages.",
+    "howTitle": "Comment ça marche",
+    "how1": "Une vérification a lieu chaque jour ; seuls les feedbacks non soumis sont concernés.",
+    "how2": "Un feedback est relancé lorsque le délai est écoulé depuis le dernier e-mail (ou depuis sa création).",
+    "how3": "Le manager peut aussi relancer manuellement depuis la liste des feedbacks."
   },
   "login": {
     "welcome": "Bon retour !",
@@ -178,8 +213,10 @@
     "emailTaken": "Cet email est déjà utilisé.",
     "createError": "Création impossible (vérifiez les champs).",
     "created": "Compte créé ✔ Un e-mail d'activation a été envoyé.",
+    "createdTitle": "Compte créé !",
+    "createdText": "Un e-mail d'activation a été envoyé au collaborateur.",
     "linkLabel": "Lien :",
-    "backToList": "← Retour à la liste",
+    "backToList": "Retour à la liste",
     "howItWorks": "Comment ça marche",
     "step1": "Vous créez le compte avec l'email et le rôle.",
     "step2": "Un email d'activation est envoyé automatiquement.",

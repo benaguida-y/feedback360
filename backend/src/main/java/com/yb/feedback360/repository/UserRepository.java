@@ -29,7 +29,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
                    or lower(u.firstName) like :search
                    or lower(u.lastName)  like :search
                    or lower(u.email)     like :search)
-            order by u.userId
             """)
     Page<User> search(@Param("role") String role,
                       @Param("active") Boolean active,

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
+import { CheckCircle2, ChevronLeft } from "lucide-react";
 import client from "../api/client";
 import { getRole } from "../auth";
 import Layout from "../components/Layout";
@@ -69,10 +70,14 @@ export default function AdminCreateUser() {
                     </form>
 
                     {link && (
-                        <div className="notice-success mt-4 p-3 text-sm">
-                            <p className="font-medium">{t("adminCreateUser.created")}</p>
-                            <p className="notice-link">{t("adminCreateUser.linkLabel")} {link}</p>
-                            <Link to="/admin/users" className="mt-2 inline-block link-brand">
+                        <div className="create-success">
+                            <div className="create-success-badge">
+                                <CheckCircle2 className="h-6 w-6" />
+                            </div>
+                            <p className="create-success-title">{t("adminCreateUser.createdTitle")}</p>
+                            <p className="create-success-text">{t("adminCreateUser.createdText")}</p>
+                            <Link to="/admin/users" className="create-success-btn">
+                                <ChevronLeft className="h-4 w-4" />
                                 {t("adminCreateUser.backToList")}
                             </Link>
                         </div>

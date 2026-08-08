@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, MessageSquareText, Users, BarChart3, Settings, Activity } from "lucide-react";
+import { LayoutDashboard, MessageSquareText, Users, BarChart3, Settings, Activity, BellRing } from "lucide-react";
 import { clearToken, getRole, getUserName } from "../auth";
 import SidebarBrand from "./sidebar/SidebarBrand";
 import SidebarLink from "./sidebar/SidebarLink";
@@ -40,6 +40,7 @@ export default function Sidebar() {
         ] : []),
         ...(role === "ADMIN" ? [
             { to: "/admin/users", end: false, label: t("nav.administration"), icon: <Settings className="h-5 w-5 shrink-0" /> },
+            { to: "/admin/reminders", end: false, label: t("nav.reminders"), icon: <BellRing className="h-5 w-5 shrink-0" /> },
             { to: "/admin/logs", end: false, label: t("nav.supervision"), icon: <Activity className="h-5 w-5 shrink-0" /> },
         ] : []),
     ];

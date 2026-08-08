@@ -18,13 +18,15 @@ import java.nio.charset.StandardCharsets;
 public class EmailService {
 
     private static final String LOGO_CID = "logo";
-    private static final String LOGO_PATH = "mail/cap_logo.png";
+    private static final String LOGO_PATH = "mail/cap_logo_white.png";
 
     // Le contenu HTML des e-mails vit dans resources/mail/ ; ce service ne gère que l'envoi.
     private static final String TEMPLATE = "mail/activation-email.html";
     private static final String INTRO_MODULE = "mail/activation-module.html";
     private static final String INTRO_GENERIC = "mail/activation-generic.html";
     private static final String INTRO_NEW_FEEDBACK = "mail/new-feedback.html";
+    private static final String INTRO_REMINDER = "mail/reminder.html";
+    private static final String INTRO_REMINDER_ACTIVATION = "mail/reminder-activation.html";
     private static final String STYLES = "mail/email.css";
 
     private final JavaMailSender mailSender;
@@ -47,6 +49,20 @@ public class EmailService {
         String intro = loadTemplate(INTRO_NEW_FEEDBACK).replace("{{module}}", moduleTitle != null ? moduleTitle : "");
         String subject = "Votre avis sur « " + moduleTitle + " » — Feedback360";
         send(user, link, subject, "Un nouveau feedback à donner", intro, "Donner mon feedback");
+    }
+
+    // Relance : compte déjà activé, feedback toujours en attente — ton « rappel ».
+    public void sendReminderEmail(User user, String link, String moduleTitle) {
+        String intro = loadTemplate(INTRO_REMINDER).replace("{{module}}", moduleTitle != null ? moduleTitle : "");
+        String subject = "Rappel : votre avis sur « " + moduleTitle + " » — Feedback360";
+        send(user, link, subject, "Un feedback vous attend toujours", intro, "Donner mon feedback");
+    }
+
+    // Relance d'un compte jamais activé : ton « rappel » mais lien d'activation (mot de passe).
+    public void sendActivationReminderEmail(User user, String link, String moduleTitle) {
+        String intro = loadTemplate(INTRO_REMINDER_ACTIVATION).replace("{{module}}", moduleTitle != null ? moduleTitle : "");
+        String subject = "Rappel : votre avis sur « " + moduleTitle + " » — Feedback360";
+        send(user, link, subject, "Un feedback vous attend toujours", intro, "Activer mon compte");
     }
 
     // Envoi générique (multipart HTML + logo inline).

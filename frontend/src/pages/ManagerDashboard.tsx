@@ -52,6 +52,7 @@ export default function ManagerDashboard() {
         <div>
             <PageHeader title={t("common.overview")} subtitle={t("managerDashboard.subtitle")} />
 
+            <h3 className="section-title mb-3">{t("managerDashboard.sectionFeedbacks")}</h3>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <StatCard label={t("common.total")} value={summary!.total} />
                 <StatCard label={t("status.SUBMITTED")} value={summary!.submitted} accent="accent-emerald" />
@@ -59,12 +60,14 @@ export default function ManagerDashboard() {
                 <StatCard label={t("status.IN_PROGRESS")} value={summary!.inProgress} accent="accent-sky" />
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-4">
+            <h3 className="section-title mt-8 mb-3">{t("managerDashboard.sectionIndicators")}</h3>
+            <div className="grid grid-cols-2 gap-4">
                 <StatCard label={t("common.averageScore")} value={avg != null ? `${avg.toFixed(1)} / 5` : "—"} accent="accent-brand" />
                 <StatCard label={t("managerDashboard.submissionRate")} value={`${rate} %`} accent="accent-emerald" />
             </div>
 
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <h3 className="section-title mt-8 mb-3">{t("managerDashboard.sectionHighlights")}</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
                 <HighlightCard
                     label={t("managerDashboard.topCollaborator")}
                     value={highlights?.topCollaboratorName ?? "—"}
@@ -79,13 +82,15 @@ export default function ManagerDashboard() {
                 />
             </div>
 
+            <h3 className="section-title mt-8 mb-3">{t("managerDashboard.sectionCharts")}</h3>
             {/* Emplacement des futurs graphiques */}
             <div className="chart-placeholder">
                 {t("managerDashboard.chartsSoon")}
             </div>
 
             {/* Accès aux vues détaillées */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <h3 className="section-title mt-8 mb-3">{t("managerDashboard.sectionAccess")}</h3>
+            <div className="grid gap-4 sm:grid-cols-2">
                 <NavCard to="/management/feedbacks" title={t("managerFeedbacks.title")} subtitle={t("managerDashboard.navFeedbacksSub")} />
                 <NavCard to="/management/modules" title={t("managerModules.title")} subtitle={t("managerDashboard.navModulesSub")} />
             </div>

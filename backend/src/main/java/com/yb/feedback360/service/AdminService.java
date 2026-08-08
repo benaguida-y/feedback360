@@ -101,8 +101,10 @@ public class AdminService {
                                 l.getModuleFormation() != null ? l.getModuleFormation().getTitle() : null)));
     }
 
+    // Stats utilisateurs et stats intégrations sont séparées : le dashboard les charge
+    // indépendamment, pour qu'une panne sur l'une ne fasse pas tomber l'autre.
     @Transactional(readOnly = true)
-    public AdminStatsResponse getStats() {
+    public AdminUserStatsResponse getUserStats() {
         long total = userRepository.count();
         long admins = userRepository.countByRole_Name("ADMIN");
         long managers = userRepository.countByRole_Name("MANAGER");
@@ -111,12 +113,16 @@ public class AdminService {
         long inactive = userRepository.countByActive(false);
         long pending = userRepository.countByPasswordHashIsNull();
 
+        return new AdminUserStatsResponse(total, admins, managers, collaborators, active, inactive, pending);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminIntegrationStatsResponse getIntegrationStats() {
         long calls = integrationLogRepository.count();
         long success = integrationLogRepository.countByStatus(LogStatus.SUCCESS);
         long failure = integrationLogRepository.countByStatus(LogStatus.FAILURE);
 
-        return new AdminStatsResponse(total, admins, managers, collaborators,
-                active, inactive, pending, calls, success, failure);
+        return new AdminIntegrationStatsResponse(calls, success, failure);
     }
 
 }

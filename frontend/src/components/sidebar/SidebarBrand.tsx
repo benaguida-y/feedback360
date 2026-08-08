@@ -6,8 +6,19 @@ export default function SidebarBrand({ collapsed, onToggle }: { collapsed: boole
     const { t } = useTranslation();
     return (
         <div className="relative flex h-30 flex-col items-center gap-2 px-3 py-5">
-            <img src={collapsed ? "/flower-logo.png" : "/logo.png"} alt="Feedback360"
-                 className={`sidebar-logo ${collapsed ? "h-8" : "h-10"}`} />
+            {/* clair : logo Capgemini couleur — sombre : logo Capgemini blanc officiel.
+                Replié : pictogramme (voile) ; déplié : logo complet. */}
+            {collapsed ? (
+                <>
+                    <img src="/flower-logo.png" alt="Feedback360" className="sidebar-logo-light h-8" />
+                    <img src="/capgemini-icon-white.svg" alt="Feedback360" className="sidebar-logo-dark h-8" />
+                </>
+            ) : (
+                <>
+                    <img src="/logo.png" alt="Feedback360" className="sidebar-logo-light h-10" />
+                    <img src="/capgemini-white.svg" alt="Feedback360" className="sidebar-logo-dark h-10" />
+                </>
+            )}
             <span className="sidebar-brand-name">{collapsed ? "F360" : "Feedback360"}</span>
 
             <button onClick={onToggle} title={collapsed ? t("sidebar.expand") : t("sidebar.collapse")}

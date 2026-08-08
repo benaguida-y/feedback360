@@ -10,6 +10,7 @@ import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
+import { useSort } from "../useSort";
 
 interface AdminUser {
     userId: number;
@@ -21,12 +22,11 @@ interface AdminUser {
 }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
 
-const SIZE = 10;
-
 export default function AdminUsers() {
     const { t } = useTranslation();
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [page, setPage] = useState(0);
+    const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [total, setTotal] = useState(0);
     const [listError, setListError] = useState("");
@@ -36,11 +36,12 @@ export default function AdminUsers() {
     const [filterRole, setFilterRole] = useState("");
     const [filterStatus, setFilterStatus] = useState("");
     const [search, setSearch] = useState("");
+    const { sort, toggle } = useSort();
 
     if (getRole() !== "ADMIN") return <Navigate to="/" replace />;
 
-    // Un changement de filtre/recherche ramène à la 1ʳᵉ page.
-    useEffect(() => { setPage(0); }, [filterRole, filterStatus, search]);
+    // Un changement de filtre/recherche/tri ramène à la 1ʳᵉ page.
+    useEffect(() => { setPage(0); }, [filterRole, filterStatus, search, sort, size]);
 
     useEffect(() => {
         setLoading(true);
@@ -49,8 +50,9 @@ export default function AdminUsers() {
             if (filterRole) params.set("role", filterRole);
             if (filterStatus) params.set("status", filterStatus);
             if (search.trim()) params.set("search", search.trim());
+            if (sort) params.set("sort", sort);
             params.set("page", String(page));
-            params.set("size", String(SIZE));
+            params.set("size", String(size));
             client.get<Page<AdminUser>>(`/admin/users?${params.toString()}`)
                 .then((r) => {
                     setUsers(r.data.content);
@@ -61,7 +63,7 @@ export default function AdminUsers() {
                 .finally(() => setLoading(false));
         }, 300);
         return () => clearTimeout(timer);
-    }, [filterRole, filterStatus, search, page]);
+    }, [filterRole, filterStatus, search, page, sort, size]);
 
     async function toggleActive(u: AdminUser) {
         setBusyId(u.userId);
@@ -118,8 +120,8 @@ export default function AdminUsers() {
             </div>
 
             <Card>
-                <Table columns={[t("common.name"), t("common.email"), t("common.role"), t("common.status"), t("common.action")]}
-                       loading={loading}
+                <Table columns={[{ label: t("common.name"), sort: "lastName" }, { label: t("common.email"), sort: "email" }, { label: t("common.role"), sort: "role.name" }, { label: t("common.status"), sort: "active" }, t("common.action")]}
+                       loading={loading} sort={sort} onSort={toggle}
                        isEmpty={users.length === 0} emptyLabel={t("adminUsers.empty")}>
                     {users.map((u) => (
                         <tr key={u.userId} className={`table-row ${!u.active ? "opacity-60" : ""}`}>
@@ -130,28 +132,40 @@ export default function AdminUsers() {
                             </td>
                             <td className="table-cell">
                                 <div className="flex flex-col gap-1">
-                                    <span className={`pill ${u.active ? "pill-active" : "pill-inactive"}`}>
-                                        {u.active ? t("common.active") : t("common.inactive")}
-                                    </span>
-                                    {!u.activated && (
-                                        <span className="pill pill-pending">
-                                            {t("common.pendingActivation")}
+                                    {u.activated ? (
+                                        <span className={`pill ${u.active ? "pill-active" : "pill-inactive"}`}>
+                                            {u.active ? t("common.active") : t("common.inactive")}
                                         </span>
+                                    ) : (
+                                        <>
+                                            <span className="pill pill-pending">
+                                                {t("common.pendingActivation")}
+                                            </span>
+                                            {!u.active && (
+                                                <span className="pill pill-inactive">
+                                                    {t("common.inactive")}
+                                                </span>
+                                            )}
+                                        </>
                                     )}
                                 </div>
                             </td>
                             <td className="table-cell">
-                                <button onClick={() => toggleActive(u)} disabled={busyId === u.userId}
-                                        className={`btn-toggle ${u.active ? "btn-toggle-danger" : "btn-toggle-success"}`}>
-                                    {busyId === u.userId ? "…" : u.active ? t("adminUsers.deactivate") : t("adminUsers.activate")}
-                                </button>
+                                {u.activated ? (
+                                    <button onClick={() => toggleActive(u)} disabled={busyId === u.userId}
+                                            className={`btn-toggle ${u.active ? "btn-toggle-danger" : "btn-toggle-success"}`}>
+                                        {busyId === u.userId ? "…" : u.active ? t("adminUsers.deactivate") : t("adminUsers.activate")}
+                                    </button>
+                                ) : (
+                                    <span className="cell-faint">—</span>
+                                )}
                             </td>
                         </tr>
                     ))}
                 </Table>
             </Card>
 
-            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} size={size} onSizeChange={setSize} />
         </Layout>
     );
 }

@@ -23,7 +23,7 @@ export default function BrandPanel() {
                  style={{ backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)", backgroundSize: "44px 44px" }} />
 
             <div className="flex items-center justify-between">
-                <img src="/logo.png" alt="Feedback360" className="relative w-70 brightness-0 invert" />
+                <img src="/capgemini-white.svg" alt="Feedback360" className="relative w-70" />
                 <span className="brand-badge">
                     <span className="blob h-1.5 w-1.5 bg-emerald-400" />
                     {t("brandPanel.badge")}

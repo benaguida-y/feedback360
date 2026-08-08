@@ -99,6 +99,19 @@ aside[class*="border"] {
 .pagination-btn { @apply inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium transition hover:bg-slate-50 disabled:opacity-40 dark:border-cap-border dark:bg-cap-panel dark:text-slate-300 dark:hover:bg-cap-panel2; }
 .pagination-info { @apply flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 dark:border-cap-border dark:bg-cap-panel dark:text-slate-400; }
 .pagination-page { @apply inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-brand px-1.5 text-xs font-semibold text-white; }
+.pagination-controls { @apply flex items-center gap-3; }
+.page-size { @apply cursor-pointer rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-500 outline-none transition focus:border-brand dark:border-cap-border dark:bg-cap-panel dark:text-slate-400; }
+
+/* Note moyenne en étoiles */
+.rating { @apply inline-flex items-center gap-2; }
+.rating-stars { @apply relative inline-flex; }
+.rating-stars-row { @apply inline-flex; }
+.rating-stars-bg { @apply text-slate-300 dark:text-cap-border; }
+.rating-stars-fill { @apply absolute left-0 top-0 overflow-hidden text-amber-400; }
+.rating-star { @apply h-4 w-4 shrink-0; }
+.rating-star-filled { @apply fill-current; }
+.rating-value { @apply text-xs font-semibold text-slate-500 dark:text-slate-400; }
+.rating-empty { @apply text-slate-400 dark:text-slate-500; }
 
 /* Tableau */
 .table { @apply w-full text-left text-sm; }
@@ -107,6 +120,7 @@ aside[class*="border"] {
 .table-body { @apply divide-y divide-slate-100 dark:divide-cap-border; }
 .table-cell { @apply px-5 py-3.5; }
 .table-empty { @apply px-5 py-8 text-center text-slate-400 dark:text-slate-500; }
+.table-sort { @apply inline-flex cursor-pointer items-center gap-1 uppercase tracking-wide transition hover:text-slate-700 dark:hover:text-slate-200; }
 
 /* Badges de statut */
 .badge { @apply inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset; }
@@ -133,6 +147,9 @@ aside[class*="border"] {
 .btn-action { @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand hover:text-brand dark:border-cap-border dark:text-slate-300; }
 .btn-action-disabled { @apply inline-flex cursor-not-allowed items-center rounded-lg border border-slate-200 px-3.5 py-1.5 text-xs font-semibold text-slate-300 dark:border-cap-border dark:text-slate-600; }
 .btn-cta { @apply inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark; }
+.btn-relance { @apply inline-flex items-center gap-1.5 rounded-lg border border-amber-300 px-3.5 py-1.5 text-xs font-semibold text-amber-600 transition hover:border-amber-500 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-70 dark:border-amber-500/40 dark:text-amber-400; }
+.btn-relance-sent { @apply border-emerald-300 text-emerald-600 dark:border-emerald-500/40 dark:text-emerald-400; }
+.btn-relance-error { @apply border-red-300 text-red-600 dark:border-red-500/40 dark:text-red-400; }
 .btn-see-all { @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-brand hover:text-brand dark:border-cap-border dark:bg-cap-panel dark:text-slate-300; }
 .btn-toggle { @apply rounded-lg px-3.5 py-1.5 text-xs font-semibold transition disabled:opacity-50; }
 .btn-toggle-danger { @apply border border-red-300 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10; }
@@ -261,6 +278,13 @@ aside[class*="border"] {
 /* Notice succès (encadré) */
 .notice-success { @apply rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300; }
 
+/* Écran de succès (création d'utilisateur) */
+.create-success { @apply mt-4 flex flex-col items-center rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-center dark:border-emerald-500/30 dark:bg-emerald-500/10; }
+.create-success-badge { @apply mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-300; }
+.create-success-title { @apply text-base font-semibold text-emerald-800 dark:text-emerald-200; }
+.create-success-text { @apply mt-1 text-sm text-emerald-700 dark:text-emerald-300/80; }
+.create-success-btn { @apply mt-4 inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700; }
+
 /* Guide / création utilisateur */
 .subsection-title { @apply text-sm font-semibold text-slate-800 dark:text-slate-100; }
 .step-num { @apply flex h-6 w-6 flex-none items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand; }
@@ -271,6 +295,8 @@ aside[class*="border"] {
 .sidebar-link-active { @apply bg-brand text-white; }
 .sidebar-link-idle { @apply text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-cap-panel2; }
 .sidebar-logo { @apply w-auto dark:brightness-0 dark:invert; }
+.sidebar-logo-light { @apply block w-auto dark:hidden; }
+.sidebar-logo-dark { @apply hidden w-auto dark:block; }
 .sidebar-brand-name { @apply text-lg font-semibold text-slate-800 dark:text-slate-100; }
 .sidebar-toggle { @apply absolute right-0 z-10 flex h-7 w-7 -translate-y-1/2 translate-x-1/2 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-brand hover:text-brand dark:border-cap-border dark:bg-cap-panel2 dark:text-slate-300; }
 .sidebar-sep { @apply mb-3 h-px bg-slate-200 dark:bg-cap-panel2; }

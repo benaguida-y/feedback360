@@ -5,6 +5,7 @@
     "collaborators": "Collaborators",
     "modules": "Modules",
     "administration": "Administration",
+    "reminders": "Reminders",
     "supervision": "Supervision"
   },
   "common": {
@@ -47,12 +48,22 @@
     "viewAll": "View all",
     "overview": "Overview",
     "statsError": "Unable to load statistics.",
-    "back": "Back to dashboard"
+    "back": "Back",
+    "perPage": "{{n}} per page",
+    "allScores": "All ratings",
+    "noRating": "No rating"
   },
   "status": {
     "SUBMITTED": "Submitted",
     "NOT_SUBMITTED": "Pending",
     "IN_PROGRESS": "In progress"
+  },
+  "relance": {
+    "action": "Remind",
+    "sending": "Sending…",
+    "sent": "Reminded",
+    "error": "Failed",
+    "tooltip": "Resend the feedback invitation email"
   },
   "search": {
     "module": "Search for a module…",
@@ -115,6 +126,11 @@
   },
   "managerDashboard": {
     "subtitle": "Global feedback indicators.",
+    "sectionFeedbacks": "Feedback",
+    "sectionIndicators": "Key indicators",
+    "sectionHighlights": "Highlights",
+    "sectionCharts": "Charts",
+    "sectionAccess": "Quick access",
     "submissionRate": "Submission rate",
     "topCollaborator": "Most active collaborator",
     "feedbacksSubmitted": "{{n}} feedback(s) submitted",
@@ -133,7 +149,7 @@
     "managers": "Managers",
     "activeUsers": "Active",
     "inactiveUsers": "Disabled",
-    "integrations": "Integrations (webhook)",
+    "integrations": "Integrations",
     "callsReceived": "Calls received",
     "successes": "Successful",
     "failures": "Failed",
@@ -145,6 +161,25 @@
     "notFound": "Collaborator not found.",
     "modulesFeedbacks": "Modules & feedback",
     "empty": "No modules."
+  },
+  "adminReminders": {
+    "title": "Automatic reminders",
+    "subtitle": "Automatically resend invitations for pending feedback.",
+    "autoLabel": "Enable automatic reminders",
+    "autoHelp": "The system resends the invitation email to collaborators who haven't submitted their feedback yet.",
+    "delayLabel": "Delay before reminder (days)",
+    "delayHelp": "Time to wait since the last contact before sending a reminder.",
+    "maxLabel": "Maximum number of reminders",
+    "maxHelp": "Beyond this, the system stops reminding for a given feedback.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Settings saved",
+    "loadError": "Unable to load settings.",
+    "saveError": "Unable to save settings.",
+    "howTitle": "How it works",
+    "how1": "A check runs every day; only pending feedback is considered.",
+    "how2": "A feedback is reminded once the delay has passed since the last email (or since it was created).",
+    "how3": "Managers can also send a reminder manually from the feedback list."
   },
   "login": {
     "welcome": "Welcome back!",
@@ -178,8 +213,10 @@
     "emailTaken": "This email is already in use.",
     "createError": "Unable to create (check the fields).",
     "created": "Account created ✔ An activation email has been sent.",
+    "createdTitle": "Account created!",
+    "createdText": "An activation email has been sent to the user.",
     "linkLabel": "Link:",
-    "backToList": "← Back to list",
+    "backToList": "Back to list",
     "howItWorks": "How it works",
     "step1": "You create the account with the email and role.",
     "step2": "An activation email is sent automatically.",
