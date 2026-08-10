@@ -1,9 +1,13 @@
+import { useTranslation } from "react-i18next";
+
 export default function StatusBadge({ status }: { status: string }) {
-    const map: Record<string, { c: string; label: string }> = {
-        SUBMITTED: { c: "bg-emerald-50 text-emerald-700 ring-emerald-600/20", label: "Soumis" },
-        NOT_SUBMITTED: { c: "bg-amber-50 text-amber-700 ring-amber-600/20", label: "En attente" },
-        IN_PROGRESS: { c: "bg-sky-50 text-sky-700 ring-sky-600/20", label: "En cours" },
+    const { t } = useTranslation();
+    const map: Record<string, string> = {
+        SUBMITTED:     "badge-submitted",
+        NOT_SUBMITTED: "badge-pending",
+        IN_PROGRESS:   "badge-progress",
     };
-    const s = map[status] ?? { c: "bg-slate-100 text-slate-600 ring-slate-500/20", label: status };
-    return <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset ${s.c}`}>{s.label}</span>;
+    const cls = map[status] ?? "badge-neutral";
+    const label = map[status] ? t(`status.${status}`) : status;
+    return <span className={`badge ${cls}`}>{label}</span>;
 }

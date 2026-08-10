@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import client from "../api/client";
 import { getRole } from "../auth";
 import Card from "../components/Card";
@@ -23,6 +24,7 @@ interface Page<T> { content: T[]; page: number; size: number; totalElements: num
 const SIZE = 10;
 
 export default function AdminUsers() {
+    const { t } = useTranslation();
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -42,7 +44,7 @@ export default function AdminUsers() {
 
     useEffect(() => {
         setLoading(true);
-        const t = setTimeout(() => {
+        const timer = setTimeout(() => {
             const params = new URLSearchParams();
             if (filterRole) params.set("role", filterRole);
             if (filterStatus) params.set("status", filterStatus);
@@ -55,10 +57,10 @@ export default function AdminUsers() {
                     setTotalPages(r.data.totalPages);
                     setTotal(r.data.totalElements);
                 })
-                .catch(() => setListError("Impossible de charger les utilisateurs."))
+                .catch(() => setListError(t("adminUsers.loadError")))
                 .finally(() => setLoading(false));
         }, 300);
-        return () => clearTimeout(t);
+        return () => clearTimeout(timer);
     }, [filterRole, filterStatus, search, page]);
 
     async function toggleActive(u: AdminUser) {
@@ -67,7 +69,7 @@ export default function AdminUsers() {
             const res = await client.patch<AdminUser>(`/admin/users/${u.userId}/status`, { active: !u.active });
             setUsers((list) => list.map((x) => (x.userId === u.userId ? res.data : x)));
         } catch {
-            setListError("Changement de statut impossible.");
+            setListError(t("adminUsers.statusError"));
         } finally {
             setBusyId(null);
         }
@@ -75,81 +77,73 @@ export default function AdminUsers() {
 
     function roleBadge(r: string) {
         switch (r) {
-            case "ADMIN":        return "bg-red-50 text-red-700 ring-1 ring-red-200";
-            case "MANAGER":      return "bg-sky-50 text-sky-700 ring-1 ring-sky-200";
-            case "COLLABORATOR": return "bg-slate-100 text-slate-600 ring-1 ring-slate-200";
-            default:             return "bg-slate-100 text-slate-600 ring-1 ring-slate-200";
+            case "ADMIN":   return "role-admin";
+            case "MANAGER": return "role-manager";
+            default:        return "role-collaborator";
         }
     }
 
     return (
         <Layout>
-            <PageHeader title="Administration"
-                        subtitle="Gérer les comptes."
+            <PageHeader title={t("adminUsers.title")}
+                        subtitle={t("adminUsers.subtitle")}
                         backTo="/"
                         action={
-                            <Link to="/admin/users/new"
-                                  className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark">
+                            <Link to="/admin/users/new" className="btn-primary">
                                 <Plus className="h-4 w-4" />
-                                Ajouter un utilisateur
+                                {t("adminUsers.add")}
                             </Link>
                         } />
 
-            {listError && <p className="mb-3 text-sm text-red-600">{listError}</p>}
+            {listError && <p className="error-line">{listError}</p>}
 
             {/* Filtres */}
-            <div className="mb-3 flex flex-wrap items-center gap-3">
-                <select value={filterRole} onChange={(e) => setFilterRole(e.target.value)}
-                        className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none focus:border-brand">
-                    <option value="">Tous les rôles</option>
+            <div className="filter-bar">
+                <select value={filterRole} onChange={(e) => setFilterRole(e.target.value)} className="form-select">
+                    <option value="">{t("adminUsers.allRoles")}</option>
                     <option value="ADMIN">ADMIN</option>
                     <option value="MANAGER">MANAGER</option>
                     <option value="COLLABORATOR">COLLABORATOR</option>
                 </select>
-                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
-                        className="rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none focus:border-brand">
-                    <option value="">Tous les statuts</option>
-                    <option value="ACTIVE">Actif</option>
-                    <option value="INACTIVE">Désactivé</option>
-                    <option value="PENDING">En attente d'activation</option>
+                <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="form-select">
+                    <option value="">{t("adminUsers.allStatuses")}</option>
+                    <option value="ACTIVE">{t("common.active")}</option>
+                    <option value="INACTIVE">{t("common.inactive")}</option>
+                    <option value="PENDING">{t("common.pendingActivation")}</option>
                 </select>
                 <div className="ml-auto flex items-center gap-3">
-                    <span className="text-xs bg-white rounded-lg px-3 py-1.5 font-medium border border-slate-300 flex items-center gap-1.5 text-slate-500">{total} résultat(s)</span>
-                    <SearchInput value={search} onChange={setSearch} placeholder="Rechercher un nom ou un email…" />
+                    <span className="results-chip">{total} {t("common.results")}</span>
+                    <SearchInput value={search} onChange={setSearch} placeholder={t("search.nameEmail")} />
                 </div>
             </div>
 
             <Card>
-                <Table columns={["Nom", "Email", "Rôle", "Statut", "Action"]}
+                <Table columns={[t("common.name"), t("common.email"), t("common.role"), t("common.status"), t("common.action")]}
                        loading={loading}
-                       isEmpty={users.length === 0} emptyLabel="Aucun utilisateur.">
+                       isEmpty={users.length === 0} emptyLabel={t("adminUsers.empty")}>
                     {users.map((u) => (
-                        <tr key={u.userId} className={`hover:bg-slate-50/60 ${!u.active ? "opacity-60" : ""}`}>
-                            <td className="px-5 py-3.5 font-medium text-slate-800">{u.fullName}</td>
-                            <td className="px-5 py-3.5 text-slate-600">{u.email}</td>
-                            <td className="px-5 py-3.5">
-                                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${roleBadge(u.role)}`}>{u.role}</span>
+                        <tr key={u.userId} className={`table-row ${!u.active ? "opacity-60" : ""}`}>
+                            <td className="table-cell cell-strong">{u.fullName}</td>
+                            <td className="table-cell cell-default">{u.email}</td>
+                            <td className="table-cell">
+                                <span className={`role-badge ${roleBadge(u.role)}`}>{u.role}</span>
                             </td>
-                            <td className="px-5 py-3.5">
+                            <td className="table-cell">
                                 <div className="flex flex-col gap-1">
-                                    <span className={`w-fit rounded-full px-2 py-0.5 text-xs font-medium ${u.active ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}`}>
-                                        {u.active ? "Actif" : "Désactivé"}
+                                    <span className={`pill ${u.active ? "pill-active" : "pill-inactive"}`}>
+                                        {u.active ? t("common.active") : t("common.inactive")}
                                     </span>
                                     {!u.activated && (
-                                        <span className="w-fit rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
-                                            En attente d'activation
+                                        <span className="pill pill-pending">
+                                            {t("common.pendingActivation")}
                                         </span>
                                     )}
                                 </div>
                             </td>
-                            <td className="px-5 py-3.5">
+                            <td className="table-cell">
                                 <button onClick={() => toggleActive(u)} disabled={busyId === u.userId}
-                                        className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition disabled:opacity-50 ${
-                                            u.active
-                                                ? "border border-red-300 text-red-600 hover:bg-red-50"
-                                                : "border border-emerald-300 text-emerald-600 hover:bg-emerald-50"
-                                        }`}>
-                                    {busyId === u.userId ? "…" : u.active ? "Désactiver" : "Activer"}
+                                        className={`btn-toggle ${u.active ? "btn-toggle-danger" : "btn-toggle-success"}`}>
+                                    {busyId === u.userId ? "…" : u.active ? t("adminUsers.deactivate") : t("adminUsers.activate")}
                                 </button>
                             </td>
                         </tr>

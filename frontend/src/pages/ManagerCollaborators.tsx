@@ -8,6 +8,8 @@ import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
+import { useTranslation } from "react-i18next";
+
 
 interface Collab {
     userId: number;
@@ -31,6 +33,7 @@ export default function ManagerCollaborators() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const { t } = useTranslation();
 
     if (role !== "MANAGER" && role !== "ADMIN") return <Navigate to="/" replace />;
 
@@ -38,54 +41,53 @@ export default function ManagerCollaborators() {
 
     useEffect(() => {
         setLoading(true);
-        const t = setTimeout(() => {
+        const timer = setTimeout(() => {
             const params = new URLSearchParams();
             if (search.trim()) params.set("search", search.trim());
             params.set("page", String(page));
             params.set("size", String(SIZE));
             client.get<Page<Collab>>(`/management/collaborators?${params.toString()}`)
                 .then((r) => { setRows(r.data.content); setTotalPages(r.data.totalPages); })
-                .catch(() => setError("Impossible de charger les collaborateurs."))
+                .catch(() => setError(t("managerCollaborators.loadError")))
                 .finally(() => setLoading(false));
         }, 300);
-        return () => clearTimeout(t);
+        return () => clearTimeout(timer);
     }, [search, page]);
 
     return (
         <Layout>
-            <PageHeader title="Collaborateurs"
-                        subtitle="Progression des retours par personne."
+            <PageHeader title={t("nav.collaborators")}
+                        subtitle={t("managerCollaborators.subtitle")}
                         backTo="/" />
 
-            {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+            {error && <p className="error-line">{error}</p>}
 
             <div className="mb-3 flex justify-end">
-                <SearchInput value={search} onChange={setSearch} placeholder="Rechercher un nom ou un email…" />
+                <SearchInput value={search} onChange={setSearch} placeholder={t("search.nameEmail")} />
             </div>
 
             <Card>
-                <Table columns={["Collaborateur", "Progression", "Note moyenne", "Action"]}
+                <Table columns={[t("common.collaborator"), t("managerCollaborators.progress"), t("common.averageScore"), t("common.action")]}
                        loading={loading}
-                       isEmpty={rows.length === 0} emptyLabel="Aucun collaborateur.">
+                       isEmpty={rows.length === 0} emptyLabel={t("managerCollaborators.empty")}>
                     {rows.map((c) => (
-                        <tr key={c.userId} className="hover:bg-slate-50/60">
-                            <td className="px-5 py-3.5">
-                                <p className="font-medium text-slate-800">{c.fullName}</p>
-                                <p className="text-xs text-slate-400">{c.email}</p>
+                        <tr key={c.userId} className="table-row">
+                            <td className="table-cell">
+                                <p className="cell-strong">{c.fullName}</p>
+                                <p className="cell-faint">{c.email}</p>
                             </td>
-                            <td className="px-5 py-3.5">
+                            <td className="table-cell">
                                 <div className="flex items-center gap-3">
-                                    <div className="h-2 w-32 bg-slate-100">
-                                        <div className="h-2 bg-brand" style={{ width: `${c.submittedPercent}%` }} />
+                                    <div className="progress-track">
+                                        <div className="progress-fill" style={{ width: `${c.submittedPercent}%` }} />
                                     </div>
-                                    <span className="text-xs text-slate-500">{c.submitted} / {c.total} soumis</span>
+                                    <span className="text-xs cell-muted">{t("managerCollaborators.submittedCount", { submitted: c.submitted, total: c.total })}</span>
                                 </div>
                             </td>
-                            <td className="px-5 py-3.5 text-slate-600">{c.averageScore != null ? `${c.averageScore.toFixed(1)} / 5` : "—"}</td>
-                            <td className="px-5 py-3.5">
-                                <Link to={`/management/collaborators/${c.userId}`}
-                                      className="inline-flex items-center rounded-lg border border-slate-300 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand hover:text-brand">
-                                    Voir la fiche
+                            <td className="table-cell cell-default">{c.averageScore != null ? `${c.averageScore.toFixed(1)} / 5` : "—"}</td>
+                            <td className="table-cell">
+                                <Link to={`/management/collaborators/${c.userId}`} className="btn-action">
+                                    {t("common.viewProfile")}
                                 </Link>
                             </td>
                         </tr>

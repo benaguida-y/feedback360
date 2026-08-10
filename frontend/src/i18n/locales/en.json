@@ -1,0 +1,237 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "feedbacks": "Feedbacks",
+    "collaborators": "Collaborators",
+    "modules": "Modules",
+    "administration": "Administration",
+    "supervision": "Supervision"
+  },
+  "common": {
+    "all": "All",
+    "search": "Search…",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "results": "result(s)",
+    "loading": "Loading…",
+    "logout": "Log out",
+    "user": "User",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "action": "Action",
+    "date": "Date",
+    "module": "Module",
+    "collaborator": "Collaborator",
+    "comment": "Comment",
+    "globalScore": "Overall rating",
+    "active": "Active",
+    "inactive": "Disabled",
+    "pendingActivation": "Pending activation",
+    "type": "Type",
+    "score": "Rating",
+    "view": "View",
+    "noFeedback": "No feedback.",
+    "notSubmittedTooltip": "Feedback not submitted yet",
+    "averageScore": "Average rating",
+    "viewProfile": "View profile",
+    "submitted": "Submitted",
+    "notSubmitted": "Not submitted",
+    "noData": "No data.",
+    "continue": "Continue",
+    "giveFeedback": "Give my feedback",
+    "loadError": "Loading error.",
+    "total": "Total",
+    "viewAll": "View all",
+    "overview": "Overview",
+    "statsError": "Unable to load statistics.",
+    "back": "Back to dashboard"
+  },
+  "status": {
+    "SUBMITTED": "Submitted",
+    "NOT_SUBMITTED": "Pending",
+    "IN_PROGRESS": "In progress"
+  },
+  "search": {
+    "module": "Search for a module…",
+    "nameEmail": "Search by name or email…",
+    "moduleCollaborator": "Search by module or collaborator…",
+    "emailModule": "Search by email or module…"
+  },
+  "adminUsers": {
+    "title": "Administration",
+    "subtitle": "Manage accounts.",
+    "add": "Add a user",
+    "allRoles": "All roles",
+    "allStatuses": "All statuses",
+    "empty": "No users.",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "loadError": "Unable to load users.",
+    "statusError": "Unable to change status."
+  },
+  "adminLogs": {
+    "title": "Supervision",
+    "subtitle": "Log of received integration calls (webhook).",
+    "allTypes": "All types",
+    "allStatuses": "All statuses",
+    "receivedAt": "Received at",
+    "processedAt": "Processed at",
+    "empty": "No calls recorded.",
+    "loadError": "Unable to load logs.",
+    "logStatus": {
+      "SUCCESS": "Success",
+      "FAILURE": "Failure",
+      "IN_PROGRESS": "In progress"
+    }
+  },
+  "managerFeedbacks": {
+    "title": "All feedback",
+    "subtitle": "Review feedback from all collaborators.",
+    "loadError": "Unable to load feedback."
+  },
+  "managerCollaborators": {
+    "subtitle": "Feedback progress per person.",
+    "progress": "Progress",
+    "empty": "No collaborators.",
+    "loadError": "Unable to load collaborators.",
+    "submittedCount": "{{submitted}} / {{total}} submitted"
+  },
+  "managerModules": {
+    "title": "Module breakdown",
+    "subtitle": "Response rate and average rating, module by module.",
+    "loadError": "Unable to load module breakdown."
+  },
+  "collaboratorFeedbacks": {
+    "title": "My feedback",
+    "subtitle": "All your training feedback."
+  },
+  "collaboratorDashboard": {
+    "title": "My dashboard",
+    "subtitle": "Track and complete your training feedback.",
+    "recent": "Recent feedback"
+  },
+  "managerDashboard": {
+    "subtitle": "Global feedback indicators.",
+    "submissionRate": "Submission rate",
+    "topCollaborator": "Most active collaborator",
+    "feedbacksSubmitted": "{{n}} feedback(s) submitted",
+    "noSubmission": "No submissions",
+    "bestModule": "Best-rated module",
+    "averageOf": "{{avg}} / 5 average",
+    "noRating": "No rating yet",
+    "chartsSoon": "Charts coming soon",
+    "navFeedbacksSub": "Filterable list and detailed view",
+    "navModulesSub": "Response rate and average rating per module"
+  },
+  "adminDashboard": {
+    "subtitle": "Application administration and monitoring.",
+    "users": "Users",
+    "admins": "Admins",
+    "managers": "Managers",
+    "activeUsers": "Active",
+    "inactiveUsers": "Disabled",
+    "integrations": "Integrations (webhook)",
+    "callsReceived": "Calls received",
+    "successes": "Successful",
+    "failures": "Failed",
+    "navUsers": "Manage users",
+    "navUsersSub": "Create, enable/disable accounts",
+    "navLogsSub": "Integration call log"
+  },
+  "collaboratorDetail": {
+    "notFound": "Collaborator not found.",
+    "modulesFeedbacks": "Modules & feedback",
+    "empty": "No modules."
+  },
+  "login": {
+    "welcome": "Welcome back!",
+    "subtitle": "Sign in to access your space.",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "signIn": "Sign in",
+    "loggingIn": "Signing in…",
+    "footer": "Restricted access — contact your administrator if you have any issue.",
+    "error": "Incorrect email or password."
+  },
+  "activate": {
+    "title": "Activate your account",
+    "subtitle": "Choose a password to access your space.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "submit": "Activate my account",
+    "activating": "Activating…",
+    "success": "Password set ✔ Redirecting to sign in…",
+    "tokenMissing": "Invalid activation link (missing token). Ask your administrator for a new link.",
+    "passwordTooShort": "The password must be at least 6 characters long.",
+    "passwordMismatch": "The passwords do not match.",
+    "linkInvalid": "Invalid or expired link. Request a new activation link."
+  },
+  "adminCreateUser": {
+    "title": "New user",
+    "subtitle": "Create a manager or administrator account.",
+    "firstName": "First name",
+    "submit": "Create account",
+    "creating": "Creating…",
+    "emailTaken": "This email is already in use.",
+    "createError": "Unable to create (check the fields).",
+    "created": "Account created ✔ An activation email has been sent.",
+    "linkLabel": "Link:",
+    "backToList": "← Back to list",
+    "howItWorks": "How it works",
+    "step1": "You create the account with the email and role.",
+    "step2": "An activation email is sent automatically.",
+    "step3": "The user sets their password via the link.",
+    "step4": "They can sign in to their space.",
+    "rolesTitle": "Roles",
+    "managerDesc": "Views feedback, statistics and collaborators' progress.",
+    "adminDesc": "Everything a manager does, plus user management and application monitoring."
+  },
+  "submitFeedback": {
+    "title": "Give my feedback",
+    "loadingModule": "Loading module…",
+    "notFound": "Feedback not found or not accessible.",
+    "alreadySubmitted": "You have already submitted this feedback ✔",
+    "ratingValue": "Rating: {{score}} / 5",
+    "commentValue": "Comment: {{comment}}",
+    "trainingModule": "Training module",
+    "completedOn": "Completed on {{date}}",
+    "draft": "Draft",
+    "commentPlaceholder": "Your feedback on the module…",
+    "saveDraft": "Save draft",
+    "saving": "Saving…",
+    "submit": "Send my feedback",
+    "sending": "Sending…",
+    "savingDraft": "Saving draft…",
+    "draftSavedAt": "Draft saved at {{time}}",
+    "noRating": "Please give a rating.",
+    "noComment": "Please leave a comment.",
+    "draftError": "Unable to save the draft.",
+    "submitSuccess": "Your feedback has been sent. Thank you!",
+    "submitError": "Unable to send (feedback already submitted, not found, or not allowed)."
+  },
+  "feedbackDetail": {
+    "subtitle": "Feedback details",
+    "notFound": "Feedback not found or not accessible.",
+    "notRated": "Not rated yet",
+    "noComment": "No comment."
+  },
+  "brandPanel": {
+    "badge": "Internal platform · Capgemini",
+    "taglineLine1": "Your feedback,",
+    "taglineLine2": "our progress.",
+    "description": "Collect and analyze training feedback, simply and all in one place."
+  },
+  "header": {
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
+  "sidebar": {
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "expandMenu": "Expand menu",
+    "collapseMenu": "Collapse menu"
+  }
+}

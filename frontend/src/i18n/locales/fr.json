@@ -1,0 +1,237 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "feedbacks": "Feedbacks",
+    "collaborators": "Collaborateurs",
+    "modules": "Modules",
+    "administration": "Administration",
+    "supervision": "Supervision"
+  },
+  "common": {
+    "all": "Tous",
+    "search": "Rechercher…",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page",
+    "results": "résultat(s)",
+    "loading": "Chargement…",
+    "logout": "Se déconnecter",
+    "user": "Utilisateur",
+    "name": "Nom",
+    "email": "Email",
+    "role": "Rôle",
+    "status": "Statut",
+    "action": "Action",
+    "date": "Date",
+    "module": "Module",
+    "collaborator": "Collaborateur",
+    "comment": "Commentaire",
+    "globalScore": "Note globale",
+    "active": "Actif",
+    "inactive": "Désactivé",
+    "pendingActivation": "En attente d'activation",
+    "type": "Type",
+    "score": "Note",
+    "view": "Consulter",
+    "noFeedback": "Aucun feedback.",
+    "notSubmittedTooltip": "Feedback pas encore soumis",
+    "averageScore": "Note moyenne",
+    "viewProfile": "Voir la fiche",
+    "submitted": "Soumis",
+    "notSubmitted": "Non soumis",
+    "noData": "Aucune donnée.",
+    "continue": "Continuer",
+    "giveFeedback": "Donner mon avis",
+    "loadError": "Erreur de chargement.",
+    "total": "Total",
+    "viewAll": "Voir tout",
+    "overview": "Vue d'ensemble",
+    "statsError": "Impossible de charger les statistiques.",
+    "back": "Retour au tableau de bord"
+  },
+  "status": {
+    "SUBMITTED": "Soumis",
+    "NOT_SUBMITTED": "En attente",
+    "IN_PROGRESS": "En cours"
+  },
+  "search": {
+    "module": "Rechercher un module…",
+    "nameEmail": "Rechercher un nom ou un email…",
+    "moduleCollaborator": "Rechercher un module ou un collaborateur…",
+    "emailModule": "Rechercher un email ou un module…"
+  },
+  "adminUsers": {
+    "title": "Administration",
+    "subtitle": "Gérer les comptes.",
+    "add": "Ajouter un utilisateur",
+    "allRoles": "Tous les rôles",
+    "allStatuses": "Tous les statuts",
+    "empty": "Aucun utilisateur.",
+    "activate": "Activer",
+    "deactivate": "Désactiver",
+    "loadError": "Impossible de charger les utilisateurs.",
+    "statusError": "Changement de statut impossible."
+  },
+  "adminLogs": {
+    "title": "Supervision",
+    "subtitle": "Journal des appels d'intégration reçus (webhook).",
+    "allTypes": "Tous les types",
+    "allStatuses": "Tous les statuts",
+    "receivedAt": "Reçu le",
+    "processedAt": "Traité le",
+    "empty": "Aucun appel enregistré.",
+    "loadError": "Impossible de charger les logs.",
+    "logStatus": {
+      "SUCCESS": "Succès",
+      "FAILURE": "Échec",
+      "IN_PROGRESS": "En cours"
+    }
+  },
+  "managerFeedbacks": {
+    "title": "Tous les feedbacks",
+    "subtitle": "Consultez les retours de l'ensemble des collaborateurs.",
+    "loadError": "Impossible de charger les feedbacks."
+  },
+  "managerCollaborators": {
+    "subtitle": "Progression des retours par personne.",
+    "progress": "Progression",
+    "empty": "Aucun collaborateur.",
+    "loadError": "Impossible de charger les collaborateurs.",
+    "submittedCount": "{{submitted}} / {{total}} soumis"
+  },
+  "managerModules": {
+    "title": "Détail par module",
+    "subtitle": "Taux de retour et note moyenne, module par module.",
+    "loadError": "Impossible de charger le détail par module."
+  },
+  "collaboratorFeedbacks": {
+    "title": "Mes feedbacks",
+    "subtitle": "Tous vos retours de formation."
+  },
+  "collaboratorDashboard": {
+    "title": "Mon tableau de bord",
+    "subtitle": "Suivez et complétez vos retours de formation.",
+    "recent": "Feedbacks récents"
+  },
+  "managerDashboard": {
+    "subtitle": "Indicateurs globaux des feedbacks.",
+    "submissionRate": "Taux de soumission",
+    "topCollaborator": "Collaborateur le plus actif",
+    "feedbacksSubmitted": "{{n}} feedback(s) soumis",
+    "noSubmission": "Aucune soumission",
+    "bestModule": "Module le mieux noté",
+    "averageOf": "{{avg}} / 5 de moyenne",
+    "noRating": "Pas encore de note",
+    "chartsSoon": "Graphiques à venir",
+    "navFeedbacksSub": "Liste filtrable et consultation détaillée",
+    "navModulesSub": "Taux de retour et note moyenne par module"
+  },
+  "adminDashboard": {
+    "subtitle": "Administration et supervision de l'application.",
+    "users": "Utilisateurs",
+    "admins": "Admins",
+    "managers": "Managers",
+    "activeUsers": "Actifs",
+    "inactiveUsers": "Désactivés",
+    "integrations": "Intégrations (webhook)",
+    "callsReceived": "Appels reçus",
+    "successes": "Succès",
+    "failures": "Échecs",
+    "navUsers": "Gérer les utilisateurs",
+    "navUsersSub": "Créer, activer/désactiver les comptes",
+    "navLogsSub": "Journal des appels d'intégration"
+  },
+  "collaboratorDetail": {
+    "notFound": "Collaborateur introuvable.",
+    "modulesFeedbacks": "Modules & feedbacks",
+    "empty": "Aucun module."
+  },
+  "login": {
+    "welcome": "Bon retour !",
+    "subtitle": "Connectez-vous pour accéder à votre espace.",
+    "emailPlaceholder": "vous@exemple.com",
+    "password": "Mot de passe",
+    "signIn": "Se connecter",
+    "loggingIn": "Connexion…",
+    "footer": "Accès réservé — contactez votre administrateur en cas de problème.",
+    "error": "Email ou mot de passe incorrect."
+  },
+  "activate": {
+    "title": "Activez votre compte",
+    "subtitle": "Choisissez un mot de passe pour accéder à votre espace.",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "submit": "Activer mon compte",
+    "activating": "Activation…",
+    "success": "Mot de passe défini ✔ Redirection vers la connexion…",
+    "tokenMissing": "Lien d'activation invalide (jeton manquant). Demandez un nouveau lien à votre administrateur.",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères.",
+    "passwordMismatch": "Les mots de passe ne correspondent pas.",
+    "linkInvalid": "Lien invalide ou expiré. Demandez un nouveau lien d'activation."
+  },
+  "adminCreateUser": {
+    "title": "Nouvel utilisateur",
+    "subtitle": "Créer un compte manager ou administrateur.",
+    "firstName": "Prénom",
+    "submit": "Créer le compte",
+    "creating": "Création…",
+    "emailTaken": "Cet email est déjà utilisé.",
+    "createError": "Création impossible (vérifiez les champs).",
+    "created": "Compte créé ✔ Un e-mail d'activation a été envoyé.",
+    "linkLabel": "Lien :",
+    "backToList": "← Retour à la liste",
+    "howItWorks": "Comment ça marche",
+    "step1": "Vous créez le compte avec l'email et le rôle.",
+    "step2": "Un email d'activation est envoyé automatiquement.",
+    "step3": "L'utilisateur définit son mot de passe via le lien.",
+    "step4": "Il peut se connecter à son espace.",
+    "rolesTitle": "Les rôles",
+    "managerDesc": "Consulte les feedbacks, les statistiques et la progression des collaborateurs.",
+    "adminDesc": "Tout ce que fait un manager, plus la gestion des utilisateurs et la supervision de l'application."
+  },
+  "submitFeedback": {
+    "title": "Donner mon feedback",
+    "loadingModule": "Chargement du module…",
+    "notFound": "Feedback introuvable ou non accessible.",
+    "alreadySubmitted": "Vous avez déjà soumis ce feedback ✔",
+    "ratingValue": "Note : {{score}} / 5",
+    "commentValue": "Commentaire : {{comment}}",
+    "trainingModule": "Module de formation",
+    "completedOn": "Terminé le {{date}}",
+    "draft": "Brouillon",
+    "commentPlaceholder": "Votre avis sur le module…",
+    "saveDraft": "Enregistrer le brouillon",
+    "saving": "Enregistrement…",
+    "submit": "Envoyer mon feedback",
+    "sending": "Envoi…",
+    "savingDraft": "Enregistrement du brouillon…",
+    "draftSavedAt": "Brouillon enregistré à {{time}}",
+    "noRating": "Merci de donner une note.",
+    "noComment": "Merci de laisser un commentaire.",
+    "draftError": "Impossible d'enregistrer le brouillon.",
+    "submitSuccess": "Votre feedback a bien été envoyé. Merci !",
+    "submitError": "Envoi impossible (feedback déjà soumis, introuvable, ou non autorisé)."
+  },
+  "feedbackDetail": {
+    "subtitle": "Détail du feedback",
+    "notFound": "Feedback introuvable ou non accessible.",
+    "notRated": "Pas encore noté",
+    "noComment": "Aucun commentaire."
+  },
+  "brandPanel": {
+    "badge": "Plateforme interne · Capgemini",
+    "taglineLine1": "Vos retours,",
+    "taglineLine2": "notre progrès.",
+    "description": "Collectez et analysez les feedbacks de formation, simplement et en un seul endroit."
+  },
+  "header": {
+    "switchToLight": "Passer en thème clair",
+    "switchToDark": "Passer en thème sombre"
+  },
+  "sidebar": {
+    "expand": "Déplier",
+    "collapse": "Replier",
+    "expandMenu": "Déplier le menu",
+    "collapseMenu": "Replier le menu"
+  }
+}

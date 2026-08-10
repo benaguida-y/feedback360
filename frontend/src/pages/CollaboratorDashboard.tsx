@@ -8,63 +8,64 @@ import StatusBadge from "../components/StatusBadge";
 import Table from "../components/Table";
 import { FeedbackAction } from "./CollaboratorFeedbacks";
 import {ArrowRight} from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface Summary { total: number; submitted: number; notSubmitted: number; inProgress: number; }
 interface Feedback { feedbackId: number; status: string; moduleTitle: string; createdAt: string; globalScore: number | null; }
 interface Page<T> { content: T[]; totalPages: number; }
 
 export default function CollaboratorDashboard() {
+    const { t, i18n } = useTranslation();
     const [summary, setSummary] = useState<Summary | null>(null);
     const [recent, setRecent] = useState<Feedback[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        client.get<Summary>("/feedbacks/summary").then((r) => setSummary(r.data)).catch(() => setError("Erreur de chargement."));
+        client.get<Summary>("/feedbacks/summary").then((r) => setSummary(r.data)).catch(() => setError(t("common.loadError")));
     }, []);
 
     useEffect(() => {
         client.get<Page<Feedback>>("/feedbacks?page=0&size=5")
             .then((r) => setRecent(r.data.content))
-            .catch(() => setError("Erreur de chargement."))
+            .catch(() => setError(t("common.loadError")))
             .finally(() => setLoading(false));
     }, []);
 
-    if (error) return <p className="text-red-600">{error}</p>;
+    if (error) return <p className="error-text">{error}</p>;
 
     return (
         <div>
-            <PageHeader title="Mon tableau de bord" subtitle="Suivez et complétez vos retours de formation." />
+            <PageHeader title={t("collaboratorDashboard.title")} subtitle={t("collaboratorDashboard.subtitle")} />
 
             {summary && (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    <StatCard label="Total" value={summary.total} />
-                    <StatCard label="Soumis" value={summary.submitted} accent="text-emerald-600" />
-                    <StatCard label="En attente" value={summary.notSubmitted} accent="text-amber-600" />
-                    <StatCard label="En cours" value={summary.inProgress} accent="text-sky-600" />
+                    <StatCard label={t("common.total")} value={summary.total} />
+                    <StatCard label={t("status.SUBMITTED")} value={summary.submitted} accent="accent-emerald" />
+                    <StatCard label={t("status.NOT_SUBMITTED")} value={summary.notSubmitted} accent="accent-amber" />
+                    <StatCard label={t("status.IN_PROGRESS")} value={summary.inProgress} accent="accent-sky" />
                 </div>
             )}
 
             <div className="mt-8 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-800">Feedbacks récents</h3>
-                <Link to="/feedbacks"
-                      className="group inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-brand hover:text-brand">
-                    Voir tout
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                <h3 className="section-title">{t("collaboratorDashboard.recent")}</h3>
+                <Link to="/feedbacks" className="btn-see-all">
+                    {t("common.viewAll")}
+                    <ArrowRight className="see-all-arrow" />
                 </Link>
             </div>
 
             <Card className="mt-3">
-                <Table columns={["Module", "Statut", "Note", "Date", "Action"]}
+                <Table columns={[t("common.module"), t("common.status"), t("common.score"), t("common.date"), t("common.action")]}
                        loading={loading}
-                       isEmpty={recent.length === 0} emptyLabel="Aucun feedback.">
+                       isEmpty={recent.length === 0} emptyLabel={t("common.noFeedback")}>
                     {recent.map((f) => (
-                        <tr key={f.feedbackId} className="hover:bg-slate-50/60">
-                            <td className="px-5 py-3.5 font-medium text-slate-800">{f.moduleTitle}</td>
-                            <td className="px-5 py-3.5"><StatusBadge status={f.status} /></td>
-                            <td className="px-5 py-3.5 text-slate-600">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
-                            <td className="px-5 py-3.5 text-slate-500">{new Date(f.createdAt).toLocaleDateString("fr-FR")}</td>
-                            <td className="px-5 py-3.5"><FeedbackAction f={f} /></td>
+                        <tr key={f.feedbackId} className="table-row">
+                            <td className="table-cell cell-strong">{f.moduleTitle}</td>
+                            <td className="table-cell"><StatusBadge status={f.status} /></td>
+                            <td className="table-cell cell-default">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
+                            <td className="table-cell cell-muted">{new Date(f.createdAt).toLocaleDateString(i18n.language === "en" ? "en-GB" : "fr-FR")}</td>
+                            <td className="table-cell"><FeedbackAction f={f} /></td>
                         </tr>
                     ))}
                 </Table>

@@ -4,6 +4,7 @@ import client from "../api/client";
 import { getToken } from "../auth";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader.tsx";
+import { useTranslation } from "react-i18next";
 
 interface Detail {
     feedbackId: number;
@@ -17,6 +18,8 @@ interface Detail {
 export default function SubmitFeedback() {
     const { feedbackId } = useParams();
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
+    const locale = i18n.language === "en" ? "en-GB" : "fr-FR";
 
     const [detail, setDetail] = useState<Detail | null>(null);
     const [loadError, setLoadError] = useState("");
@@ -53,14 +56,14 @@ export default function SubmitFeedback() {
                 setScore(r.data.globalScore ?? 0);
                 setComment(r.data.comment ?? "");
             })
-            .catch(() => setLoadError("Feedback introuvable ou non accessible."));
+            .catch(() => setLoadError(t("submitFeedback.notFound")));
     }, [feedbackId]);
 
     // (1) Auto-save 1,5 s après la dernière modification
     useEffect(() => {
         if (!touched.current || !detail || detail.status === "SUBMITTED") return;
-        const t = setTimeout(() => saveDraft(true), 1500);
-        return () => clearTimeout(t);
+        const timer = setTimeout(() => saveDraft(true), 1500);
+        return () => clearTimeout(timer);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [score, comment]);
 
@@ -101,7 +104,7 @@ export default function SubmitFeedback() {
             await client.post(`/feedbacks/${feedbackId}/draft`, { globalScore: score || null, comment });
             setSavedAt(new Date());
         } catch {
-            if (!auto) setError("Impossible d'enregistrer le brouillon.");
+            if (!auto) setError(t("submitFeedback.draftError"));
         } finally {
             setSaving(false);
         }
@@ -110,94 +113,92 @@ export default function SubmitFeedback() {
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setError("");
-        if (score < 1) { setError("Merci de donner une note."); return; }
-        if (!comment.trim()) { setError("Merci de laisser un commentaire."); return; }
+        if (score < 1) { setError(t("submitFeedback.noRating")); return; }
+        if (!comment.trim()) { setError(t("submitFeedback.noComment")); return; }
         setLoading(true);
         try {
             await client.post(`/feedbacks/${feedbackId}/submit`, { globalScore: score, comment });
             submittedRef.current = true; // empêche le flush brouillon au démontage
-            navigate("/", { state: { success: "Votre feedback a bien été envoyé. Merci !" } });
+            navigate("/", { state: { success: t("submitFeedback.submitSuccess") } });
         } catch {
-            setError("Envoi impossible (feedback déjà soumis, introuvable, ou non autorisé).");
+            setError(t("submitFeedback.submitError"));
         } finally {
             setLoading(false);
         }
     }
 
     const createdLabel = detail
-        ? new Date(detail.createdAt).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" })
+        ? new Date(detail.createdAt).toLocaleDateString(locale, { day: "2-digit", month: "long", year: "numeric" })
         : "";
-    const savedLabel = savedAt ? savedAt.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }) : "";
+    const savedLabel = savedAt ? savedAt.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" }) : "";
 
     return (
         <Layout>
-            <PageHeader title="Donner mon feedback"
-                        subtitle={detail ? detail.moduleTitle : "Chargement du module…"}
+            <PageHeader title={t("submitFeedback.title")}
+                        subtitle={detail ? detail.moduleTitle : t("submitFeedback.loadingModule")}
                         backTo="/"
             />
 
-            {loadError && <p className="text-red-600">{loadError}</p>}
+            {loadError && <p className="error-text">{loadError}</p>}
 
             {detail && detail.status === "SUBMITTED" ? (
-                <div className="max-w-lg border border-emerald-200 bg-emerald-50 p-6 text-emerald-800">
-                    <p className="font-semibold">Vous avez déjà soumis ce feedback ✔</p>
-                    <p className="mt-2 text-sm">Note : {detail.globalScore} / 5</p>
-                    {detail.comment && <p className="mt-1 text-sm">Commentaire : {detail.comment}</p>}
+                <div className="notice-success max-w-lg p-6">
+                    <p className="font-semibold">{t("submitFeedback.alreadySubmitted")}</p>
+                    <p className="mt-2 text-sm">{t("submitFeedback.ratingValue", { score: detail.globalScore })}</p>
+                    {detail.comment && <p className="mt-1 text-sm">{t("submitFeedback.commentValue", { comment: detail.comment })}</p>}
                 </div>
             ) : detail ? (
-                <div className="max-w-lg border border-slate-200 bg-white shadow-sm">
-                    <div className="flex items-start justify-between border-b border-slate-100 bg-slate-50 p-5">
+                <div className="card max-w-lg">
+                    <div className="module-strip">
                         <div>
-                            <p className="text-xs font-medium uppercase tracking-wide text-slate-400">Module de formation</p>
-                            <p className="mt-1 text-lg font-semibold text-slate-800">{detail.moduleTitle}</p>
-                            <p className="mt-1 text-sm text-slate-500">Terminé le {createdLabel}</p>
+                            <p className="highlight-label">{t("submitFeedback.trainingModule")}</p>
+                            <p className="strip-title">{detail.moduleTitle}</p>
+                            <p className="strip-sub">{t("submitFeedback.completedOn", { date: createdLabel })}</p>
                         </div>
                         {detail.status === "IN_PROGRESS" && (
-                            <span className="bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">Brouillon</span>
+                            <span className="draft-badge">{t("submitFeedback.draft")}</span>
                         )}
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-6">
-                        <p className="mb-2 text-sm font-medium text-slate-700">Note globale</p>
+                        <p className="form-label mb-2">{t("common.globalScore")}</p>
                         <div className="mb-6 flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map((n) => (
                                 <button type="button" key={n}
                                         onMouseEnter={() => setHover(n)} onMouseLeave={() => setHover(0)}
                                         onClick={() => { setScore(n); markTouched(); }}
-                                        className={`text-3xl transition ${(hover || score) >= n ? "text-amber-400" : "text-slate-300"}`}>
+                                        className={`star-btn ${(hover || score) >= n ? "star-filled" : "star-idle"}`}>
                                     ★
                                 </button>
                             ))}
-                            {score > 0 && <span className="ml-3 text-sm text-slate-500">{score} / 5</span>}
+                            {score > 0 && <span className="ml-3 text-sm cell-muted">{score} / 5</span>}
                         </div>
 
                         <label className="mb-6 block">
-                            <span className="text-sm font-medium text-slate-700">Commentaire <span className="text-red-500">*</span></span>
+                            <span className="form-label">{t("common.comment")} <span className="required-mark">*</span></span>
                             <textarea value={comment} onChange={(e) => { setComment(e.target.value); markTouched(); }} rows={4}
-                                      placeholder="Votre avis sur le module…"
-                                      className="mt-1.5 w-full border border-slate-300 px-3 py-2 outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20" />
+                                      placeholder={t("submitFeedback.commentPlaceholder")}
+                                      className="form-input-plain transition" />
                         </label>
 
-                        {error && <p className="mb-4 border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>}
+                        {error && <p className="error-banner">{error}</p>}
 
                         <div className="flex items-center gap-3">
-                            <button type="button" onClick={() => saveDraft(false)} disabled={saving}
-                                    className="border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:border-brand hover:text-brand disabled:opacity-60">
-                                {saving ? "Enregistrement…" : "Enregistrer le brouillon"}
+                            <button type="button" onClick={() => saveDraft(false)} disabled={saving} className="btn-secondary">
+                                {saving ? t("submitFeedback.saving") : t("submitFeedback.saveDraft")}
                             </button>
-                            <button type="submit" disabled={loading}
-                                    className="flex-1 bg-brand py-2.5 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60">
-                                {loading ? "Envoi…" : "Envoyer mon feedback"}
+                            <button type="submit" disabled={loading} className="btn-primary-lg flex-1">
+                                {loading ? t("submitFeedback.sending") : t("submitFeedback.submit")}
                             </button>
                         </div>
 
-                        <p className="mt-3 h-4 text-xs text-slate-400">
-                            {saving ? "Enregistrement du brouillon…" : savedAt ? `Brouillon enregistré à ${savedLabel}` : ""}
+                        <p className="mt-3 h-4 text-xs text-faint">
+                            {saving ? t("submitFeedback.savingDraft") : savedAt ? t("submitFeedback.draftSavedAt", { time: savedLabel }) : ""}
                         </p>
                     </form>
                 </div>
             ) : (
-                !loadError && <p className="text-slate-500">Chargement…</p>
+                !loadError && <p className="loading-text">{t("common.loading")}</p>
             )}
         </Layout>
     );
