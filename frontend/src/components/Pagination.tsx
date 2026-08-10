@@ -27,7 +27,7 @@ export default function Pagination({ page, totalPages, onChange, size, onSizeCha
             {totalPages > 1 ? (
                 <div className="pagination-controls">
                     <button onClick={() => onChange(page - 1)} disabled={page === 0} aria-label={t("common.previous")} className="pagination-btn">
-                        <ChevronLeft className="h-4 w-4" />
+                        <ChevronLeft className="icon-sm" />
                         {t("common.previous")}
                     </button>
                     <span className="pagination-info">
@@ -37,7 +37,7 @@ export default function Pagination({ page, totalPages, onChange, size, onSizeCha
                     </span>
                     <button onClick={() => onChange(page + 1)} disabled={page >= totalPages - 1} aria-label={t("common.next")} className="pagination-btn">
                         {t("common.next")}
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="icon-sm" />
                     </button>
                 </div>
             ) : <span />}

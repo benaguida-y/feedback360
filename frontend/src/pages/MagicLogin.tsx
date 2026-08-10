@@ -26,7 +26,7 @@ export default function MagicLogin() {
     }, []);
 
     return (
-        <div className="auth-page items-center justify-center">
+        <div className="auth-page auth-page-center">
             <p className="loading-text">{t("common.loading")}</p>
         </div>
     );

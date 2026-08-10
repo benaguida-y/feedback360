@@ -92,7 +92,7 @@ export default function AdminUsers() {
                         backTo="/"
                         action={
                             <Link to="/admin/users/new" className="btn-primary">
-                                <Plus className="h-4 w-4" />
+                                <Plus className="icon-sm" />
                                 {t("adminUsers.add")}
                             </Link>
                         } />
@@ -113,7 +113,7 @@ export default function AdminUsers() {
                     <option value="INACTIVE">{t("common.inactive")}</option>
                     <option value="PENDING">{t("common.pendingActivation")}</option>
                 </select>
-                <div className="ml-auto flex items-center gap-3">
+                <div className="filter-bar-right">
                     <span className="results-chip">{total} {t("common.results")}</span>
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.nameEmail")} />
                 </div>
@@ -131,7 +131,7 @@ export default function AdminUsers() {
                                 <span className={`role-badge ${roleBadge(u.role)}`}>{u.role}</span>
                             </td>
                             <td className="table-cell">
-                                <div className="flex flex-col gap-1">
+                                <div className="pill-stack">
                                     {u.activated ? (
                                         <span className={`pill ${u.active ? "pill-active" : "pill-inactive"}`}>
                                             {u.active ? t("common.active") : t("common.inactive")}

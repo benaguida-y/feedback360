@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     return (
         <div className="app-shell">
             <Sidebar />
-            <div className="relative flex flex-1 flex-col overflow-hidden">
+            <div className="layout-main-col">
                 {/* Filigrane flower-logo en fond de chaque page */}
                 <img src="/flower-logo.png" alt="" className="app-watermark" />
                 <Header />

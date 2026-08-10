@@ -75,7 +75,7 @@ export default function ManagerCollaborators() {
                     <option value="1">1 – 2</option>
                     <option value="0">{t("common.noRating")}</option>
                 </select>
-                <div className="ml-auto">
+                <div className="filter-bar-search">
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.nameEmail")} />
                 </div>
             </div>
@@ -91,11 +91,11 @@ export default function ManagerCollaborators() {
                                 <p className="cell-faint">{c.email}</p>
                             </td>
                             <td className="table-cell">
-                                <div className="flex items-center gap-3">
+                                <div className="row-center-3">
                                     <div className="progress-track">
                                         <div className="progress-fill" style={{ width: `${c.submittedPercent}%` }} />
                                     </div>
-                                    <span className="text-xs cell-muted">{t("managerCollaborators.submittedCount", { submitted: c.submitted, total: c.total })}</span>
+                                    <span className="cell-muted txt-xs">{t("managerCollaborators.submittedCount", { submitted: c.submitted, total: c.total })}</span>
                                 </div>
                             </td>
                             <td className="table-cell cell-default">{c.averageScore != null ? `${c.averageScore.toFixed(1)} / 5` : "—"}</td>

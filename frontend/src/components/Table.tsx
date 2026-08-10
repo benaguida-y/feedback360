@@ -3,8 +3,6 @@ import { useTranslation } from "react-i18next";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import Skeleton from "./Skeleton";
 
-const WIDTHS = ["70%", "55%", "80%", "45%", "60%", "50%"];
-
 // Une colonne : soit un simple libellé, soit { libellé + champ de tri backend }.
 export type Column = string | { label: string; sort?: string };
 
@@ -36,8 +34,8 @@ export default function Table({ columns, children, isEmpty, emptyLabel, loading,
                             <button type="button" className="table-sort" onClick={() => onSort(field)}>
                                 {label}
                                 {active && (sortDir === "desc"
-                                    ? <ChevronDown className="h-3.5 w-3.5 text-brand" />
-                                    : <ChevronUp className="h-3.5 w-3.5 text-brand" />)}
+                                    ? <ChevronDown className="table-sort-icon" />
+                                    : <ChevronUp className="table-sort-icon" />)}
                             </button>
                         </th>
                     );
@@ -50,7 +48,7 @@ export default function Table({ columns, children, isEmpty, emptyLabel, loading,
                     <tr key={r}>
                         {columns.map((_, i) => (
                             <td key={i} className="table-cell">
-                                <Skeleton className="h-4" style={{ width: WIDTHS[i % WIDTHS.length] }} />
+                                <Skeleton className={`h-4 skeleton-w-${(i % 6) + 1}`} />
                             </td>
                         ))}
                     </tr>

@@ -67,7 +67,7 @@ export default function ManagerModuleStats() {
                     <option value="1">1 ★</option>
                     <option value="0">{t("common.noRating")}</option>
                 </select>
-                <div className="ml-auto">
+                <div className="filter-bar-search">
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.module")} />
                 </div>
             </div>

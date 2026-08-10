@@ -50,7 +50,7 @@ export default function Login() {
 
             {/* Formulaire (droite) */}
             <div className="auth-form-col">
-                <form onSubmit={handleSubmit} className="w-full max-w-sm">
+                <form onSubmit={handleSubmit} className="auth-form">
                     <img src="/logo.png" alt="Feedback360" className="auth-logo" />
 
                     <h2 className="auth-title">{t("login.welcome")}</h2>

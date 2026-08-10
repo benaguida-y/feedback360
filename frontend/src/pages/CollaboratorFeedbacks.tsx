@@ -71,7 +71,7 @@ export default function CollaboratorFeedbacks() {
                     <option value="1">1 ★</option>
                     <option value="0">{t("common.noRating")}</option>
                 </select>
-                <div className="ml-auto">
+                <div className="filter-bar-search">
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.module")} />
                 </div>
             </div>
@@ -110,7 +110,7 @@ export function FeedbackAction({ f }: { f: { feedbackId: number; status: string 
     return (
         <Link to={`/feedback/${f.feedbackId}`} className="btn-cta">
             {f.status === "IN_PROGRESS" ? t("common.continue") : t("common.giveFeedback")}
-            <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="icon-xs" />
         </Link>
     );
 }

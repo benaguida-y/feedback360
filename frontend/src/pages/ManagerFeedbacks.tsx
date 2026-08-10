@@ -73,7 +73,7 @@ export default function ManagerFeedbacks() {
                     <option value="1">1 ★</option>
                     <option value="0">{t("common.noRating")}</option>
                 </select>
-                <div className="ml-auto">
+                <div className="filter-bar-search">
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.moduleCollaborator")} />
                 </div>
             </div>
@@ -139,7 +139,7 @@ function RelanceButton({ feedbackId }: { feedbackId: number }) {
     return (
         <button type="button" onClick={send} disabled={state === "sending" || state === "sent"}
                 title={t("relance.tooltip")} className={cls}>
-            {state === "sent" ? <Check className="h-3.5 w-3.5" /> : <Send className="h-3.5 w-3.5" />}
+            {state === "sent" ? <Check className="icon-xs" /> : <Send className="icon-xs" />}
             {label}
         </button>
     );

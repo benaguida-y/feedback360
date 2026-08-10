@@ -56,41 +56,41 @@ export default function AdminReminders() {
 
             {error && <p className="error-line">{error}</p>}
 
-            <div className="grid max-w-5xl gap-6 lg:grid-cols-2">
-                <div className="card h-max p-6">
-                    <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="reminders-grid">
+                <div className="card h-content pad-6">
+                    <form onSubmit={handleSubmit} className="form-stack-lg">
                         {/* Interrupteur relance auto */}
-                        <label className="flex cursor-pointer items-start gap-3">
+                        <label className="toggle-row">
                             <input type="checkbox" checked={autoEnabled} disabled={loading}
-                                   onChange={(e) => setAutoEnabled(e.target.checked)} className="peer sr-only" />
-                            <span className="relative mt-0.5 h-6 w-11 shrink-0 rounded-full bg-slate-300 transition after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:bg-brand peer-checked:after:translate-x-5 dark:bg-cap-border" />
+                                   onChange={(e) => setAutoEnabled(e.target.checked)} className="peer sr-hide" />
+                            <span className="toggle-switch" />
                             <span>
                                 <span className="form-label">{t("adminReminders.autoLabel")}</span>
-                                <span className="mt-0.5 block text-xs cell-muted">{t("adminReminders.autoHelp")}</span>
+                                <span className="cell-muted field-help-tight">{t("adminReminders.autoHelp")}</span>
                             </span>
                         </label>
 
-                        <label className="block">
+                        <label className="d-block">
                             <span className="form-label">{t("adminReminders.delayLabel")}</span>
                             <input type="number" min={1} max={365} value={delayDays} disabled={loading}
-                                   onChange={(e) => setDelayDays(Number(e.target.value))} className="form-input-plain w-full" />
-                            <span className="mt-1 block text-xs cell-muted">{t("adminReminders.delayHelp")}</span>
+                                   onChange={(e) => setDelayDays(Number(e.target.value))} className="form-input-plain full-w" />
+                            <span className="cell-muted field-help">{t("adminReminders.delayHelp")}</span>
                         </label>
 
-                        <label className="block">
+                        <label className="d-block">
                             <span className="form-label">{t("adminReminders.maxLabel")}</span>
                             <input type="number" min={1} max={10} value={maxReminders} disabled={loading}
-                                   onChange={(e) => setMaxReminders(Number(e.target.value))} className="form-input-plain w-full" />
-                            <span className="mt-1 block text-xs cell-muted">{t("adminReminders.maxHelp")}</span>
+                                   onChange={(e) => setMaxReminders(Number(e.target.value))} className="form-input-plain full-w" />
+                            <span className="cell-muted field-help">{t("adminReminders.maxHelp")}</span>
                         </label>
 
-                        <div className="flex items-center gap-3">
-                            <button type="submit" disabled={saving || loading} className="btn-primary-lg px-5">
+                        <div className="row-center-3">
+                            <button type="submit" disabled={saving || loading} className="btn-primary-lg btn-px5">
                                 {saving ? t("adminReminders.saving") : t("adminReminders.save")}
                             </button>
                             {saved && (
-                                <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                                    <Check className="h-4 w-4" />
+                                <span className="saved-badge">
+                                    <Check className="icon-sm" />
                                     {t("adminReminders.saved")}
                                 </span>
                             )}
@@ -98,12 +98,12 @@ export default function AdminReminders() {
                     </form>
                 </div>
 
-                <aside className="card h-max p-6">
-                    <div className="mb-4 flex items-center gap-2">
-                        <BellRing className="h-5 w-5 text-brand" />
+                <aside className="card h-content pad-6">
+                    <div className="reminders-title-row">
+                        <BellRing className="icon-md-brand" />
                         <h3 className="subsection-title">{t("adminReminders.howTitle")}</h3>
                     </div>
-                    <ul className="space-y-3 text-sm cell-default">
+                    <ul className="cell-default how-list">
                         <li>{t("adminReminders.how1")}</li>
                         <li>{t("adminReminders.how2")}</li>
                         <li>{t("adminReminders.how3")}</li>

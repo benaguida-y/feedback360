@@ -9,10 +9,10 @@ export default function SidebarUser({ name, role, collapsed, onLogout }: {
 
     const { t } = useTranslation();
     return (
-        <div className="p-3">
+        <div className="sidebar-user">
             <div className="sidebar-sep" />
 
-            <div className="mb-3 flex items-center gap-3">
+            <div className="sidebar-user-row">
                 <div title={name ?? ""} className="sidebar-avatar">
                     {initials}
                 </div>
@@ -23,7 +23,7 @@ export default function SidebarUser({ name, role, collapsed, onLogout }: {
             </div>
 
             <button onClick={onLogout} title={t("common.logout")} className="sidebar-logout">
-                <LogOut className="h-4 w-4 shrink-0" />
+                <LogOut className="sidebar-logout-icon" />
                 <span className={labelClass(collapsed)}>{t("common.logout")}</span>
             </button>
         </div>

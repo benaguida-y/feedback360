@@ -40,17 +40,17 @@ export default function AdminDashboard() {
         <div>
             <PageHeader title={t("common.overview")} subtitle={t("adminDashboard.subtitle")} />
 
-            <h3 className="section-title mb-3">{t("adminDashboard.users")}</h3>
+            <h3 className="section-title dash-head">{t("adminDashboard.users")}</h3>
             <Section loading={!users && !usersError} error={usersError}>
                 {users && (
                     <>
-                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                        <div className="grid-stats-4">
                             <StatCard label={t("common.total")} value={users.totalUsers} />
                             <StatCard label={t("adminDashboard.admins")} value={users.admins} accent="accent-red" />
                             <StatCard label={t("adminDashboard.managers")} value={users.managers} accent="accent-sky" />
                             <StatCard label={t("nav.collaborators")} value={users.collaborators} accent="accent-muted" />
                         </div>
-                        <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                        <div className="grid-stats-3-mt">
                             <StatCard label={t("adminDashboard.activeUsers")} value={users.activeUsers} accent="accent-emerald" />
                             <StatCard label={t("adminDashboard.inactiveUsers")} value={users.inactiveUsers} accent="accent-red" />
                             <StatCard label={t("common.pendingActivation")} value={users.pendingActivation} accent="accent-amber" />
@@ -59,10 +59,10 @@ export default function AdminDashboard() {
                 )}
             </Section>
 
-            <h3 className="section-title mt-8 mb-3">{t("adminDashboard.integrations")}</h3>
+            <h3 className="section-title dash-head-next">{t("adminDashboard.integrations")}</h3>
             <Section loading={!integrations && !integrationsError} error={integrationsError}>
                 {integrations && (
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                    <div className="grid-stats-3">
                         <StatCard label={t("adminDashboard.callsReceived")} value={integrations.totalWebhookCalls} />
                         <StatCard label={t("adminDashboard.successes")} value={integrations.webhookSuccess} accent="accent-emerald" />
                         <StatCard label={t("adminDashboard.failures")} value={integrations.webhookFailure} accent="accent-red" />
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
                 )}
             </Section>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="grid-nav-mt">
                 <NavCard to="/admin/users" title={t("adminDashboard.navUsers")} subtitle={t("adminDashboard.navUsersSub")} />
                 <NavCard to="/admin/logs" title={t("adminLogs.title")} subtitle={t("adminDashboard.navLogsSub")} />
             </div>

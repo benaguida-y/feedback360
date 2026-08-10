@@ -136,6 +136,12 @@ aside[class*="border"] {
 
 /* Squelette de chargement */
 .skeleton { @apply animate-pulse rounded bg-slate-200 dark:bg-cap-panel2; }
+.skeleton-w-1 { width: 70%; }
+.skeleton-w-2 { width: 55%; }
+.skeleton-w-3 { width: 80%; }
+.skeleton-w-4 { width: 45%; }
+.skeleton-w-5 { width: 60%; }
+.skeleton-w-6 { width: 50%; }
 
 /* Bannière d'erreur */
 .error-banner { @apply mb-4 flex items-center gap-2 rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/15 px-3 py-2 text-sm text-red-700 dark:text-red-300; }
@@ -294,11 +300,14 @@ aside[class*="border"] {
 .sidebar-link { @apply mx-1 my-1 flex items-center rounded-lg py-3 text-sm font-medium transition-colors; }
 .sidebar-link-active { @apply bg-brand text-white; }
 .sidebar-link-idle { @apply text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-cap-panel2; }
-.sidebar-logo { @apply w-auto dark:brightness-0 dark:invert; }
-.sidebar-logo-light { @apply block w-auto dark:hidden; }
-.sidebar-logo-dark { @apply hidden w-auto dark:block; }
+.sidebar-brand { @apply relative flex h-30 flex-col items-center gap-2 px-3 py-5; }
+.logo-full-light { @apply block h-10 w-auto dark:hidden; }
+.logo-full-dark { @apply hidden h-10 w-auto dark:block; }
+.logo-icon-light { @apply block h-8 w-auto dark:hidden; }
+.logo-icon-dark { @apply hidden h-8 w-auto dark:block; }
 .sidebar-brand-name { @apply text-lg font-semibold text-slate-800 dark:text-slate-100; }
-.sidebar-toggle { @apply absolute right-0 z-10 flex h-7 w-7 -translate-y-1/2 translate-x-1/2 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-brand hover:text-brand dark:border-cap-border dark:bg-cap-panel2 dark:text-slate-300; }
+.sidebar-toggle { @apply absolute right-0 top-[85.714%] z-10 flex h-7 w-7 -translate-y-1/2 translate-x-1/2 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-brand hover:text-brand dark:border-cap-border dark:bg-cap-panel2 dark:text-slate-300; }
+.sidebar-toggle-icon { @apply h-4 w-4; }
 .sidebar-sep { @apply mb-3 h-px bg-slate-200 dark:bg-cap-panel2; }
 .sidebar-avatar { @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand text-sm font-semibold text-white; }
 .sidebar-logout { @apply flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-red-200 dark:border-cap-border dark:text-slate-300 dark:hover:bg-red-900/40; }
@@ -323,3 +332,147 @@ aside[class*="border"] {
 .brand-tagline { @apply mt-6 text-5xl leading-[1.05] tracking-tight; }
 .brand-desc { @apply mt-6 max-w-md text-lg leading-relaxed text-white/75; }
 .brand-copyright { @apply relative text-sm text-white/60; }
+.brand-grid {
+  @apply pointer-events-none absolute inset-0 opacity-[0.06];
+  background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* ===== Utilitaires repliés en classes (aucun utilitaire dans le markup) ===== */
+/* Tailles d'icônes */
+.icon-xs { @apply h-3.5 w-3.5; }
+.icon-sm { @apply h-4 w-4; }
+.icon-md { @apply h-5 w-5; }
+
+/* ErrorBanner */
+.error-banner-icon { @apply h-4 w-4 flex-none; }
+
+/* FormField */
+.form-field { @apply mb-5 block; }
+.form-field-label { @apply mb-1.5 block; }
+.form-field-control { @apply relative; }
+.form-input-pw { @apply pr-11; }
+.form-input-txt { @apply pr-3.5; }
+
+/* PageHeader */
+.page-header-main { @apply flex-1; }
+
+/* StatusFilter */
+.status-filter { @apply flex gap-2; }
+
+/* StatCardSkeleton */
+.stat-skeleton-label { @apply h-3 w-20; }
+.stat-skeleton-value { @apply mt-3 h-7 w-12; }
+
+/* SidebarUser */
+.sidebar-user { @apply p-3; }
+.sidebar-user-row { @apply mb-3 flex items-center gap-3; }
+.sidebar-logout-icon { @apply h-4 w-4 shrink-0; }
+
+/* Layout */
+.layout-main-col { @apply relative flex flex-1 flex-col overflow-hidden; }
+
+/* Sidebar */
+.sidebar-icon { @apply h-5 w-5 shrink-0; }
+.sidebar-collapsed { @apply w-16; }
+.sidebar-expanded { @apply w-60; }
+.sidebar-nav { @apply flex flex-1 flex-col py-3; }
+
+/* BrandPanel (décoratif) */
+.brand-blob-1 { @apply pointer-events-none absolute -right-32 -top-32 h-96 w-96 bg-brand-light/40 blur-3xl; }
+.brand-blob-2 { @apply pointer-events-none absolute top-1/3 -left-24 h-80 w-80 bg-white/10 blur-3xl; }
+.brand-blob-3 { @apply pointer-events-none absolute -bottom-24 right-1/4 h-72 w-72 bg-white/10 blur-3xl; }
+.brand-ring-1 { @apply pointer-events-none absolute -bottom-40 -left-40 h-[32rem] w-[32rem] border border-white/15; }
+.brand-ring-2 { @apply pointer-events-none absolute -bottom-28 -left-28 h-96 w-96 border border-white/10; }
+.brand-flower { @apply pointer-events-none absolute -bottom-16 -right-16 w-96 opacity-10 brightness-0 invert; }
+.brand-header { @apply flex items-center justify-between; }
+.brand-logo { @apply relative w-70; }
+.brand-badge-dot { @apply h-1.5 w-1.5 bg-emerald-400; }
+.brand-body { @apply relative; }
+.brand-tagline-soft { @apply text-white/70; }
+
+/* Table — icône de tri */
+.table-sort-icon { @apply h-3.5 w-3.5 text-brand; }
+
+/* Auth — centrage plein écran */
+.auth-page-center { @apply items-center justify-center; }
+
+/* Barre de filtres — groupe de droite (recherche) */
+.filter-bar-search { @apply ml-auto; }
+.filter-bar-right { @apply ml-auto flex items-center gap-3; }
+
+/* Dashboards — titres de section & grilles */
+.dash-head { @apply mb-3; }
+.dash-head-next { @apply mt-8 mb-3; }
+.grid-stats-4 { @apply grid grid-cols-2 gap-4 sm:grid-cols-4; }
+.grid-stats-3 { @apply grid grid-cols-2 gap-4 sm:grid-cols-3; }
+.grid-stats-3-mt { @apply mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3; }
+.grid-2col { @apply grid grid-cols-2 gap-4; }
+.grid-cards-2 { @apply grid gap-4 sm:grid-cols-2; }
+.grid-nav-mt { @apply mt-8 grid gap-4 sm:grid-cols-2; }
+.highlight-body { @apply min-w-0; }
+.recent-head { @apply mt-8 flex items-center justify-between; }
+.recent-list { @apply mt-3; }
+
+/* Auth (Login / Activate) */
+.auth-form { @apply w-full max-w-sm; }
+.auth-alert-icon { @apply h-5 w-5 flex-none; }
+
+/* Helpers réutilisables (repliés depuis le markup) */
+.txt-xs { @apply text-xs; }
+.txt-sm { @apply text-sm; }
+.full-w { @apply w-full; }
+.row-center-3 { @apply flex items-center gap-3; }
+.pill-stack { @apply flex flex-col gap-1; }
+.form-stack { @apply space-y-4; }
+.form-stack-lg { @apply space-y-6; }
+.icon-lg { @apply h-6 w-6; }
+
+/* AdminCreateUser */
+.create-grid { @apply grid max-w-7xl gap-6 lg:grid-cols-2; }
+.guide-title { @apply mb-4; }
+.roles-stack { @apply space-y-4 text-sm; }
+.role-desc { @apply mt-1.5; }
+.row-3 { @apply flex gap-3; }
+.error-text-sm { @apply text-sm text-red-600; }
+
+/* AdminReminders */
+.reminders-grid { @apply grid max-w-5xl gap-6 lg:grid-cols-2; }
+.toggle-row { @apply flex cursor-pointer items-start gap-3; }
+.toggle-switch { @apply relative mt-0.5 h-6 w-11 shrink-0 rounded-full bg-slate-300 transition after:absolute after:left-0.5 after:top-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:transition peer-checked:bg-brand peer-checked:after:translate-x-5 dark:bg-cap-border; }
+.field-help { @apply mt-1 block text-xs; }
+.field-help-tight { @apply mt-0.5 block text-xs; }
+.reminders-title-row { @apply mb-4 flex items-center gap-2; }
+.icon-md-brand { @apply h-5 w-5 text-brand; }
+.how-list { @apply space-y-3 text-sm; }
+.saved-badge { @apply inline-flex items-center gap-1.5 text-sm font-medium text-emerald-600 dark:text-emerald-400; }
+.btn-px5 { @apply px-5; }
+
+/* FeedbackDetail */
+.detail-card { @apply max-w-2xl px-5; }
+.detail-inline { @apply ml-2; }
+.detail-row { @apply flex items-center; }
+.detail-row-note { @apply ml-3; }
+.detail-comment-label { @apply mb-2 text-sm font-medium; }
+.detail-stars { @apply flex items-center gap-6 py-4; }
+
+/* SubmitFeedback */
+.submit-notice { @apply max-w-lg p-6; }
+.submit-card { @apply max-w-lg; }
+.submit-line { @apply mt-2 text-sm; }
+.submit-line-tight { @apply mt-1 text-sm; }
+.stars-row { @apply mb-6 flex items-center gap-1; }
+.score-label { @apply ml-3 text-sm; }
+.comment-block { @apply mb-6 block; }
+.form-label-mb { @apply mb-2; }
+.btn-flex1 { @apply flex-1; }
+.draft-status { @apply mt-3 h-4 text-xs; }
+
+/* Helpers finaux */
+.pad-6 { @apply p-6; }
+.h-content { @apply h-max; }
+.d-block { @apply block; }
+.sr-hide { @apply sr-only; }
+.pre-wrap { @apply whitespace-pre-wrap; }
+.text-semibold { @apply font-semibold; }
+.el-transition { @apply transition; }
