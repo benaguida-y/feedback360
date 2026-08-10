@@ -2,13 +2,16 @@ package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.Feedback;
+import com.yb.feedback360.dto.request.DraftFeedbackRequest;
 import com.yb.feedback360.dto.request.FeedbackSummaryResponse;
 import com.yb.feedback360.dto.request.SubmitFeedbackRequest;
 import com.yb.feedback360.dto.response.DashboardSummaryResponse;
 import com.yb.feedback360.dto.response.FeedbackDetailResponse;
+import com.yb.feedback360.dto.response.PageResponse;
 import com.yb.feedback360.repository.FeedbackRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,20 +24,13 @@ public class FeedbackService {
 
     private final FeedbackRepository feedbackRepository;
 
-    public List<FeedbackSummaryResponse> getFeedbackForUser(Long userId, FeedbackStatus status) {
-        List<Feedback> feedbacks = (status == null)
-                ? feedbackRepository.findByUser_UserIdOrderByCreatedAtDesc(userId)
-                : feedbackRepository.findByUser_UserIdAndStatusOrderByCreatedAtDesc(userId, status);
-
-        return feedbacks.stream()
-                .map(f -> new FeedbackSummaryResponse(
-                        f.getFeedbackId(),
-                        f.getStatus().name(),
-                        f.getModuleFormation().getTitle(),
-                        f.getCreatedAt(),
-                        f.getGlobalScore()
-                ))
-                .toList();
+    @Transactional(readOnly = true)
+    public PageResponse<FeedbackSummaryResponse> getFeedbackForUser(Long userId, FeedbackStatus status, String search, Pageable pageable) {
+        String searchParam = (search == null || search.isBlank())
+                ? null : "%" + search.trim().toLowerCase() + "%";
+        return PageResponse.from(
+                feedbackRepository.findUserFeedbacks(userId, status, searchParam, pageable)
+                        .map(FeedbackSummaryResponse::from));
     }
 
     @Transactional(readOnly = true)
@@ -73,6 +69,25 @@ public class FeedbackService {
         feedback.setComment(request.comment());
         feedback.setStatus(FeedbackStatus.SUBMITTED);
         feedbackRepository.save(feedback);
+    }
+
+    // Enregistre un brouillon : conserve la note/commentaire partiels sans finaliser.
+    // Le feedback passe en IN_PROGRESS tant qu'il n'est pas soumis.
+    @Transactional
+    public FeedbackDetailResponse saveDraft(Long userId, Long feedbackId, DraftFeedbackRequest request) {
+        Feedback feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new EntityNotFoundException("Feedback not found"));
+        if (!feedback.getUser().getUserId().equals(userId)) {
+            throw new AccessDeniedException("This feedback is not yours");
+        }
+        if (feedback.getStatus() == FeedbackStatus.SUBMITTED) {
+            throw new IllegalStateException("Feedback already submitted");
+        }
+        feedback.setGlobalScore(request.globalScore());
+        feedback.setComment(request.comment());
+        feedback.setStatus(FeedbackStatus.IN_PROGRESS);
+        feedbackRepository.save(feedback);
+        return getFeedback(userId, feedbackId);
     }
 
     @Transactional(readOnly = true)

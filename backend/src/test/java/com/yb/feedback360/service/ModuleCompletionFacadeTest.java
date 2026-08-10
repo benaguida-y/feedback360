@@ -2,6 +2,7 @@ package com.yb.feedback360.service;
 
 import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.domain.model.Feedback;
+import com.yb.feedback360.domain.model.ModuleFormation;
 import com.yb.feedback360.domain.model.User;
 import com.yb.feedback360.dto.request.ModuleCompletedRequest;
 import com.yb.feedback360.dto.response.ModuleCompletionResult;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import com.yb.feedback360.repository.IntegrationLogRepository;
 
 import java.util.List;
 import java.util.Set;
@@ -37,13 +39,16 @@ import static org.mockito.Mockito.when;
  */
 @ExtendWith(MockitoExtension.class)
 class ModuleCompletionFacadeTest {
-
     @Mock
     Validator validator;
     @Mock
     ModuleCompletionService moduleCompletionService;
     @Mock
     MagicLinkService magicLinkService;
+    @Mock
+    EmailService emailService;
+    @Mock
+    IntegrationLogRepository integrationLogRepository;
 
     @InjectMocks
     ModuleCompletionFacade facade;
@@ -61,6 +66,12 @@ class ModuleCompletionFacadeTest {
         feedback.setFeedbackId(1L);
         feedback.setUser(new User());
         feedback.setStatus(FeedbackStatus.NOT_SUBMITTED);
+
+        // Le module est requis : la façade lit son titre pour l'e-mail d'activation.
+        ModuleFormation module = new ModuleFormation();
+        module.setTitle("React Avancé");
+        feedback.setModuleFormation(module);
+
         return feedback;
     }
 

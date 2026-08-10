@@ -13,7 +13,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable=false, unique=true)
+    @Column(unique=true)
     private Long externalUserId;
 
     private String firstName;
@@ -30,5 +30,8 @@ public class User {
     private Role role;
 
     private String department;
+
+    @Column(nullable = false)
+    private boolean active = true;
 
 }

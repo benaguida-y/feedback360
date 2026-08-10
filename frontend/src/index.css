@@ -1,0 +1,299 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand: #0070ad;
+  --color-brand-dark: #005180;
+  --color-brand-light: #12abdb;
+  --font-sans: "Ubuntu", ui-sans-serif, system-ui, sans-serif;
+
+  /* Charte sombre Capgemini */
+  --color-cap-bg: #12151d;
+  --color-cap-panel: #1b1f27;
+  --color-cap-panel2: #21252d;
+  --color-cap-border: #2b303a;
+  --color-cap-deep: #1d365a;
+}
+
+body {
+  background-color: #f7f9fb;
+  color: #1e293b;
+}
+
+/* Thème sombre : fond et texte de base */
+.dark body {
+  background-color: #12151d;
+  color: #e5e9f0;
+}
+
+/* Coins arrondis par défaut dans toute l'application */
+button,
+input,
+select,
+textarea,
+[class*="border"] {
+  border-radius: 0.5rem;
+}
+
+/* Exception : éléments décoratifs parfaitement ronds (halos, anneaux, pastilles) */
+.blob { border-radius: 9999px; }
+
+/* Coins précis mis à angle droit ; les autres coins gardent leur arrondi */
+header[class*="border"] {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+aside[class*="border"] {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Survol des lignes de tableau en thème sombre (toutes les listes) */
+.dark tbody tr:hover {
+  background-color: rgba(33, 37, 45, 0.55); /* cap-panel2 */
+}
+
+/* Classes sémantiques (méthode @apply) — libellés utilisateur de la sidebar.
+   Le style vit dans le CSS, le markup ne porte que le nom de classe. */
+.user-name {
+  @apply truncate text-sm font-semibold text-slate-800 dark:text-slate-100;
+}
+.user-role {
+  @apply text-xs text-slate-500 dark:text-slate-400;
+}
+
+/* ===== Système de classes sémantiques (@apply) =====
+   Le style vit ici ; les composants ne portent que des noms de classes. */
+
+/* Cartes & panneaux */
+.card { @apply rounded-lg border border-slate-200 bg-white shadow-sm dark:border-cap-border dark:bg-cap-panel; }
+.stat-card { @apply rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-cap-border dark:bg-cap-panel; }
+.stat-card-label { @apply text-sm font-medium text-slate-500 dark:text-slate-400; }
+.stat-card-value { @apply mt-1 text-3xl font-bold; }
+
+/* Carte de navigation */
+.nav-card { @apply flex items-center justify-between rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-brand hover:shadow dark:border-cap-border dark:bg-cap-panel dark:hover:border-brand; }
+.nav-card-title { @apply font-semibold text-slate-800 dark:text-slate-100; }
+.nav-card-subtitle { @apply mt-1 text-sm text-slate-500 dark:text-slate-400; }
+.nav-card-chevron { @apply h-5 w-5 text-slate-300 transition dark:text-slate-500; }
+.nav-card:hover .nav-card-chevron { @apply translate-x-0.5 text-brand; }
+
+/* En-tête de page */
+.page-header { @apply mb-6 flex items-center gap-4; }
+.page-title { @apply text-2xl font-bold text-slate-800 dark:text-slate-100; }
+.page-subtitle { @apply text-sm text-slate-500 dark:text-slate-400; }
+
+/* Bouton carré (retour) */
+.icon-btn { @apply flex h-10 w-10 flex-none items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-500 transition hover:border-brand hover:text-brand dark:border-cap-border dark:bg-cap-panel dark:text-slate-300; }
+
+/* Recherche */
+.search-wrap { @apply relative w-72; }
+.search-icon { @apply pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 dark:text-slate-500; }
+.search-input { @apply w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-cap-border dark:bg-cap-panel dark:text-slate-100 dark:placeholder:text-slate-500; }
+
+/* Pagination */
+.pagination { @apply mt-3 flex items-center justify-between text-sm text-slate-600 dark:text-slate-400; }
+.pagination-btn { @apply inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium transition hover:bg-slate-50 disabled:opacity-40 dark:border-cap-border dark:bg-cap-panel dark:text-slate-300 dark:hover:bg-cap-panel2; }
+.pagination-info { @apply flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 dark:border-cap-border dark:bg-cap-panel dark:text-slate-400; }
+.pagination-page { @apply inline-flex h-6 min-w-6 items-center justify-center rounded-md bg-brand px-1.5 text-xs font-semibold text-white; }
+
+/* Tableau */
+.table { @apply w-full text-left text-sm; }
+.table-head { @apply border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:border-cap-border dark:bg-cap-panel2 dark:text-slate-400; }
+.table-th { @apply px-5 py-3 font-medium; }
+.table-body { @apply divide-y divide-slate-100 dark:divide-cap-border; }
+.table-cell { @apply px-5 py-3.5; }
+.table-empty { @apply px-5 py-8 text-center text-slate-400 dark:text-slate-500; }
+
+/* Badges de statut */
+.badge { @apply inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset; }
+.badge-submitted { @apply bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-400/25; }
+.badge-pending { @apply bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-400/25; }
+.badge-progress { @apply bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-400/25; }
+.badge-neutral { @apply bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-cap-panel2 dark:text-slate-300 dark:ring-slate-400/20; }
+
+/* Pastilles de filtre par statut */
+.filter-pill { @apply rounded-lg px-3.5 py-1.5 text-sm font-medium transition; }
+.filter-pill-active { @apply bg-brand text-white; }
+.filter-pill-idle { @apply border border-slate-200 dark:border-cap-border bg-white dark:bg-cap-panel text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-cap-panel2; }
+
+/* Squelette de chargement */
+.skeleton { @apply animate-pulse rounded bg-slate-200 dark:bg-cap-panel2; }
+
+/* Bannière d'erreur */
+.error-banner { @apply mb-4 flex items-center gap-2 rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/15 px-3 py-2 text-sm text-red-700 dark:text-red-300; }
+
+/* ===== Classes des pages ===== */
+
+/* Boutons */
+.btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60; }
+.btn-action { @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-brand hover:text-brand dark:border-cap-border dark:text-slate-300; }
+.btn-action-disabled { @apply inline-flex cursor-not-allowed items-center rounded-lg border border-slate-200 px-3.5 py-1.5 text-xs font-semibold text-slate-300 dark:border-cap-border dark:text-slate-600; }
+.btn-cta { @apply inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-dark; }
+.btn-see-all { @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-1.5 text-sm font-semibold text-slate-600 transition hover:border-brand hover:text-brand dark:border-cap-border dark:bg-cap-panel dark:text-slate-300; }
+.btn-toggle { @apply rounded-lg px-3.5 py-1.5 text-xs font-semibold transition disabled:opacity-50; }
+.btn-toggle-danger { @apply border border-red-300 text-red-600 hover:bg-red-50 dark:border-red-500/40 dark:text-red-400 dark:hover:bg-red-500/10; }
+.btn-toggle-success { @apply border border-emerald-300 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-500/40 dark:text-emerald-400 dark:hover:bg-emerald-500/10; }
+
+/* Filtres */
+.filter-bar { @apply mb-3 flex flex-wrap items-center gap-3; }
+.form-select { @apply rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none focus:border-brand dark:border-cap-border dark:bg-cap-panel dark:text-slate-300; }
+.results-chip { @apply inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 dark:border-cap-border dark:bg-cap-panel dark:text-slate-400; }
+
+/* Lignes & cellules de tableau */
+.table-row { @apply transition hover:bg-slate-50/60; }
+.cell-strong { @apply font-medium text-slate-800 dark:text-slate-100; }
+.cell-default { @apply text-slate-600 dark:text-slate-300; }
+.cell-muted { @apply text-slate-500 dark:text-slate-400; }
+.cell-faint { @apply text-xs text-slate-400 dark:text-slate-500; }
+
+/* Titres de section */
+.section-title { @apply text-lg font-semibold text-slate-800 dark:text-slate-100; }
+
+/* Badges de rôle */
+.role-badge { @apply rounded-full px-2 py-0.5 text-xs font-medium ring-1; }
+.role-admin { @apply bg-red-50 text-red-700 ring-red-200 dark:bg-red-500/15 dark:text-red-300 dark:ring-red-400/25; }
+.role-manager { @apply bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-400/25; }
+.role-collaborator { @apply bg-slate-100 text-slate-600 ring-slate-200 dark:bg-cap-panel2 dark:text-slate-300 dark:ring-slate-500/25; }
+
+/* Pastilles de statut utilisateur */
+.pill { @apply w-fit rounded-full px-2 py-0.5 text-xs font-medium; }
+.pill-active { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300; }
+.pill-inactive { @apply bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300; }
+.pill-pending { @apply bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300; }
+
+/* Badges de statut de log */
+.log-badge { @apply rounded-full px-2 py-0.5 text-xs font-medium; }
+.log-success { @apply bg-emerald-50 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300; }
+.log-failure { @apply bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300; }
+.log-progress { @apply bg-sky-50 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300; }
+.log-default { @apply bg-slate-100 text-slate-600 dark:bg-cap-panel2 dark:text-slate-300; }
+
+/* Barre de progression */
+.progress-track { @apply h-2 w-32 rounded-full bg-slate-100 dark:bg-cap-panel2; }
+.progress-fill { @apply h-2 rounded-full bg-brand; }
+
+/* Ligne de message d'erreur */
+.error-line { @apply mb-3 text-sm text-red-600; }
+
+/* Flèche du lien « Voir tout » (animation au survol) */
+.see-all-arrow { @apply h-4 w-4 transition-transform; }
+.btn-see-all:hover .see-all-arrow { @apply translate-x-0.5; }
+
+/* Textes d'état */
+.loading-text { @apply text-slate-500 dark:text-slate-400; }
+.error-text { @apply text-red-600; }
+
+/* Dashboard : cartes « highlights » & placeholder graphiques */
+.highlight-card { @apply flex items-start gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-cap-border dark:bg-cap-panel; }
+.highlight-icon { @apply text-2xl; }
+.highlight-label { @apply text-xs font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500; }
+.highlight-value { @apply mt-1 truncate text-lg font-semibold text-slate-800 dark:text-slate-100; }
+.highlight-sub { @apply text-sm text-slate-500 dark:text-slate-400; }
+.chart-placeholder { @apply mt-6 flex h-40 items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white text-sm text-slate-400 dark:border-cap-border dark:bg-cap-panel dark:text-slate-500; }
+
+/* Pages d'authentification */
+.auth-page { @apply flex min-h-screen bg-slate-50 dark:bg-cap-bg; }
+.auth-form-col { @apply flex w-full items-center justify-center p-8 lg:w-1/2; }
+.auth-logo { @apply mb-8 h-9 w-auto lg:hidden; }
+.auth-title { @apply text-3xl font-bold tracking-tight text-slate-800 dark:text-slate-100; }
+.auth-subtitle { @apply mt-2 mb-8 text-sm text-slate-500 dark:text-slate-400; }
+.auth-footer { @apply mt-8 text-center text-xs text-slate-400 dark:text-slate-500; }
+.auth-alert-error { @apply rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-300; }
+.auth-alert-success { @apply flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300; }
+
+/* Bouton pleine largeur (auth) */
+.btn-block { @apply flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-3 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60; }
+.arrow-slide { @apply h-4 w-4 transition-transform; }
+.btn-block:hover .arrow-slide { @apply translate-x-0.5; }
+
+/* Champs de formulaire */
+.form-label { @apply text-sm font-medium text-slate-700 dark:text-slate-300; }
+.form-icon { @apply pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400 dark:text-slate-500; }
+.form-input { @apply w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-11 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-cap-border dark:bg-cap-panel dark:text-slate-100 dark:placeholder:text-slate-500; }
+.form-input-plain { @apply mt-1.5 w-full border border-slate-300 px-3 py-2 outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 dark:border-cap-border dark:bg-cap-panel; }
+.form-reveal { @apply absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300; }
+
+/* Texte estompé générique */
+.text-faint { @apply text-slate-400 dark:text-slate-500; }
+
+/* Accents chiffrés de StatCard (couleur par carte) */
+.accent-default { @apply text-slate-800 dark:text-slate-100; }
+.accent-emerald { @apply text-emerald-600; }
+.accent-red { @apply text-red-600; }
+.accent-sky { @apply text-sky-600; }
+.accent-amber { @apply text-amber-600; }
+.accent-brand { @apply text-brand; }
+.accent-muted { @apply text-slate-600 dark:text-slate-300; }
+
+/* Cellules chiffrées colorées (module stats) */
+.cell-positive { @apply text-emerald-700 dark:text-emerald-300; }
+.cell-negative { @apply text-amber-700 dark:text-amber-300; }
+
+/* Divers */
+.notice-link { @apply mt-1 break-all text-emerald-700 dark:text-emerald-300; }
+.required-mark { @apply text-red-500; }
+
+/* Fiche détail (feedback) */
+.detail-list { @apply divide-y divide-slate-100 dark:divide-cap-border; }
+.detail-label { @apply w-40 flex-none text-sm font-medium text-slate-500 dark:text-slate-400; }
+.detail-value { @apply text-sm text-slate-700 dark:text-slate-300; }
+.detail-comment { @apply border-t border-slate-100 py-5 dark:border-cap-border; }
+.star-filled { @apply text-amber-400; }
+.star-empty { @apply text-slate-200 dark:text-slate-600; }
+.star-btn { @apply text-3xl transition; }
+.star-idle { @apply text-slate-300 dark:text-slate-600; }
+
+/* Formulaire de feedback */
+.module-strip { @apply flex items-start justify-between border-b border-slate-100 bg-slate-50 p-5 dark:border-cap-border dark:bg-cap-panel2; }
+.strip-title { @apply mt-1 text-lg font-semibold text-slate-800 dark:text-slate-100; }
+.strip-sub { @apply mt-1 text-sm text-slate-500 dark:text-slate-400; }
+.draft-badge { @apply bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700 dark:bg-sky-500/15 dark:text-sky-300; }
+
+/* Boutons additionnels */
+.btn-secondary { @apply rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-600 transition hover:border-brand hover:text-brand disabled:opacity-60 dark:border-cap-border dark:text-slate-300; }
+.btn-primary-lg { @apply rounded-lg bg-brand py-2.5 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60; }
+.link-brand { @apply font-medium text-brand hover:text-brand-dark; }
+
+/* Notice succès (encadré) */
+.notice-success { @apply rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300; }
+
+/* Guide / création utilisateur */
+.subsection-title { @apply text-sm font-semibold text-slate-800 dark:text-slate-100; }
+.step-num { @apply flex h-6 w-6 flex-none items-center justify-center rounded-full bg-brand/10 text-xs font-semibold text-brand; }
+
+/* Chrome : sidebar */
+.sidebar { @apply sticky top-0 z-20 flex h-screen shrink-0 flex-col border-r border-slate-200 bg-white transition-[width] duration-300 ease-in-out dark:border-cap-border dark:bg-cap-bg; }
+.sidebar-link { @apply mx-1 my-1 flex items-center rounded-lg py-3 text-sm font-medium transition-colors; }
+.sidebar-link-active { @apply bg-brand text-white; }
+.sidebar-link-idle { @apply text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-cap-panel2; }
+.sidebar-logo { @apply w-auto dark:brightness-0 dark:invert; }
+.sidebar-brand-name { @apply text-lg font-semibold text-slate-800 dark:text-slate-100; }
+.sidebar-toggle { @apply absolute right-0 z-10 flex h-7 w-7 -translate-y-1/2 translate-x-1/2 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-brand hover:text-brand dark:border-cap-border dark:bg-cap-panel2 dark:text-slate-300; }
+.sidebar-sep { @apply mb-3 h-px bg-slate-200 dark:bg-cap-panel2; }
+.sidebar-avatar { @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand text-sm font-semibold text-white; }
+.sidebar-logout { @apply flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-red-200 dark:border-cap-border dark:text-slate-300 dark:hover:bg-red-900/40; }
+
+/* Chrome : header */
+.app-header { @apply flex shrink-0 items-center justify-end gap-3 border-b border-slate-200 bg-white px-8 py-3 dark:border-cap-border dark:bg-cap-bg; }
+.lang-toggle { @apply flex overflow-hidden rounded-lg border border-slate-300 dark:border-cap-border; }
+.lang-btn { @apply rounded-lg px-3 py-1.5 text-xs font-semibold transition; }
+.lang-btn-active { @apply bg-brand text-white; }
+.lang-btn-idle { @apply bg-white text-slate-600 hover:bg-slate-50 dark:bg-cap-panel dark:text-slate-300 dark:hover:bg-cap-panel2; }
+.theme-toggle { @apply flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-600 transition hover:border-brand hover:text-brand dark:border-cap-border dark:text-slate-300; }
+
+/* Chrome : layout */
+.app-shell { @apply flex h-screen overflow-hidden bg-slate-50 dark:bg-cap-bg; }
+.app-watermark { @apply pointer-events-none absolute -bottom-10 -right-10 w-200 select-none opacity-[0.5] dark:opacity-[0.12]; }
+.app-main { @apply relative flex-1 overflow-y-auto p-8 dark:bg-cap-panel/50; }
+
+/* Panneau de marque (auth) */
+.brand-panel { @apply relative hidden w-1/2 flex-col justify-between overflow-hidden bg-gradient-to-br from-brand-dark via-brand to-brand-light p-14 text-white lg:flex; }
+.brand-badge { @apply mb-6 inline-flex items-center gap-2 border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium tracking-wide text-white/90 backdrop-blur-sm; }
+.brand-title { @apply text-5xl font-bold leading-tight tracking-tight; }
+.brand-tagline { @apply mt-6 text-5xl leading-[1.05] tracking-tight; }
+.brand-desc { @apply mt-6 max-w-md text-lg leading-relaxed text-white/75; }
+.brand-copyright { @apply relative text-sm text-white/60; }

@@ -9,4 +9,5 @@ public record FeedbackDetailResponse(
         Instant createdAt,
         Double globalScore,
         String comment
+
 ) {}
