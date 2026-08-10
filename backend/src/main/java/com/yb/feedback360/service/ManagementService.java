@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -216,5 +217,18 @@ public class ManagementService {
                 top != null ? top.submitted() : null,
                 best != null ? best.moduleTitle() : null,
                 best != null ? best.averageScore() : null);
+    }
+
+    @Transactional(readOnly = true)
+    public RatingDistributionResponse getRatingDistribution(FeedbackStatus status, String search) {
+        String searchParam = (search == null || search.isBlank()) ? null : "%" + search.trim().toLowerCase() + "%";
+        long[] counts = new long[5];
+        for (Double s : feedbackRepository.findScoresForDistribution(status, searchParam)) {
+            int star = (int) Math.round(s);
+            if (star >= 1 && star <= 5) counts[star - 1]++;
+        }
+        List<Long> list = new ArrayList<>();
+        for (long c : counts) list.add(c);
+        return new RatingDistributionResponse(list);
     }
 }

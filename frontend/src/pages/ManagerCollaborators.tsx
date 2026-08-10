@@ -3,11 +3,13 @@ import { Link, Navigate } from "react-router-dom";
 import client from "../api/client";
 import { getRole } from "../auth";
 import Card from "../components/Card";
+import StatCard from "../components/StatCard";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
+import Donut from "../components/Donut";
 import { useTranslation } from "react-i18next";
 import { useSort } from "../useSort";
 
@@ -30,10 +32,12 @@ export default function ManagerCollaborators() {
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [search, setSearch] = useState("");
     const [score, setScore] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [allCollabs, setAllCollabs] = useState<Collab[]>([]);
     const { t } = useTranslation();
     const { sort, toggle } = useSort();
 
@@ -51,12 +55,40 @@ export default function ManagerCollaborators() {
             params.set("page", String(page));
             params.set("size", String(size));
             client.get<Page<Collab>>(`/management/collaborators?${params.toString()}`)
-                .then((r) => { setRows(r.data.content); setTotalPages(r.data.totalPages); })
+                .then((r) => { setRows(r.data.content); setTotalPages(r.data.totalPages); setTotal(r.data.totalElements); })
                 .catch(() => setError(t("managerCollaborators.loadError")))
                 .finally(() => setLoading(false));
         }, 300);
         return () => clearTimeout(timer);
     }, [search, score, page, sort, size]);
+
+    // Tous les collaborateurs (KPIs + donut) — indépendant de la pagination/filtres.
+    useEffect(() => {
+        client.get<Page<Collab>>("/management/collaborators?size=1000")
+            .then((r) => setAllCollabs(r.data.content))
+            .catch(() => {});
+    }, []);
+
+    const totalCollabs = allCollabs.length;
+    const avgProgress = totalCollabs
+        ? Math.round(allCollabs.reduce((s, c) => s + c.submittedPercent, 0) / totalCollabs)
+        : 0;
+    const done = allCollabs.filter((c) => c.submittedPercent === 100).length;
+    const nothing = allCollabs.filter((c) => c.submittedPercent === 0).length;
+    const inProgress = totalCollabs - done - nothing;
+
+    const teamData = [
+        { name: t("managerCollaborators.teamDone"),       value: done,       color: "#10b981" }, // emerald
+        { name: t("managerCollaborators.teamInProgress"), value: inProgress, color: "#0ea5e9" }, // sky
+        { name: t("managerCollaborators.teamNone"),       value: nothing,    color: "#f59e0b" }, // amber
+    ].filter((d) => d.value > 0);
+
+    const LegendRow = ({ color, label, help }: { color: string; label: string; help: string }) => (
+        <li className="flex items-start gap-2">
+            <span className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
+            <span><span className="font-semibold">{label}</span> — {help}</span>
+        </li>
+    );
 
     return (
         <Layout>
@@ -65,6 +97,30 @@ export default function ManagerCollaborators() {
                         backTo="/" />
 
             {error && <p className="error-line">{error}</p>}
+
+            {allCollabs.length > 0 && (
+                <div className="mb-4 grid gap-4 lg:grid-cols-2">
+                    {/* Donut : où en est l'équipe */}
+                    <Donut title={t("managerCollaborators.teamTitle")} data={teamData} emptyLabel={t("common.noData")} />
+
+                    {/* KPIs + carte d'explication */}
+                    <div className="flex flex-col gap-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <StatCard label={t("common.total")} value={totalCollabs} />
+                            <StatCard label={t("managerCollaborators.avgProgress")} value={`${avgProgress} %`} accent="accent-brand" />
+                        </div>
+
+                        <div className="card p-5">
+                            <p className="chart-title mb-3">{t("managerCollaborators.legendTitle")}</p>
+                            <ul className="space-y-2.5 text-sm cell-default">
+                                <LegendRow color="#10b981" label={t("managerCollaborators.teamDone")}       help={t("managerCollaborators.teamDoneHelp")} />
+                                <LegendRow color="#0ea5e9" label={t("managerCollaborators.teamInProgress")} help={t("managerCollaborators.teamInProgressHelp")} />
+                                <LegendRow color="#f59e0b" label={t("managerCollaborators.teamNone")}       help={t("managerCollaborators.teamNoneHelp")} />
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="filter-bar">
                 <select value={score} onChange={(e) => setScore(e.target.value)} className="form-select">
@@ -75,7 +131,8 @@ export default function ManagerCollaborators() {
                     <option value="1">1 – 2</option>
                     <option value="0">{t("common.noRating")}</option>
                 </select>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-3">
+                    <span className="results-chip">{total} {t("common.results")}</span>
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.nameEmail")} />
                 </div>
             </div>

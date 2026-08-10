@@ -323,3 +323,7 @@ aside[class*="border"] {
 .brand-tagline { @apply mt-6 text-5xl leading-[1.05] tracking-tight; }
 .brand-desc { @apply mt-6 max-w-md text-lg leading-relaxed text-white/75; }
 .brand-copyright { @apply relative text-sm text-white/60; }
+
+/* Graphiques */
+.chart-title { @apply mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200; }
+.chart-empty { @apply flex h-64 items-center justify-center text-sm text-slate-400 dark:text-slate-500; }

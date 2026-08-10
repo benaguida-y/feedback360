@@ -14,6 +14,7 @@ import RatingStars from "../components/RatingStars";
 import { Send, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSort } from "../useSort";
+import RatingHistogram from "../components/RatingHistogram.tsx";
 
 interface Feedback { feedbackId: number; status: string; moduleTitle: string; createdAt: string; globalScore: number | null; collaboratorName: string; collaboratorEmail: string; }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
@@ -24,6 +25,7 @@ export default function ManagerFeedbacks() {
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [filter, setFilter] = useState("");
     const [score, setScore] = useState("");
     const [search, setSearch] = useState("");
@@ -47,12 +49,26 @@ export default function ManagerFeedbacks() {
             params.set("page", String(page));
             params.set("size", String(size));
             client.get<Page<Feedback>>(`/management/feedbacks?${params.toString()}`)
-                .then((r) => { setFeedbacks(r.data.content); setTotalPages(r.data.totalPages); })
+                .then((r) => { setFeedbacks(r.data.content); setTotalPages(r.data.totalPages); setTotal(r.data.totalElements); })
                 .catch(() => setError(t("managerFeedbacks.loadError")))
                 .finally(() => setLoading(false));
         }, 300);
         return () => clearTimeout(timer);
     }, [filter, score, search, page, sort, size]);
+
+    const [dist, setDist] = useState<number[]>([0, 0, 0, 0, 0]);
+    // Distribution des notes — suit statut + recherche (pas le filtre « note »).
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const params = new URLSearchParams();
+            if (filter) params.set("status", filter);
+            if (search.trim()) params.set("search", search.trim());
+            client.get<{ counts: number[] }>(`/management/feedbacks/rating-distribution?${params.toString()}`)
+                .then((r) => setDist(r.data.counts))
+                .catch(() => {});
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [filter, search]);
 
     return (
         <Layout>
@@ -73,9 +89,14 @@ export default function ManagerFeedbacks() {
                     <option value="1">1 ★</option>
                     <option value="0">{t("common.noRating")}</option>
                 </select>
-                <div className="ml-auto">
+                <div className="ml-auto flex items-center gap-3">
+                    <span className="results-chip">{total} {t("common.results")}</span>
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.moduleCollaborator")} />
                 </div>
+            </div>
+
+            <div className="mb-4">
+                <RatingHistogram counts={dist} emptyLabel={t("common.noData")} />
             </div>
 
             <Card>

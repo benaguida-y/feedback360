@@ -58,6 +58,14 @@
     "NOT_SUBMITTED": "En attente",
     "IN_PROGRESS": "En cours"
   },
+  "charts": {
+    "statusTitle": "Répartition des feedbacks",
+    "scoreTitle": "Note moyenne par module",
+    "topCollaborators": "Collaborateurs les plus actifs",
+    "moduleSubmissions": "Feedbacks soumis par module",
+    "moduleParticipation": "Top 10 — soumis vs non soumis",
+    "ratingDistribution": "Distribution des notes"
+  },
   "relance": {
     "action": "Relancer",
     "sending": "Envoi…",
@@ -81,7 +89,9 @@
     "activate": "Activer",
     "deactivate": "Désactiver",
     "loadError": "Impossible de charger les utilisateurs.",
-    "statusError": "Changement de statut impossible."
+    "statusError": "Changement de statut impossible.",
+    "byRole": "Répartition par rôle",
+    "byStatus": "Répartition par statut"
   },
   "adminLogs": {
     "title": "Supervision",
@@ -108,7 +118,19 @@
     "progress": "Progression",
     "empty": "Aucun collaborateur.",
     "loadError": "Impossible de charger les collaborateurs.",
-    "submittedCount": "{{submitted}} / {{total}} soumis"
+    "submittedCount": "{{submitted}} / {{total}} soumis",
+    "avgProgress": "Progression moyenne",
+    "completed": "Terminé (100 %)",
+    "notStarted": "Non démarré (0 %)",
+    "progressDistribution": "Répartition par progression",
+    "teamTitle": "Où en est l'équipe",
+    "teamDone": "Terminé",
+    "teamInProgress": "En cours",
+    "teamNone": "Rien soumis",
+    "legendTitle": "Comment lire ce graphe",
+    "teamDoneHelp": "a soumis tous ses feedbacks",
+    "teamInProgressHelp": "a soumis une partie de ses feedbacks",
+    "teamNoneHelp": "n'a encore rien soumis"
   },
   "managerModules": {
     "title": "Détail par module",
