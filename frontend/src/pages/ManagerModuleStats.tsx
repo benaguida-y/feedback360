@@ -72,7 +72,7 @@ export default function ManagerModuleStats() {
             {error && <p className="error-line">{error}</p>}
 
             {participationData.length > 0 && (
-                <div className="mb-4">
+                <div className="chart-block">
                     <ModuleParticipationChart data={participationData} emptyLabel={t("common.noData")} />
                 </div>
             )}
@@ -87,7 +87,7 @@ export default function ManagerModuleStats() {
                     <option value="1">1 ★</option>
                     <option value="0">{t("common.noRating")}</option>
                 </select>
-                <div className="ml-auto flex items-center gap-3">
+                <div className="filter-bar-right">
                     <span className="results-chip">{total} {t("common.results")}</span>
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.module")} />
                 </div>

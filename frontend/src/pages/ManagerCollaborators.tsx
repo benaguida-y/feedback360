@@ -84,9 +84,9 @@ export default function ManagerCollaborators() {
     ].filter((d) => d.value > 0);
 
     const LegendRow = ({ color, label, help }: { color: string; label: string; help: string }) => (
-        <li className="flex items-start gap-2">
-            <span className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: color }} />
-            <span><span className="font-semibold">{label}</span> — {help}</span>
+        <li className="legend-row">
+            <span className="legend-dot" style={{ background: color }} />
+            <span><span className="text-semibold">{label}</span> — {help}</span>
         </li>
     );
 
@@ -99,20 +99,20 @@ export default function ManagerCollaborators() {
             {error && <p className="error-line">{error}</p>}
 
             {allCollabs.length > 0 && (
-                <div className="mb-4 grid gap-4 lg:grid-cols-2">
+                <div className="charts-duo">
                     {/* Donut : où en est l'équipe */}
                     <Donut title={t("managerCollaborators.teamTitle")} data={teamData} emptyLabel={t("common.noData")} />
 
                     {/* KPIs + carte d'explication */}
-                    <div className="flex flex-col gap-4">
-                        <div className="grid grid-cols-2 gap-4">
+                    <div className="col-gap-4">
+                        <div className="grid-2col">
                             <StatCard label={t("common.total")} value={totalCollabs} />
                             <StatCard label={t("managerCollaborators.avgProgress")} value={`${avgProgress} %`} accent="accent-brand" />
                         </div>
 
-                        <div className="card p-5">
-                            <p className="chart-title mb-3">{t("managerCollaborators.legendTitle")}</p>
-                            <ul className="space-y-2.5 text-sm cell-default">
+                        <div className="chart-card">
+                            <p className="chart-title">{t("managerCollaborators.legendTitle")}</p>
+                            <ul className="legend-list cell-default">
                                 <LegendRow color="#10b981" label={t("managerCollaborators.teamDone")}       help={t("managerCollaborators.teamDoneHelp")} />
                                 <LegendRow color="#0ea5e9" label={t("managerCollaborators.teamInProgress")} help={t("managerCollaborators.teamInProgressHelp")} />
                                 <LegendRow color="#f59e0b" label={t("managerCollaborators.teamNone")}       help={t("managerCollaborators.teamNoneHelp")} />
@@ -131,7 +131,7 @@ export default function ManagerCollaborators() {
                     <option value="1">1 – 2</option>
                     <option value="0">{t("common.noRating")}</option>
                 </select>
-                <div className="ml-auto flex items-center gap-3">
+                <div className="filter-bar-right">
                     <span className="results-chip">{total} {t("common.results")}</span>
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.nameEmail")} />
                 </div>
@@ -148,11 +148,11 @@ export default function ManagerCollaborators() {
                                 <p className="cell-faint">{c.email}</p>
                             </td>
                             <td className="table-cell">
-                                <div className="flex items-center gap-3">
+                                <div className="row-center-3">
                                     <div className="progress-track">
                                         <div className="progress-fill" style={{ width: `${c.submittedPercent}%` }} />
                                     </div>
-                                    <span className="text-xs cell-muted">{t("managerCollaborators.submittedCount", { submitted: c.submitted, total: c.total })}</span>
+                                    <span className="txt-xs cell-muted">{t("managerCollaborators.submittedCount", { submitted: c.submitted, total: c.total })}</span>
                                 </div>
                             </td>
                             <td className="table-cell cell-default">{c.averageScore != null ? `${c.averageScore.toFixed(1)} / 5` : "—"}</td>

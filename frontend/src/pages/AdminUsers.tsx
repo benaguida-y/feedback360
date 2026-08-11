@@ -129,7 +129,7 @@ export default function AdminUsers() {
             {listError && <p className="error-line">{listError}</p>}
 
             {stats && (
-                <div className="mb-4 grid gap-4 lg:grid-cols-2">
+                <div className="charts-duo">
                     <Donut title={t("adminUsers.byRole")}   data={roleData}   emptyLabel={t("common.noData")} />
                     <Donut title={t("adminUsers.byStatus")} data={statusData} emptyLabel={t("common.noData")} />
                 </div>
@@ -160,7 +160,7 @@ export default function AdminUsers() {
                        loading={loading} sort={sort} onSort={toggle}
                        isEmpty={users.length === 0} emptyLabel={t("adminUsers.empty")}>
                     {users.map((u) => (
-                        <tr key={u.userId} className={`table-row ${!u.active ? "opacity-60" : ""}`}>
+                        <tr key={u.userId} className={`table-row ${!u.active ? "row-dim" : ""}`}>
                             <td className="table-cell cell-strong">{u.fullName}</td>
                             <td className="table-cell cell-default">{u.email}</td>
                             <td className="table-cell">

@@ -40,11 +40,11 @@ export default function ModuleParticipationChart({ data, emptyLabel }: { data: M
     if (ticks[ticks.length - 1] !== maxVal) ticks.push(maxVal);
 
     const Dot = ({ color }: { color: string }) => (
-        <span style={{ display: "inline-block", width: 9, height: 9, borderRadius: 9999, background: color }} />
+        <span className="chart-dot" style={{ background: color }} />
     );
 
     return (
-        <div className="card p-5">
+        <div className="chart-card">
             <h4 className="chart-title">{t("charts.moduleParticipation")}</h4>
 
             {data.length === 0 ? (
@@ -52,13 +52,13 @@ export default function ModuleParticipationChart({ data, emptyLabel }: { data: M
             ) : (
                 <>
                     {/* Légende — fixe */}
-                    <div className="mb-2 flex items-center gap-4 text-xs" style={{ color: axis }}>
-                        <span className="inline-flex items-center gap-1.5"><Dot color={SUBMITTED} /> {t("status.SUBMITTED")}</span>
-                        <span className="inline-flex items-center gap-1.5"><Dot color={NOT_SUBMITTED} /> {t("status.NOT_SUBMITTED")}</span>
+                    <div className="chart-legend" style={{ color: axis }}>
+                        <span className="chart-legend-item"><Dot color={SUBMITTED} /> {t("status.SUBMITTED")}</span>
+                        <span className="chart-legend-item"><Dot color={NOT_SUBMITTED} /> {t("status.NOT_SUBMITTED")}</span>
                     </div>
 
                     {/* Barres — SEULE cette zone scrolle (axe X recharts masqué) */}
-                    <div className="max-h-[320px] overflow-y-auto" style={{ scrollbarGutter: "stable" }}>
+                    <div className="chart-scroll">
                         <ResponsiveContainer width="100%" height={data.length * 38 + 10}>
                             <BarChart data={data} layout="vertical" margin={MARGIN}>
                                 <CartesianGrid horizontal={false} stroke={grid} strokeDasharray="3 3" />

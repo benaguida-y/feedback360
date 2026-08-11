@@ -24,7 +24,7 @@ export default function Donut({ title, data, emptyLabel }: { title: string; data
     const total = data.reduce((a, b) => a + b.value, 0);
 
     return (
-        <div className="card p-5">
+        <div className="chart-card">
             <h4 className="chart-title">{title}</h4>
             {total === 0 ? (
                 <p className="chart-empty">{emptyLabel}</p>

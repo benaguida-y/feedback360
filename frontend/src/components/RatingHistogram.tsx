@@ -31,7 +31,7 @@ export default function RatingHistogram({ counts, emptyLabel }: { counts: number
     const total = counts.reduce((a, b) => a + b, 0);
 
     return (
-        <div className="card p-5">
+        <div className="chart-card">
             <h4 className="chart-title">{t("charts.ratingDistribution")}</h4>
             {total === 0 ? (
                 <p className="chart-empty">{emptyLabel}</p>

@@ -63,5 +63,5 @@ export default function DashboardBarChart({
         </>
     );
 
-    return bare ? body : <div className="card p-5">{body}</div>;
+    return bare ? body : <div className="chart-card">{body}</div>;
 }

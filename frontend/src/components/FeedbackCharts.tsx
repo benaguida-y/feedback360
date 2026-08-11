@@ -47,9 +47,9 @@ export default function FeedbackCharts({ summary, perModule }: { summary: Summar
         .slice(0, 8);
 
     return (
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="charts-pair">
             {/* Répartition des feedbacks (donut) */}
-            <div className="card p-5">
+            <div className="chart-card">
                 <h4 className="chart-title">{t("charts.statusTitle")}</h4>
                 {statusData.length === 0 ? (
                     <p className="chart-empty">{t("common.noData")}</p>
@@ -71,7 +71,7 @@ export default function FeedbackCharts({ summary, perModule }: { summary: Summar
             </div>
 
             {/* Note moyenne par module (barres horizontales) */}
-            <div className="card p-5">
+            <div className="chart-card">
                 <h4 className="chart-title">{t("charts.scoreTitle")}</h4>
                 {scoreData.length === 0 ? (
                     <p className="chart-empty">{t("common.noData")}</p>

@@ -82,22 +82,22 @@ export default function ManagerDashboard() {
         <div>
             <PageHeader title={t("common.overview")} subtitle={t("managerDashboard.subtitle")} />
 
-            <h3 className="section-title mb-3">{t("managerDashboard.sectionFeedbacks")}</h3>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <h3 className="section-title dash-head">{t("managerDashboard.sectionFeedbacks")}</h3>
+            <div className="grid-stats-4">
                 <StatCard label={t("common.total")} value={summary!.total} />
                 <StatCard label={t("status.SUBMITTED")} value={summary!.submitted} accent="accent-emerald" />
                 <StatCard label={t("status.NOT_SUBMITTED")} value={summary!.notSubmitted} accent="accent-amber" />
                 <StatCard label={t("status.IN_PROGRESS")} value={summary!.inProgress} accent="accent-sky" />
             </div>
 
-            <h3 className="section-title mt-8 mb-3">{t("managerDashboard.sectionIndicators")}</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionIndicators")}</h3>
+            <div className="grid-2col">
                 <StatCard label={t("common.averageScore")} value={avg != null ? `${avg.toFixed(1)} / 5` : "—"} accent="accent-brand" />
                 <StatCard label={t("managerDashboard.submissionRate")} value={`${rate} %`} accent="accent-emerald" />
             </div>
 
-            <h3 className="section-title mt-8 mb-3">{t("managerDashboard.sectionHighlights")}</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionHighlights")}</h3>
+            <div className="grid-cards-2">
                 {/* Collaborateur le plus actif + son graphe (même carte) */}
                 <HighlightCard
                     label={t("managerDashboard.topCollaborator")}
@@ -130,12 +130,12 @@ export default function ManagerDashboard() {
                 </HighlightCard>
             </div>
 
-            <h3 className="section-title mt-8 mb-3">{t("managerDashboard.sectionCharts")}</h3>
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionCharts")}</h3>
             <FeedbackCharts summary={summary!} perModule={stats!.perModule} />
 
             {/* Accès aux vues détaillées */}
-            <h3 className="section-title mt-8 mb-3">{t("managerDashboard.sectionAccess")}</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionAccess")}</h3>
+            <div className="grid-cards-2">
                 <NavCard to="/management/feedbacks" title={t("managerFeedbacks.title")} subtitle={t("managerDashboard.navFeedbacksSub")} />
                 <NavCard to="/management/modules" title={t("managerModules.title")} subtitle={t("managerDashboard.navModulesSub")} />
             </div>
@@ -148,16 +148,16 @@ function HighlightCard({ label, value, sub, icon, children }: {
     label: string; value: string; sub: string; icon?: any; children?: ReactNode;
 }) {
     return (
-        <div className="highlight-card flex-col">
-            <div className="flex w-full items-start gap-4">
+        <div className="highlight-card highlight-card-col">
+            <div className="highlight-head">
                 <span className="highlight-icon">{icon}</span>
-                <div className="min-w-0 mb-4">
+                <div className="highlight-info">
                     <p className="highlight-label">{label}</p>
                     <p className="highlight-value">{value}</p>
                     <p className="highlight-sub">{sub}</p>
                 </div>
             </div>
-            {children && <div className="w-full">{children}</div>}
+            {children && <div className="full-w">{children}</div>}
         </div>
     );
 }

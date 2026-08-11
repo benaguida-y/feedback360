@@ -29,7 +29,7 @@ export default function ProgressDistributionChart({ title, data, emptyLabel }: {
     const total = data.reduce((a, b) => a + b.count, 0);
 
     return (
-        <div className="card p-5">
+        <div className="chart-card">
             <h4 className="chart-title">{title}</h4>
             {total === 0 ? (
                 <p className="chart-empty">{emptyLabel}</p>
