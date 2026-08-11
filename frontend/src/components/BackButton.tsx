@@ -21,7 +21,7 @@ export default function BackButton({ to = "/" }: { to?: string }) {
             aria-label={t("common.back")}
             className="icon-btn"
         >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="icon-sm" />
         </button>
     );
 }

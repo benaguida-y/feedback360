@@ -11,71 +11,55 @@
         {{styles}}
     </style>
 </head>
-<body style="margin:0; padding:0; background-color:#f7f9fb;">
+<body class="email-body">
+<div class="preheader">{{title}}</div>
 
-<!-- Aperçu masqué (preheader) -->
-<div style="display:none; max-height:0; overflow:hidden; opacity:0; mso-hide:all;">{{title}}</div>
-
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f7f9fb; border-collapse:collapse;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="email-bg">
     <tr>
-        <td align="center" style="padding:40px 16px;">
+        <td align="center" class="email-wrap">
+            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="email-card">
 
-            <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="card" style="width:600px; max-width:600px; background-color:#ffffff; border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; box-shadow:0 10px 30px rgba(15,23,42,0.07); border-collapse:collapse;">
+                <tr><td class="email-accent">&nbsp;</td></tr>
 
-                <!-- Bande de marque (dégradé Capgemini) : logo blanc + tagline -->
                 <tr>
-                    <td align="center" class="px" bgcolor="#0070ad" style="padding:30px 40px 26px; background-color:#0070ad; background-image:linear-gradient(135deg,#1d365a 0%,#0070ad 55%,#12abdb 130%);">
-                        <img src="cid:{{logoCid}}" alt="Capgemini — Feedback360" height="48" style="height:48px; display:block; margin:0 auto 16px; border:0; outline:none;" />
-                        <p style="margin:0; font-family:'Ubuntu','Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:20px; line-height:1.35; font-weight:700; color:#ffffff;">Vos retours,<span style="color:rgba(255,255,255,0.72);"> notre progrès.</span></p>
+                    <td align="center" class="email-header">
+                        <img src="cid:{{logoCid}}" alt="Capgemini — Feedback360" class="email-logo" />
+                        <p class="email-tagline">Vos retours,<span class="email-tagline-soft"> notre progrès.</span></p>
                     </td>
                 </tr>
 
-                <!-- Corps -->
                 <tr>
-                    <td class="px" style="padding:32px 44px 4px; font-family:'Ubuntu','Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:#1e293b;">
-                        <h1 class="title" style="margin:0 0 18px; font-size:23px; line-height:1.3; font-weight:700; color:#0f172a;">{{title}}</h1>
-                        <p style="margin:0 0 14px; font-size:15px; line-height:1.7; color:#475569;">Bonjour {{name}},</p>
-                        <div class="intro" style="font-size:15px; line-height:1.7; color:#475569;">
-                            {{intro}}
-                        </div>
+                    <td class="email-content">
+                        <h1 class="email-title">{{title}}</h1>
+                        <p class="email-greeting">Bonjour {{name}},</p>
+                        <div class="email-intro">{{intro}}</div>
                     </td>
                 </tr>
 
-                <!-- Bouton (plein bleu, comme btn-primary) -->
                 <tr>
-                    <td align="center" class="px" style="padding:24px 44px 8px;">
-                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-                            <tr>
-                                <td align="center" bgcolor="#0070ad" style="border-radius:8px; padding:14px 38px; background-color:#0070ad; box-shadow:0 6px 16px rgba(0,112,173,0.28);">
-                                    <a href="{{link}}" class="btn" style="display:inline-block; font-family:'Ubuntu','Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:15px; font-weight:600; color:#ffffff !important; text-decoration:none;">{{cta}} &gt;</a>
-                                </td>
-                            </tr>
-                        </table>
+                    <td align="center" class="email-btn-cell">
+                        <a href="{{link}}" class="email-btn">{{cta}} &gt;</a>
                     </td>
                 </tr>
 
-                <!-- Lien de secours -->
                 <tr>
-                    <td class="px" style="padding:16px 44px 26px; font-family:'Ubuntu','Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-                        <p style="margin:0; font-size:12px; line-height:1.5; color:#94a3b8;">Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur :</p>
-                        <p style="margin:6px 0 0; font-size:12px; line-height:1.5; word-break:break-all;"><a href="{{link}}" style="color:#0070ad; text-decoration:underline;">{{link}}</a></p>
+                    <td class="email-fallback">
+                        <p class="email-fallback-label">Le bouton ne fonctionne pas ? Copiez ce lien dans votre navigateur :</p>
+                        <p class="email-fallback-link"><a href="{{link}}" class="email-link">{{link}}</a></p>
                     </td>
                 </tr>
 
-                <!-- Pied de page -->
                 <tr>
-                    <td class="px" style="padding:22px 44px 30px; background-color:#f7f9fb; border-top:1px solid #eef2f6; font-family:'Ubuntu','Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-                        <p style="margin:0 0 6px; font-size:14px; font-weight:700; color:#0070ad;">Feedback360</p>
-                        <p style="margin:0 0 4px; font-size:12px; line-height:1.6; color:#94a3b8;">Si vous n'attendiez pas cet e-mail, vous pouvez l'ignorer en toute sécurité.</p>
-                        <p style="margin:0; font-size:12px; line-height:1.6; color:#b3bdc9;">E-mail automatique · merci de ne pas y répondre · © 2026 Feedback360 · Capgemini</p>
+                    <td class="email-footer">
+                        <p class="email-brand">Feedback360</p>
+                        <p class="email-footer-text">Si vous n'attendiez pas cet e-mail, vous pouvez l'ignorer en toute sécurité.</p>
+                        <p class="email-footer-muted">E-mail automatique · merci de ne pas y répondre · © 2026 Feedback360 · Capgemini</p>
                     </td>
                 </tr>
 
             </table>
-
         </td>
     </tr>
 </table>
-
 </body>
 </html>

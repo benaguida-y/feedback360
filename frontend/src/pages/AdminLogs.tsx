@@ -90,7 +90,7 @@ export default function AdminLogs() {
                     <option value="FAILURE">{t("adminLogs.logStatus.FAILURE")}</option>
                     <option value="IN_PROGRESS">{t("adminLogs.logStatus.IN_PROGRESS")}</option>
                 </select>
-                <div className="ml-auto">
+                <div className="filter-bar-search">
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.emailModule")} />
                 </div>
             </div>

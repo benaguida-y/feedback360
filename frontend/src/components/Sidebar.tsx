@@ -29,27 +29,27 @@ export default function Sidebar() {
     const isManager = role === "MANAGER" || role === "ADMIN";
     const { t } = useTranslation();
     const items = [
-        { to: "/", end: true, label: t("nav.dashboard"), icon: <LayoutDashboard className="h-5 w-5 shrink-0" /> },
+        { to: "/", end: true, label: t("nav.dashboard"), icon: <LayoutDashboard className="sidebar-icon" /> },
         ...(role === "COLLABORATOR" ? [
-            { to: "/feedbacks", end: false, label: t("nav.feedbacks"), icon: <MessageSquareText className="h-5 w-5 shrink-0" /> },
+            { to: "/feedbacks", end: false, label: t("nav.feedbacks"), icon: <MessageSquareText className="sidebar-icon" /> },
         ] : []),
         ...(isManager ? [
-            { to: "/management/feedbacks", end: false, label: t("nav.feedbacks"), icon: <MessageSquareText className="h-5 w-5 shrink-0" /> },
-            { to: "/management/collaborators", end: false, label: t("nav.collaborators") , icon: <Users className="h-5 w-5 shrink-0" /> },
-            { to: "/management/modules", end: false, label: t("nav.modules"), icon: <BarChart3 className="h-5 w-5 shrink-0" /> },
+            { to: "/management/feedbacks", end: false, label: t("nav.feedbacks"), icon: <MessageSquareText className="sidebar-icon" /> },
+            { to: "/management/collaborators", end: false, label: t("nav.collaborators") , icon: <Users className="sidebar-icon" /> },
+            { to: "/management/modules", end: false, label: t("nav.modules"), icon: <BarChart3 className="sidebar-icon" /> },
         ] : []),
         ...(role === "ADMIN" ? [
-            { to: "/admin/users", end: false, label: t("nav.administration"), icon: <Settings className="h-5 w-5 shrink-0" /> },
-            { to: "/admin/reminders", end: false, label: t("nav.reminders"), icon: <BellRing className="h-5 w-5 shrink-0" /> },
-            { to: "/admin/logs", end: false, label: t("nav.supervision"), icon: <Activity className="h-5 w-5 shrink-0" /> },
+            { to: "/admin/users", end: false, label: t("nav.administration"), icon: <Settings className="sidebar-icon" /> },
+            { to: "/admin/reminders", end: false, label: t("nav.reminders"), icon: <BellRing className="sidebar-icon" /> },
+            { to: "/admin/logs", end: false, label: t("nav.supervision"), icon: <Activity className="sidebar-icon" /> },
         ] : []),
     ];
 
     return (
-        <aside className={`sidebar ${collapsed ? "w-16" : "w-60"}`}>
+        <aside className={`sidebar ${collapsed ? "sidebar-collapsed" : "sidebar-expanded"}`}>
             <SidebarBrand collapsed={collapsed} onToggle={toggle} />
 
-            <nav className="flex flex-1 flex-col py-3">
+            <nav className="sidebar-nav">
                 {items.map((item) => (
                     <SidebarLink key={item.to} {...item} collapsed={collapsed} />
                 ))}

@@ -142,13 +142,13 @@ export default function SubmitFeedback() {
             {loadError && <p className="error-text">{loadError}</p>}
 
             {detail && detail.status === "SUBMITTED" ? (
-                <div className="notice-success max-w-lg p-6">
-                    <p className="font-semibold">{t("submitFeedback.alreadySubmitted")}</p>
-                    <p className="mt-2 text-sm">{t("submitFeedback.ratingValue", { score: detail.globalScore })}</p>
-                    {detail.comment && <p className="mt-1 text-sm">{t("submitFeedback.commentValue", { comment: detail.comment })}</p>}
+                <div className="notice-success submit-notice">
+                    <p className="text-semibold">{t("submitFeedback.alreadySubmitted")}</p>
+                    <p className="submit-line">{t("submitFeedback.ratingValue", { score: detail.globalScore })}</p>
+                    {detail.comment && <p className="submit-line-tight">{t("submitFeedback.commentValue", { comment: detail.comment })}</p>}
                 </div>
             ) : detail ? (
-                <div className="card max-w-lg">
+                <div className="card submit-card">
                     <div className="module-strip">
                         <div>
                             <p className="highlight-label">{t("submitFeedback.trainingModule")}</p>
@@ -160,9 +160,9 @@ export default function SubmitFeedback() {
                         )}
                     </div>
 
-                    <form onSubmit={handleSubmit} className="p-6">
-                        <p className="form-label mb-2">{t("common.globalScore")}</p>
-                        <div className="mb-6 flex items-center gap-1">
+                    <form onSubmit={handleSubmit} className="pad-6">
+                        <p className="form-label form-label-mb">{t("common.globalScore")}</p>
+                        <div className="stars-row">
                             {[1, 2, 3, 4, 5].map((n) => (
                                 <button type="button" key={n}
                                         onMouseEnter={() => setHover(n)} onMouseLeave={() => setHover(0)}
@@ -171,28 +171,28 @@ export default function SubmitFeedback() {
                                     ★
                                 </button>
                             ))}
-                            {score > 0 && <span className="ml-3 text-sm cell-muted">{score} / 5</span>}
+                            {score > 0 && <span className="cell-muted score-label">{score} / 5</span>}
                         </div>
 
-                        <label className="mb-6 block">
+                        <label className="comment-block">
                             <span className="form-label">{t("common.comment")} <span className="required-mark">*</span></span>
                             <textarea value={comment} onChange={(e) => { setComment(e.target.value); markTouched(); }} rows={4}
                                       placeholder={t("submitFeedback.commentPlaceholder")}
-                                      className="form-input-plain transition" />
+                                      className="form-input-plain el-transition" />
                         </label>
 
                         {error && <p className="error-banner">{error}</p>}
 
-                        <div className="flex items-center gap-3">
+                        <div className="row-center-3">
                             <button type="button" onClick={() => saveDraft(false)} disabled={saving} className="btn-secondary">
                                 {saving ? t("submitFeedback.saving") : t("submitFeedback.saveDraft")}
                             </button>
-                            <button type="submit" disabled={loading} className="btn-primary-lg flex-1">
+                            <button type="submit" disabled={loading} className="btn-primary-lg btn-flex1">
                                 {loading ? t("submitFeedback.sending") : t("submitFeedback.submit")}
                             </button>
                         </div>
 
-                        <p className="mt-3 h-4 text-xs text-faint">
+                        <p className="text-faint draft-status">
                             {saving ? t("submitFeedback.savingDraft") : savedAt ? t("submitFeedback.draftSavedAt", { time: savedLabel }) : ""}
                         </p>
                     </form>

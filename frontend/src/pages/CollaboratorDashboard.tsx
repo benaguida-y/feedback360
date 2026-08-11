@@ -39,7 +39,7 @@ export default function CollaboratorDashboard() {
             <PageHeader title={t("collaboratorDashboard.title")} subtitle={t("collaboratorDashboard.subtitle")} />
 
             {summary && (
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                <div className="grid-stats-4">
                     <StatCard label={t("common.total")} value={summary.total} />
                     <StatCard label={t("status.SUBMITTED")} value={summary.submitted} accent="accent-emerald" />
                     <StatCard label={t("status.NOT_SUBMITTED")} value={summary.notSubmitted} accent="accent-amber" />
@@ -47,7 +47,7 @@ export default function CollaboratorDashboard() {
                 </div>
             )}
 
-            <div className="mt-8 flex items-center justify-between">
+            <div className="recent-head">
                 <h3 className="section-title">{t("collaboratorDashboard.recent")}</h3>
                 <Link to="/feedbacks" className="btn-see-all">
                     {t("common.viewAll")}
@@ -55,7 +55,7 @@ export default function CollaboratorDashboard() {
                 </Link>
             </div>
 
-            <Card className="mt-3">
+            <Card className="recent-list">
                 <Table columns={[t("common.module"), t("common.status"), t("common.score"), t("common.date"), t("common.action")]}
                        loading={loading}
                        isEmpty={recent.length === 0} emptyLabel={t("common.noFeedback")}>

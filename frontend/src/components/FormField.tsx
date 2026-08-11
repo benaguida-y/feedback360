@@ -17,21 +17,21 @@ export default function FormField({ label, icon: Icon, type = "text", value, onC
     const isPassword = type === "password";
 
     return (
-        <label className="mb-5 block">
-            <span className="form-label mb-1.5 block">{label}</span>
-            <div className="relative">
+        <label className="form-field">
+            <span className="form-label form-field-label">{label}</span>
+            <div className="form-field-control">
                 <span className="form-icon">
-                    <Icon className="h-5 w-5" />
+                    <Icon className="icon-md" />
                 </span>
                 <input type={isPassword && reveal ? "text" : type}
                        value={value} onChange={(e) => onChange(e.target.value)}
                        required minLength={minLength} placeholder={placeholder}
-                       className={`form-input ${isPassword ? "pr-11" : "pr-3.5"}`} />
+                       className={`form-input ${isPassword ? "form-input-pw" : "form-input-txt"}`} />
                 {isPassword && (
                     <button type="button" onClick={() => setReveal((v) => !v)}
                             aria-label={reveal ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                             className="form-reveal">
-                        {reveal ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                        {reveal ? <EyeOff className="icon-md" /> : <Eye className="icon-md" />}
                     </button>
                 )}
             </div>
