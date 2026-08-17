@@ -504,3 +504,18 @@ aside[class*="border"] {
 
 /* AdminUsers — ligne d'utilisateur inactif estompée */
 .row-dim { @apply opacity-60; }
+
+/* Card — variantes de remplissage */
+.card-padded { @apply p-6; }
+.card-clip { @apply overflow-hidden; }
+
+/* Table — hauteur de cellule squelette */
+.skeleton-h { @apply h-4; }
+
+/* SidebarLink — état plié/déplié + libellé */
+.sidebar-link-collapsed { @apply justify-center px-0; }
+.sidebar-link-expanded { @apply gap-3 px-[22px]; }
+.sidebar-link-label { @apply flex-1 text-left; }
+
+/* FeedbackDetail — étoile de note */
+.detail-star { @apply text-xl; }
