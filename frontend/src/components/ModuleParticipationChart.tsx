@@ -4,7 +4,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 
-interface ModuleRow { module: string; submitted: number; notSubmitted: number; }
+interface ModuleRow { module: string; submitted: number; inProgress: number; notSubmitted: number; }
 
 function useDarkMode() {
     const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
@@ -18,6 +18,7 @@ function useDarkMode() {
 }
 
 const SUBMITTED = "#10b981";      // emerald (statut « soumis »)
+const IN_PROGRESS = "#0ea5e9";    // sky     (statut « en cours »)
 const NOT_SUBMITTED = "#f59e0b";  // amber  (statut « en attente »)
 const Y_WIDTH = 120;              // largeur axe Y (px)
 const MARGIN = { top: 0, right: 16, bottom: 0, left: 4 };
@@ -33,7 +34,7 @@ export default function ModuleParticipationChart({ data, emptyLabel }: { data: M
     const tipText = dark ? "#e5e9f0" : "#1e293b";
 
     // Domaine X commun (barres + axe HTML) + graduations.
-    const maxVal = Math.max(1, ...data.map((d) => d.submitted + d.notSubmitted));
+    const maxVal = Math.max(1, ...data.map((d) => d.submitted + d.inProgress + d.notSubmitted));
     const step = Math.max(1, Math.ceil(maxVal / 5));
     const ticks: number[] = [];
     for (let i = 0; i <= maxVal; i += step) ticks.push(i);
@@ -54,6 +55,7 @@ export default function ModuleParticipationChart({ data, emptyLabel }: { data: M
                     {/* Légende — fixe */}
                     <div className="chart-legend" style={{ color: axis }}>
                         <span className="chart-legend-item"><Dot color={SUBMITTED} /> {t("status.SUBMITTED")}</span>
+                        <span className="chart-legend-item"><Dot color={IN_PROGRESS} /> {t("status.IN_PROGRESS")}</span>
                         <span className="chart-legend-item"><Dot color={NOT_SUBMITTED} /> {t("status.NOT_SUBMITTED")}</span>
                     </div>
 
@@ -69,6 +71,8 @@ export default function ModuleParticipationChart({ data, emptyLabel }: { data: M
                                          cursor={{ fill: dark ? "rgba(255,255,255,0.05)" : "rgba(2,6,23,0.04)" }} />
                                 <Bar dataKey="submitted" name={t("status.SUBMITTED")} stackId="a"
                                      fill={SUBMITTED} stroke={surface} strokeWidth={1} radius={[4, 0, 0, 4]} barSize={18} />
+                                <Bar dataKey="inProgress" name={t("status.IN_PROGRESS")} stackId="a"
+                                     fill={IN_PROGRESS} stroke={surface} strokeWidth={1} barSize={18} />
                                 <Bar dataKey="notSubmitted" name={t("status.NOT_SUBMITTED")} stackId="a"
                                      fill={NOT_SUBMITTED} stroke={surface} strokeWidth={1} radius={[0, 4, 4, 0]} barSize={18} />
                             </BarChart>

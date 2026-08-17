@@ -18,6 +18,7 @@ interface ModuleStat {
     moduleTitle: string;
     submittedCount: number;
     notSubmittedCount: number;
+    inProgressCount: number;
     averageScore: number | null;
 }
 interface Stats {

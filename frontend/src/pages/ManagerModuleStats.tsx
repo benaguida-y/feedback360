@@ -13,7 +13,7 @@ import ModuleParticipationChart from "../components/ModuleParticipationChart";
 import { useTranslation } from "react-i18next";
 import { useSort } from "../useSort";
 
-interface ModuleStats { moduleTitle: string; submittedCount: number; notSubmittedCount: number; averageScore: number | null; }
+interface ModuleStats { moduleTitle: string; submittedCount: number; notSubmittedCount: number; inProgressCount: number; averageScore: number | null; }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
 
 export default function ManagerModuleStats() {
@@ -60,8 +60,8 @@ export default function ManagerModuleStats() {
     }, []);
 
     const participationData = [...allModules]
-        .sort((a, b) => (b.submittedCount + b.notSubmittedCount) - (a.submittedCount + a.notSubmittedCount))
-        .map((m) => ({ module: m.moduleTitle, submitted: m.submittedCount, notSubmitted: m.notSubmittedCount }));
+        .sort((a, b) => (b.submittedCount + b.inProgressCount + b.notSubmittedCount) - (a.submittedCount + a.inProgressCount + a.notSubmittedCount))
+        .map((m) => ({ module: m.moduleTitle, submitted: m.submittedCount, inProgress: m.inProgressCount, notSubmitted: m.notSubmittedCount }));
 
     return (
         <Layout>

@@ -69,7 +69,7 @@ public class ManagementService {
 
         // Le dashboard a besoin de TOUS les modules → requête non paginée.
         List<ModuleStatsResponse> perModule = feedbackRepository
-                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, null, Pageable.unpaged())
+                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, FeedbackStatus.IN_PROGRESS, null, Pageable.unpaged())
                 .getContent();
 
         int submissionRatePercent = (int) Math.round(submissionRate * 100);
@@ -118,7 +118,7 @@ public class ManagementService {
         String searchParam = (search == null || search.isBlank())
                 ? null : "%" + search.trim().toLowerCase() + "%";
         List<ModuleStatsResponse> all = feedbackRepository
-                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, searchParam, Pageable.unpaged())
+                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, FeedbackStatus.IN_PROGRESS, searchParam, Pageable.unpaged())
                 .getContent().stream()
                 .filter(m -> matchesStar(m.averageScore(), score))
                 .toList();
@@ -206,7 +206,7 @@ public class ManagementService {
 
         // Module le mieux noté : meilleure note moyenne (sur TOUS les modules).
         ModuleStatsResponse best = feedbackRepository
-                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, null, Pageable.unpaged())
+                .moduleStats(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, FeedbackStatus.IN_PROGRESS, null, Pageable.unpaged())
                 .getContent().stream()
                 .filter(m -> m.averageScore() != null)
                 .max(Comparator.comparingDouble(ModuleStatsResponse::averageScore))
