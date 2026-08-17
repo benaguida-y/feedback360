@@ -1,34 +1,54 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import Skeleton from "./Skeleton";
 
-const WIDTHS = ["70%", "55%", "80%", "45%", "60%", "50%"];
+// Une colonne : soit un simple libellé, soit { libellé + champ de tri backend }.
+export type Column = string | { label: string; sort?: string };
 
-export default function Table({ columns, children, isEmpty, emptyLabel, loading, skeletonRows = 5 }: {
-    columns: string[];
+export default function Table({ columns, children, isEmpty, emptyLabel, loading, skeletonRows = 5, sort, onSort }: {
+    columns: Column[];
     children: ReactNode;
     isEmpty?: boolean;
     emptyLabel?: string;
     loading?: boolean;
     skeletonRows?: number;
+    sort?: string;                       // ex. "email,asc"
+    onSort?: (field: string) => void;    // clic sur une colonne triable
 }) {
     const { t } = useTranslation();
+    const [sortField, sortDir] = (sort ?? "").split(",");
+
     return (
         <table className="table">
             <thead className="table-head">
             <tr>
-                {columns.map((c) => (
-                    <th key={c} className="table-th">{c}</th>
-                ))}
+                {columns.map((c, i) => {
+                    const label = typeof c === "string" ? c : c.label;
+                    const field = typeof c === "string" ? undefined : c.sort;
+                    const key = `${label}-${i}`;
+                    if (!field || !onSort) return <th key={key} className="table-th">{label}</th>;
+                    const active = sortField === field;
+                    return (
+                        <th key={key} className="table-th">
+                            <button type="button" className="table-sort" onClick={() => onSort(field)}>
+                                {label}
+                                {active && (sortDir === "desc"
+                                    ? <ChevronDown className="table-sort-icon" />
+                                    : <ChevronUp className="table-sort-icon" />)}
+                            </button>
+                        </th>
+                    );
+                })}
             </tr>
             </thead>
             <tbody className="table-body">
             {loading ? (
                 Array.from({ length: skeletonRows }).map((_, r) => (
                     <tr key={r}>
-                        {columns.map((c, i) => (
-                            <td key={c} className="table-cell">
-                                <Skeleton className="h-4" style={{ width: WIDTHS[i % WIDTHS.length] }} />
+                        {columns.map((_, i) => (
+                            <td key={i} className="table-cell">
+                                <Skeleton className={`h-4 skeleton-w-${(i % 6) + 1}`} />
                             </td>
                         ))}
                     </tr>

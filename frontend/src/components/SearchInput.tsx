@@ -10,7 +10,7 @@ export default function SearchInput({ value, onChange, placeholder }: {
     return (
         <div className="search-wrap">
             <span className="search-icon">
-                <Search className="h-4 w-4" />
+                <Search className="icon-sm" />
             </span>
             <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder ?? t("common.search")}
                    className="search-input" />

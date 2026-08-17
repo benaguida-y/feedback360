@@ -40,7 +40,7 @@ export default function Activate() {
             <BrandPanel />
 
             <div className="auth-form-col">
-                <div className="w-full max-w-sm">
+                <div className="auth-form">
                     <img src="/logo.png" alt="Feedback360" className="auth-logo" />
 
                     {!token ? (
@@ -49,7 +49,7 @@ export default function Activate() {
                         </div>
                     ) : success ? (
                         <div className="auth-alert-success">
-                            <CheckCircle2 className="h-5 w-5 flex-none" />
+                            <CheckCircle2 className="auth-alert-icon" />
                             {t("activate.success")}
                         </div>
                     ) : (

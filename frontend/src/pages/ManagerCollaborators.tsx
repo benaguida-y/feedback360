@@ -9,6 +9,7 @@ import Pagination from "../components/Pagination";
 import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
 import { useTranslation } from "react-i18next";
+import { useSort } from "../useSort";
 
 
 interface Collab {
@@ -23,36 +24,39 @@ interface Collab {
 }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
 
-const SIZE = 10;
-
 export default function ManagerCollaborators() {
     const role = getRole();
     const [rows, setRows] = useState<Collab[]>([]);
     const [page, setPage] = useState(0);
+    const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState("");
+    const [score, setScore] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const { t } = useTranslation();
+    const { sort, toggle } = useSort();
 
     if (role !== "MANAGER" && role !== "ADMIN") return <Navigate to="/" replace />;
 
-    useEffect(() => { setPage(0); }, [search]);
+    useEffect(() => { setPage(0); }, [search, score, sort, size]);
 
     useEffect(() => {
         setLoading(true);
         const timer = setTimeout(() => {
             const params = new URLSearchParams();
             if (search.trim()) params.set("search", search.trim());
+            if (score) params.set("score", score);
+            if (sort) params.set("sort", sort);
             params.set("page", String(page));
-            params.set("size", String(SIZE));
+            params.set("size", String(size));
             client.get<Page<Collab>>(`/management/collaborators?${params.toString()}`)
                 .then((r) => { setRows(r.data.content); setTotalPages(r.data.totalPages); })
                 .catch(() => setError(t("managerCollaborators.loadError")))
                 .finally(() => setLoading(false));
         }, 300);
         return () => clearTimeout(timer);
-    }, [search, page]);
+    }, [search, score, page, sort, size]);
 
     return (
         <Layout>
@@ -62,13 +66,23 @@ export default function ManagerCollaborators() {
 
             {error && <p className="error-line">{error}</p>}
 
-            <div className="mb-3 flex justify-end">
-                <SearchInput value={search} onChange={setSearch} placeholder={t("search.nameEmail")} />
+            <div className="filter-bar">
+                <select value={score} onChange={(e) => setScore(e.target.value)} className="form-select">
+                    <option value="">{t("common.allScores")}</option>
+                    <option value="4">4 – 5</option>
+                    <option value="3">3 – 4</option>
+                    <option value="2">2 – 3</option>
+                    <option value="1">1 – 2</option>
+                    <option value="0">{t("common.noRating")}</option>
+                </select>
+                <div className="filter-bar-search">
+                    <SearchInput value={search} onChange={setSearch} placeholder={t("search.nameEmail")} />
+                </div>
             </div>
 
             <Card>
-                <Table columns={[t("common.collaborator"), t("managerCollaborators.progress"), t("common.averageScore"), t("common.action")]}
-                       loading={loading}
+                <Table columns={[{ label: t("common.collaborator"), sort: "fullName" }, { label: t("managerCollaborators.progress"), sort: "submittedPercent" }, { label: t("common.averageScore"), sort: "averageScore" }, t("common.action")]}
+                       loading={loading} sort={sort} onSort={toggle}
                        isEmpty={rows.length === 0} emptyLabel={t("managerCollaborators.empty")}>
                     {rows.map((c) => (
                         <tr key={c.userId} className="table-row">
@@ -77,11 +91,11 @@ export default function ManagerCollaborators() {
                                 <p className="cell-faint">{c.email}</p>
                             </td>
                             <td className="table-cell">
-                                <div className="flex items-center gap-3">
+                                <div className="row-center-3">
                                     <div className="progress-track">
                                         <div className="progress-fill" style={{ width: `${c.submittedPercent}%` }} />
                                     </div>
-                                    <span className="text-xs cell-muted">{t("managerCollaborators.submittedCount", { submitted: c.submitted, total: c.total })}</span>
+                                    <span className="cell-muted txt-xs">{t("managerCollaborators.submittedCount", { submitted: c.submitted, total: c.total })}</span>
                                 </div>
                             </td>
                             <td className="table-cell cell-default">{c.averageScore != null ? `${c.averageScore.toFixed(1)} / 5` : "—"}</td>
@@ -95,7 +109,7 @@ export default function ManagerCollaborators() {
                 </Table>
             </Card>
 
-            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} size={size} onSizeChange={setSize} />
         </Layout>
     );
 }

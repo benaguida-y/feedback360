@@ -11,7 +11,7 @@ const FILTERS = [
 export default function StatusFilter({ value, onChange }: { value: string; onChange: (v: string) => void }) {
     const { t } = useTranslation();
     return (
-        <div className="flex gap-2">
+        <div className="status-filter">
             {FILTERS.map((f) => (
                 <button key={f.key} onClick={() => onChange(f.key)}
                         className={`filter-pill ${value === f.key ? "filter-pill-active" : "filter-pill-idle"}`}>

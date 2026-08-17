@@ -4,6 +4,7 @@ import com.yb.feedback360.domain.enums.LogStatus;
 import com.yb.feedback360.domain.enums.LogType;
 import com.yb.feedback360.domain.model.Feedback;
 import com.yb.feedback360.domain.model.IntegrationLog;
+import com.yb.feedback360.domain.model.User;
 import com.yb.feedback360.dto.request.ModuleCompletedRequest;
 import com.yb.feedback360.dto.response.ModuleCompletionResult;
 import com.yb.feedback360.repository.IntegrationLogRepository;
@@ -54,11 +55,23 @@ public class ModuleCompletionFacade {
 
         try {
             Feedback feedback = moduleCompletionService.handleModuleCompleted(request);
-            String activationLink = magicLinkService.createActivationUrl(feedback.getUser());
-            emailService.sendActivationEmail(feedback.getUser(), activationLink, feedback.getModuleFormation().getTitle());
+            User user = feedback.getUser();
+            String moduleTitle = feedback.getModuleFormation().getTitle();
+
+            String link;
+            if (user.getPasswordHash() == null) {
+                // 1re fois : le collaborateur doit définir son mot de passe.
+                link = magicLinkService.createActivationUrl(user);
+                emailService.sendActivationEmail(user, link, moduleTitle);
+            } else {
+                // Compte déjà activé : connexion directe vers le nouveau feedback.
+                link = magicLinkService.createLoginUrl(user, feedback.getFeedbackId());
+                emailService.sendNewFeedbackEmail(user, link, moduleTitle);
+            }
+
             saveLog(log, LogStatus.SUCCESS, feedback);
             return ModuleCompletionResult.success(
-                    email, feedback.getFeedbackId(), feedback.getStatus().name(), activationLink);
+                    email, feedback.getFeedbackId(), feedback.getStatus().name(), link);
         } catch (Exception e) {
             String error = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             saveLog(log, LogStatus.FAILURE, null);

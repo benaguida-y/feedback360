@@ -10,7 +10,7 @@ export default function PageHeader({ title, subtitle, backTo, action }: {
     return (
         <div className="page-header">
             {backTo !== undefined && <BackButton to={backTo} />}
-            <div className="flex-1">
+            <div className="page-header-main">
                 <h2 className="page-title">{title}</h2>
                 {subtitle && <p className="page-subtitle">{subtitle}</p>}
             </div>

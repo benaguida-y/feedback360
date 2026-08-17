@@ -22,7 +22,6 @@ public interface IntegrationLogRepository extends JpaRepository<IntegrationLog, 
               and (:search is null
                    or lower(u.email) like :search
                    or lower(m.title) like :search)
-            order by l.receivedAt desc
             """)
     Page<IntegrationLog> search(@Param("type") LogType type,
                                 @Param("status") LogStatus status,
