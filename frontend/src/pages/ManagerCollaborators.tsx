@@ -83,10 +83,14 @@ export default function ManagerCollaborators() {
         { name: t("managerCollaborators.teamNone"),       value: nothing,    color: "#f59e0b" }, // amber
     ].filter((d) => d.value > 0);
 
-    const LegendRow = ({ color, label, help }: { color: string; label: string; help: string }) => (
+    const pct = (n: number) => (totalCollabs ? Math.round((n / totalCollabs) * 100) : 0);
+
+    const LegendRow = ({ color, label, help, count }: { color: string; label: string; help: string; count: number }) => (
         <li className="legend-row">
             <span className="legend-dot" style={{ background: color }} />
-            <span><span className="text-semibold">{label}</span> — {help}</span>
+            <span>
+                <span className="text-semibold">{label} · {count} ({pct(count)} %)</span> — {help}
+            </span>
         </li>
     );
 
@@ -113,9 +117,9 @@ export default function ManagerCollaborators() {
                         <div className="chart-card">
                             <p className="chart-title">{t("managerCollaborators.legendTitle")}</p>
                             <ul className="legend-list cell-default">
-                                <LegendRow color="#10b981" label={t("managerCollaborators.teamDone")}       help={t("managerCollaborators.teamDoneHelp")} />
-                                <LegendRow color="#0ea5e9" label={t("managerCollaborators.teamInProgress")} help={t("managerCollaborators.teamInProgressHelp")} />
-                                <LegendRow color="#f59e0b" label={t("managerCollaborators.teamNone")}       help={t("managerCollaborators.teamNoneHelp")} />
+                                <LegendRow color="#10b981" label={t("managerCollaborators.teamDone")}       help={t("managerCollaborators.teamDoneHelp")}       count={done} />
+                                <LegendRow color="#0ea5e9" label={t("managerCollaborators.teamInProgress")} help={t("managerCollaborators.teamInProgressHelp")} count={inProgress} />
+                                <LegendRow color="#f59e0b" label={t("managerCollaborators.teamNone")}       help={t("managerCollaborators.teamNoneHelp")}       count={nothing} />
                             </ul>
                         </div>
                     </div>

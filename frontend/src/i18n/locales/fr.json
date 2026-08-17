@@ -128,9 +128,9 @@
     "teamInProgress": "En cours",
     "teamNone": "Rien soumis",
     "legendTitle": "Comment lire ce graphe",
-    "teamDoneHelp": "a soumis tous ses feedbacks",
-    "teamInProgressHelp": "a soumis une partie de ses feedbacks",
-    "teamNoneHelp": "n'a encore rien soumis"
+    "teamDoneHelp": "collaborateurs ayant soumis tous leurs feedbacks",
+    "teamInProgressHelp": "collaborateurs ayant soumis une partie de leurs feedbacks",
+    "teamNoneHelp": "collaborateurs n'ayant encore rien soumis"
   },
   "managerModules": {
     "title": "Détail par module",

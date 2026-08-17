@@ -128,9 +128,9 @@
     "teamInProgress": "In progress",
     "teamNone": "Nothing submitted",
     "legendTitle": "How to read this chart",
-    "teamDoneHelp": "submitted all their feedback",
-    "teamInProgressHelp": "submitted some of their feedback",
-    "teamNoneHelp": "hasn't submitted anything yet"
+    "teamDoneHelp": "collaborators who submitted all their feedback",
+    "teamInProgressHelp": "collaborators who submitted some of their feedback",
+    "teamNoneHelp": "collaborators who haven't submitted anything yet"
   },
   "managerModules": {
     "title": "Module breakdown",
