@@ -476,3 +476,53 @@ aside[class*="border"] {
 .pre-wrap { @apply whitespace-pre-wrap; }
 .text-semibold { @apply font-semibold; }
 .el-transition { @apply transition; }
+
+/* Graphiques (recharts) */
+.chart-title { @apply mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200; }
+.chart-empty { @apply flex h-64 items-center justify-center text-sm text-slate-400 dark:text-slate-500; }
+
+/* Graphiques — enveloppes & mises en page */
+.chart-card { @apply rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-cap-border dark:bg-cap-panel; }
+.charts-duo { @apply mb-4 grid gap-4 lg:grid-cols-2; }
+.charts-split { @apply grid gap-4 lg:grid-cols-3; }
+.charts-split-main { @apply lg:col-span-2; }
+
+/* Donut — carte en colonne + légende HTML épinglée en bas */
+.chart-card-col { @apply flex flex-col; }
+.donut-body { @apply flex flex-1 flex-col justify-center; }
+.donut-legend { @apply mt-auto flex flex-wrap justify-center gap-x-4 gap-y-1.5 pt-3; }
+.donut-legend-item { @apply inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400; }
+.chart-block { @apply mb-4; }
+.chart-legend { @apply mb-2 flex items-center gap-4 text-xs; }
+.chart-legend-item { @apply inline-flex items-center gap-1.5; }
+.chart-scroll { @apply max-h-[320px] overflow-y-auto; scrollbar-gutter: stable; }
+.chart-dot { display: inline-block; width: 9px; height: 9px; border-radius: 9999px; }
+
+/* Dashboard — carte « highlight » contenant un graphe */
+.highlight-card-col { @apply flex-col; }
+.highlight-head { @apply flex w-full items-start gap-4; }
+.highlight-info { @apply mb-4 min-w-0; }
+
+/* Collaborateurs — légende du donut d'équipe */
+.legend-row { @apply flex items-start gap-2; }
+.legend-dot { @apply mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full; }
+.legend-list { @apply space-y-2.5 text-sm; }
+.col-gap-4 { @apply flex flex-col gap-4; }
+
+/* AdminUsers — ligne d'utilisateur inactif estompée */
+.row-dim { @apply opacity-60; }
+
+/* Card — variantes de remplissage */
+.card-padded { @apply p-6; }
+.card-clip { @apply overflow-hidden; }
+
+/* Table — hauteur de cellule squelette */
+.skeleton-h { @apply h-4; }
+
+/* SidebarLink — état plié/déplié + libellé */
+.sidebar-link-collapsed { @apply justify-center px-0; }
+.sidebar-link-expanded { @apply gap-3 px-[22px]; }
+.sidebar-link-label { @apply flex-1 text-left; }
+
+/* FeedbackDetail — étoile de note */
+.detail-star { @apply text-xl; }

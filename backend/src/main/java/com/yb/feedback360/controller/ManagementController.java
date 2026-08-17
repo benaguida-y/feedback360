@@ -78,4 +78,10 @@ public class ManagementController {
     public DashboardHighlightsResponse highlights() {
         return managementService.getHighlights();
     }
+
+    @GetMapping(ApiPaths.MANAGEMENT_FEEDBACKS_RATING)
+    public RatingDistributionResponse ratingDistribution(@RequestParam(required = false) FeedbackStatus status,
+                                                         @RequestParam(required = false) String search) {
+        return managementService.getRatingDistribution(status, search);
+    }
 }

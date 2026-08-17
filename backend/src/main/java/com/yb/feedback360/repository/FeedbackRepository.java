@@ -41,6 +41,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
                 m.title,
                 sum(case when f.status = :submitted then 1 else 0 end),
                 sum(case when f.status = :notSubmitted then 1 else 0 end),
+                sum(case when f.status = :inProgress then 1 else 0 end),
                 avg(case when f.status = :submitted then f.globalScore else null end))
             from Feedback f join f.moduleFormation m
             where (:search is null or lower(m.title) like :search)
@@ -54,6 +55,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             """)
     Page<ModuleStatsResponse> moduleStats(@Param("submitted") FeedbackStatus submitted,
                                           @Param("notSubmitted") FeedbackStatus notSubmitted,
+                                          @Param("inProgress") FeedbackStatus inProgress,
                                           @Param("search") String search,
                                           Pageable pageable);
 
@@ -132,4 +134,18 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
                                       @Param("maxReminders") int maxReminders,
                                       @Param("cutoff") Instant cutoff);
 
+    @Query("""
+            select f.globalScore from Feedback f
+              join f.user u
+              join f.moduleFormation m
+            where (:status is null or f.status = :status)
+              and f.globalScore is not null
+              and (:search is null
+                   or lower(m.title)     like :search
+                   or lower(u.firstName) like :search
+                   or lower(u.lastName)  like :search
+                   or lower(u.email)     like :search)
+            """)
+    List<Double> findScoresForDistribution(@Param("status") FeedbackStatus status,
+                                           @Param("search") String search);
 }

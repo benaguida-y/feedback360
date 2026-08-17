@@ -6,7 +6,7 @@ export default function Card({ children, className = "", padded = false }: {
     padded?: boolean;
 }) {
     return (
-        <div className={`card ${padded ? "p-6" : "overflow-hidden"} ${className}`}>
+        <div className={`card ${padded ? "card-padded" : "card-clip"} ${className}`}>
             {children}
         </div>
     );

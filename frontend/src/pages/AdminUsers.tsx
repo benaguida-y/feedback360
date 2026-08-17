@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import client from "../api/client";
 import { getRole } from "../auth";
 import Card from "../components/Card";
+import Donut from "../components/Donut";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
@@ -20,6 +21,15 @@ interface AdminUser {
     active: boolean;
     activated: boolean;
 }
+interface UserStats {
+    totalUsers: number;
+    admins: number;
+    managers: number;
+    collaborators: number;
+    activeUsers: number;
+    inactiveUsers: number;
+    pendingActivation: number;
+}
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
 
 export default function AdminUsers() {
@@ -32,6 +42,7 @@ export default function AdminUsers() {
     const [listError, setListError] = useState("");
     const [busyId, setBusyId] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState<UserStats | null>(null);
 
     const [filterRole, setFilterRole] = useState("");
     const [filterStatus, setFilterStatus] = useState("");
@@ -41,7 +52,7 @@ export default function AdminUsers() {
     if (getRole() !== "ADMIN") return <Navigate to="/" replace />;
 
     // Un changement de filtre/recherche/tri ramène à la 1ʳᵉ page.
-    useEffect(() => { setPage(0); }, [filterRole, filterStatus, search, sort, size]);
+    useEffect(() => { setPage(0); }, [filterRole, filterStatus, search, sort]);
 
     useEffect(() => {
         setLoading(true);
@@ -65,6 +76,13 @@ export default function AdminUsers() {
         return () => clearTimeout(timer);
     }, [filterRole, filterStatus, search, page, sort, size]);
 
+    // Stats globales (donuts) — indépendant des filtres/pagination.
+    useEffect(() => {
+        client.get<UserStats>("/admin/stats/users")
+            .then((r) => setStats(r.data))
+            .catch(() => {});
+    }, []);
+
     async function toggleActive(u: AdminUser) {
         setBusyId(u.userId);
         try {
@@ -85,6 +103,17 @@ export default function AdminUsers() {
         }
     }
 
+    const roleData = stats ? [
+        { name: t("adminDashboard.admins"),   value: stats.admins,        color: "#ef4444" }, // red
+        { name: t("adminDashboard.managers"), value: stats.managers,      color: "#10b981" }, // emerald
+        { name: t("nav.collaborators"),       value: stats.collaborators, color: "#0070ad" }, // brand
+    ].filter((d) => d.value > 0) : [];
+
+    const statusData = stats ? [
+        { name: t("common.active"),   value: stats.activeUsers,   color: "#10b981" }, // emerald
+        { name: t("common.inactive"), value: stats.inactiveUsers, color: "#94a3b8" }, // slate
+    ].filter((d) => d.value > 0) : [];
+
     return (
         <Layout>
             <PageHeader title={t("adminUsers.title")}
@@ -98,6 +127,13 @@ export default function AdminUsers() {
                         } />
 
             {listError && <p className="error-line">{listError}</p>}
+
+            {stats && (
+                <div className="charts-duo">
+                    <Donut title={t("adminUsers.byRole")}   data={roleData}   emptyLabel={t("common.noData")} />
+                    <Donut title={t("adminUsers.byStatus")} data={statusData} emptyLabel={t("common.noData")} />
+                </div>
+            )}
 
             {/* Filtres */}
             <div className="filter-bar">
@@ -124,7 +160,7 @@ export default function AdminUsers() {
                        loading={loading} sort={sort} onSort={toggle}
                        isEmpty={users.length === 0} emptyLabel={t("adminUsers.empty")}>
                     {users.map((u) => (
-                        <tr key={u.userId} className={`table-row ${!u.active ? "opacity-60" : ""}`}>
+                        <tr key={u.userId} className={`table-row ${!u.active ? "row-dim" : ""}`}>
                             <td className="table-cell cell-strong">{u.fullName}</td>
                             <td className="table-cell cell-default">{u.email}</td>
                             <td className="table-cell">

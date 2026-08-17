@@ -69,7 +69,7 @@ export default function FeedbackDetail() {
                         {score != null ? (
                             <span className="detail-row">
                                 {[1, 2, 3, 4, 5].map((n) => (
-                                    <span key={n} className={`text-xl ${n <= Math.round(score) ? "star-filled" : "star-empty"}`}>★</span>
+                                    <span key={n} className={`detail-star ${n <= Math.round(score) ? "star-filled" : "star-empty"}`}>★</span>
                                 ))}
                                 <span className="cell-muted detail-row-note">{score} / 5</span>
                             </span>

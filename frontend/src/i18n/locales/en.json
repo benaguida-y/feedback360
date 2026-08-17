@@ -58,6 +58,14 @@
     "NOT_SUBMITTED": "Pending",
     "IN_PROGRESS": "In progress"
   },
+  "charts": {
+    "statusTitle": "Feedback breakdown",
+    "scoreTitle": "Average rating per module",
+    "topCollaborators": "Most active collaborators",
+    "moduleSubmissions": "Submitted feedback per module",
+    "moduleParticipation": "Top 10 — submitted vs pending",
+    "ratingDistribution": "Rating distribution"
+  },
   "relance": {
     "action": "Remind",
     "sending": "Sending…",
@@ -81,7 +89,9 @@
     "activate": "Activate",
     "deactivate": "Deactivate",
     "loadError": "Unable to load users.",
-    "statusError": "Unable to change status."
+    "statusError": "Unable to change status.",
+    "byRole": "Users by role",
+    "byStatus": "Users by status"
   },
   "adminLogs": {
     "title": "Supervision",
@@ -108,7 +118,19 @@
     "progress": "Progress",
     "empty": "No collaborators.",
     "loadError": "Unable to load collaborators.",
-    "submittedCount": "{{submitted}} / {{total}} submitted"
+    "submittedCount": "{{submitted}} / {{total}} submitted",
+    "avgProgress": "Average progress",
+    "completed": "Completed (100%)",
+    "notStarted": "Not started (0%)",
+    "progressDistribution": "Progress distribution",
+    "teamTitle": "Team progress",
+    "teamDone": "Completed",
+    "teamInProgress": "In progress",
+    "teamNone": "Nothing submitted",
+    "legendTitle": "How to read this chart",
+    "teamDoneHelp": "collaborators who submitted all their feedback",
+    "teamInProgressHelp": "collaborators who submitted some of their feedback",
+    "teamNoneHelp": "collaborators who haven't submitted anything yet"
   },
   "managerModules": {
     "title": "Module breakdown",

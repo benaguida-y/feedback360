@@ -48,7 +48,7 @@ export default function Table({ columns, children, isEmpty, emptyLabel, loading,
                     <tr key={r}>
                         {columns.map((_, i) => (
                             <td key={i} className="table-cell">
-                                <Skeleton className={`h-4 skeleton-w-${(i % 6) + 1}`} />
+                                <Skeleton className={`skeleton-h skeleton-w-${(i % 6) + 1}`} />
                             </td>
                         ))}
                     </tr>
