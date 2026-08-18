@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import client from "../api/client";
 import { getRole, setToken } from "../auth";
 import BrandPanel from "../components/BrandPanel";
@@ -11,6 +11,10 @@ import { useTranslation } from "react-i18next";
 export default function Login() {
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const [params] = useSearchParams();
+    // Cible d'après le lien e-mail (ex. /feedback/12). Anti open-redirect : chemins internes only.
+    const nextRaw = params.get("next") ?? "";
+    const next = nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : "";
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -29,9 +33,10 @@ export default function Login() {
         }
     }
 
-    // Un collaborateur qui vient d'être intégré arrive avec un feedback en attente :
-    // on l'amène directement dessus au lieu du tableau de bord.
+    // Priorité au feedback ciblé par le lien e-mail ; sinon, un collaborateur fraîchement
+    // intégré est amené sur son feedback en attente, à défaut sur le tableau de bord.
     async function redirectAfterLogin() {
+        if (next) { navigate(next, { replace: true }); return; }
         if (getRole() === "COLLABORATOR") {
             try {
                 const pending = await client.get<{ feedbackId: number }[]>("/feedbacks?status=NOT_SUBMITTED");

@@ -62,7 +62,7 @@ export default function AdminUsers() {
             if (filterStatus) params.set("status", filterStatus);
             if (search.trim()) params.set("search", search.trim());
             if (sort) params.set("sort", sort);
-            params.set("page", String(page));
+            params.set("page", String(page + 1));
             params.set("size", String(size));
             client.get<Page<AdminUser>>(`/admin/users?${params.toString()}`)
                 .then((r) => {

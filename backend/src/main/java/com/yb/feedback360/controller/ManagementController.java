@@ -62,6 +62,11 @@ public class ManagementController {
         return managementService.getCollaborators(search, score, pageable);
     }
 
+    @GetMapping(ApiPaths.MANAGEMENT_COLLABORATORS_SUMMARY)
+    public CollaboratorsSummaryResponse collaboratorsSummary() {
+        return managementService.getCollaboratorsSummary();
+    }
+
     @GetMapping(ApiPaths.MANAGEMENT_MODULES)
     public PageResponse<ModuleStatsResponse> modules(@RequestParam(required = false) String search,
                                                      @RequestParam(required = false) Integer score,

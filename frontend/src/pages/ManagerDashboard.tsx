@@ -98,7 +98,7 @@ export default function ManagerDashboard() {
             </div>
 
             <h3 className="section-title dash-head-next">{t("managerDashboard.sectionHighlights")}</h3>
-            <div className="grid-cards-2">
+            <div className="grid-highlights">
                 {/* Collaborateur le plus actif + son graphe (même carte) */}
                 <HighlightCard
                     label={t("managerDashboard.topCollaborator")}

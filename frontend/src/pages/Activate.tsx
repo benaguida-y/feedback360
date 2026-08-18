@@ -12,6 +12,9 @@ export default function Activate() {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token") ?? "";
+    // Feedback ciblé par le lien e-mail, transmis à la page de connexion après activation.
+    const nextRaw = searchParams.get("next") ?? "";
+    const next = nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : "";
 
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
@@ -28,7 +31,9 @@ export default function Activate() {
         try {
             await client.post("/auth/activate", { token, password });
             setSuccess(true);
-            setTimeout(() => navigate("/login"), 1200); // petite pause pour lire le message
+            // Après le mot de passe : page de connexion (en gardant le feedback ciblé).
+            const target = next ? `/login?next=${encodeURIComponent(next)}` : "/login";
+            setTimeout(() => navigate(target), 1200); // petite pause pour lire le message
         } catch {
             setError(t("activate.linkInvalid"));
             setLoading(false);

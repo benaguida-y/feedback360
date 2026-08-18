@@ -61,7 +61,7 @@ public class ModuleCompletionFacade {
             String link;
             if (user.getPasswordHash() == null) {
                 // 1re fois : le collaborateur doit définir son mot de passe.
-                link = magicLinkService.createActivationUrl(user);
+                link = magicLinkService.createActivationUrl(user, feedback.getFeedbackId());
                 emailService.sendActivationEmail(user, link, moduleTitle);
             } else {
                 // Compte déjà activé : connexion directe vers le nouveau feedback.

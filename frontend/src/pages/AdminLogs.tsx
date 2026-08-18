@@ -57,7 +57,7 @@ export default function AdminLogs() {
             if (status) params.set("status", status);
             if (search.trim()) params.set("search", search.trim());
             if (sort) params.set("sort", sort);
-            params.set("page", String(page));
+            params.set("page", String(page + 1));
             params.set("size", String(size));
             client.get<Page<Log>>(`/admin/logs?${params.toString()}`)
                 .then((r) => { setLogs(r.data.content); setTotalPages(r.data.totalPages); })

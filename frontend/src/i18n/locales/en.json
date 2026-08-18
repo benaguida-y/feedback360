@@ -216,7 +216,7 @@
   "activate": {
     "title": "Activate your account",
     "subtitle": "Choose a password to access your space.",
-    "newPassword": "New password",
+    "newPassword": "Password",
     "confirmPassword": "Confirm password",
     "submit": "Activate my account",
     "activating": "Activating…",

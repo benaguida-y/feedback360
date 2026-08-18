@@ -44,7 +44,7 @@ export default function CollaboratorFeedbacks() {
             if (score) params.set("score", score);
             if (search.trim()) params.set("search", search.trim());
             if (sort) params.set("sort", sort);
-            params.set("page", String(page));
+            params.set("page", String(page + 1));
             params.set("size", String(size));
             client.get<Page<Feedback>>(`/feedbacks?${params.toString()}`)
                 .then((r) => { setFeedbacks(r.data.content); setTotalPages(r.data.totalPages); })

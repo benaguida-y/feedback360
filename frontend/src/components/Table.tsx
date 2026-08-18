@@ -20,7 +20,8 @@ export default function Table({ columns, children, isEmpty, emptyLabel, loading,
     const [sortField, sortDir] = (sort ?? "").split(",");
 
     return (
-        <table className="table">
+        <div className="table-scroll">
+            <table className="table">
             <thead className="table-head">
             <tr>
                 {columns.map((c, i) => {
@@ -57,6 +58,7 @@ export default function Table({ columns, children, isEmpty, emptyLabel, loading,
                 <tr><td colSpan={columns.length} className="table-empty">{emptyLabel ?? t("common.noData")}</td></tr>
             ) : children}
             </tbody>
-        </table>
+            </table>
+        </div>
     );
 }

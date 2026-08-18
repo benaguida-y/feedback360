@@ -46,7 +46,7 @@ export default function ManagerFeedbacks() {
             if (score) params.set("score", score);
             if (search.trim()) params.set("search", search.trim());
             if (sort) params.set("sort", sort);
-            params.set("page", String(page));
+            params.set("page", String(page + 1));
             params.set("size", String(size));
             client.get<Page<Feedback>>(`/management/feedbacks?${params.toString()}`)
                 .then((r) => { setFeedbacks(r.data.content); setTotalPages(r.data.totalPages); setTotal(r.data.totalElements); })
@@ -78,6 +78,10 @@ export default function ManagerFeedbacks() {
 
             {error && <p className="error-line">{error}</p>}
 
+            <div className="chart-block">
+                <RatingHistogram counts={dist} emptyLabel={t("common.noData")} />
+            </div>
+
             <div className="filter-bar">
                 <StatusFilter value={filter} onChange={setFilter} />
                 <select value={score} onChange={(e) => setScore(e.target.value)} className="form-select">
@@ -93,10 +97,6 @@ export default function ManagerFeedbacks() {
                     <span className="results-chip">{total} {t("common.results")}</span>
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.moduleCollaborator")} />
                 </div>
-            </div>
-
-            <div className="chart-block">
-                <RatingHistogram counts={dist} emptyLabel={t("common.noData")} />
             </div>
 
             <Card>

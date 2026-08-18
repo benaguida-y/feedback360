@@ -36,6 +36,7 @@ public final class ApiPaths {
     public static final String MANAGEMENT_FEEDBACK_REMIND = "/feedbacks/{feedbackId}/remind";
     public static final String MANAGEMENT_FEEDBACKS_RATING = "/feedbacks/rating-distribution";
     public static final String MANAGEMENT_COLLABORATORS = "/collaborators";
+    public static final String MANAGEMENT_COLLABORATORS_SUMMARY = "/collaborators/summary";
     public static final String MANAGEMENT_COLLABORATOR_BY_ID = "/collaborators/{userId}";
     public static final String MANAGEMENT_MODULES = "/modules";
 

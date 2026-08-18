@@ -216,8 +216,8 @@
   "activate": {
     "title": "Activez votre compte",
     "subtitle": "Choisissez un mot de passe pour accéder à votre espace.",
-    "newPassword": "Nouveau mot de passe",
-    "confirmPassword": "Confirmer le mot de passe",
+    "newPassword": "Mot de passe",
+    "confirmPassword": "Confirmer mot de passe",
     "submit": "Activer mon compte",
     "activating": "Activation…",
     "success": "Mot de passe défini ✔ Redirection vers la connexion…",
