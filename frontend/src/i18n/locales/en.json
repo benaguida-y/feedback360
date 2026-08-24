@@ -93,6 +93,11 @@
     "byRole": "Users by role",
     "byStatus": "Users by status"
   },
+  "adminUserDetail": {
+    "title": "User profile",
+    "department": "Department",
+    "externalId": "External ID"
+  },
   "adminLogs": {
     "title": "Supervision",
     "subtitle": "Log of received integration calls (webhook).",
@@ -102,6 +107,7 @@
     "processedAt": "Processed at",
     "empty": "No calls recorded.",
     "loadError": "Unable to load logs.",
+    "error": "Error",
     "logStatus": {
       "SUCCESS": "Success",
       "FAILURE": "Failure",

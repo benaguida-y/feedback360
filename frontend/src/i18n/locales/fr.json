@@ -93,6 +93,11 @@
     "byRole": "Répartition par rôle",
     "byStatus": "Répartition par statut"
   },
+  "adminUserDetail": {
+    "title": "Fiche utilisateur",
+    "department": "Département",
+    "externalId": "ID externe"
+  },
   "adminLogs": {
     "title": "Supervision",
     "subtitle": "Journal des appels d'intégration reçus (webhook).",
@@ -102,6 +107,7 @@
     "processedAt": "Traité le",
     "empty": "Aucun appel enregistré.",
     "loadError": "Impossible de charger les logs.",
+    "error": "Erreur",
     "logStatus": {
       "SUCCESS": "Succès",
       "FAILURE": "Échec",
