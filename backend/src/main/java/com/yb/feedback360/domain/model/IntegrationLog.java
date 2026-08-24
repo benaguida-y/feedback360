@@ -28,6 +28,9 @@ public class IntegrationLog {
     @Column(columnDefinition = "text")
     private String requestPayload;
 
+    @Column(columnDefinition = "text")
+    private String errorMessage;
+
     @Column(nullable = false)
     private Instant receivedAt;
 

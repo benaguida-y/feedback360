@@ -13,7 +13,7 @@ import Table from "../components/Table";
 import RatingStars from "../components/RatingStars";
 import {ChevronRight} from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useSort } from "../useSort";
+import { useListParams } from "../useListParams";
 
 interface Feedback { feedbackId: number; status: string; moduleTitle: string; createdAt: string; globalScore: number | null; }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
@@ -21,20 +21,18 @@ interface Page<T> { content: T[]; page: number; size: number; totalElements: num
 export default function CollaboratorFeedbacks() {
     const role = getRole();
     const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
-    const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
-    const [filter, setFilter] = useState("");
-    const [score, setScore] = useState("");
-    const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const { t, i18n } = useTranslation();
-    const { sort, toggle } = useSort();
+    const { page, setPage, size, setSize, search, setSearch, sort, toggle, get, set } = useListParams();
+    const filter = get("status");
+    const setFilter = (v: string) => set("status", v);
+    const score = get("score");
+    const setScore = (v: string) => set("score", v);
 
     if (role !== "COLLABORATOR") return <Navigate to="/" replace />;
 
-    useEffect(() => { setPage(0); }, [filter, score, search, sort, size]);
 
     useEffect(() => {
         setLoading(true);

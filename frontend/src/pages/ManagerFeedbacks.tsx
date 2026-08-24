@@ -13,8 +13,9 @@ import Table from "../components/Table";
 import RatingStars from "../components/RatingStars";
 import { Send, Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useSort } from "../useSort";
+import { useListParams } from "../useListParams";
 import RatingHistogram from "../components/RatingHistogram.tsx";
+import ChartSkeleton from "../components/ChartSkeleton";
 
 interface Feedback { feedbackId: number; status: string; moduleTitle: string; createdAt: string; globalScore: number | null; collaboratorName: string; collaboratorEmail: string; }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
@@ -22,21 +23,19 @@ interface Page<T> { content: T[]; page: number; size: number; totalElements: num
 export default function ManagerFeedbacks() {
     const role = getRole();
     const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
-    const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [total, setTotal] = useState(0);
-    const [filter, setFilter] = useState("");
-    const [score, setScore] = useState("");
-    const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const { t, i18n } = useTranslation();
-    const { sort, toggle } = useSort();
+    const { page, setPage, size, setSize, search, setSearch, sort, toggle, get, set } = useListParams();
+    const filter = get("status");
+    const setFilter = (v: string) => set("status", v);
+    const score = get("score");
+    const setScore = (v: string) => set("score", v);
 
     if (role !== "MANAGER" && role !== "ADMIN") return <Navigate to="/" replace />;
 
-    useEffect(() => { setPage(0); }, [filter, score, search, sort, size]);
 
     useEffect(() => {
         setLoading(true);
@@ -56,7 +55,7 @@ export default function ManagerFeedbacks() {
         return () => clearTimeout(timer);
     }, [filter, score, search, page, sort, size]);
 
-    const [dist, setDist] = useState<number[]>([0, 0, 0, 0, 0]);
+    const [dist, setDist] = useState<number[] | null>(null);
     // Distribution des notes — suit statut + recherche (pas le filtre « note »).
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -65,7 +64,7 @@ export default function ManagerFeedbacks() {
             if (search.trim()) params.set("search", search.trim());
             client.get<{ counts: number[] }>(`/management/feedbacks/rating-distribution?${params.toString()}`)
                 .then((r) => setDist(r.data.counts))
-                .catch(() => {});
+                .catch(() => setDist([0, 0, 0, 0, 0]));
         }, 300);
         return () => clearTimeout(timer);
     }, [filter, search]);
@@ -78,9 +77,13 @@ export default function ManagerFeedbacks() {
 
             {error && <p className="error-line">{error}</p>}
 
-            <div className="chart-block">
-                <RatingHistogram counts={dist} emptyLabel={t("common.noData")} />
-            </div>
+            {dist === null ? (
+                <div className="chart-block"><ChartSkeleton /></div>
+            ) : (
+                <div className="chart-block">
+                    <RatingHistogram counts={dist} emptyLabel={t("common.noData")} />
+                </div>
+            )}
 
             <div className="filter-bar">
                 <StatusFilter value={filter} onChange={setFilter} />

@@ -76,6 +76,19 @@ public class AdminService {
         return toResponse(userRepository.save(user));
     }
 
+    @Transactional(readOnly = true)
+    public AdminUserDetailResponse getUser(Long userId) {
+        User u = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        String fullName = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
+                (u.getLastName() != null ? u.getLastName() : "")).trim();
+        if (fullName.isBlank()) fullName = u.getEmail();
+        return new AdminUserDetailResponse(
+                u.getUserId(), u.getEmail(), fullName, u.getRole().getName(),
+                u.isActive(), u.getPasswordHash() != null,
+                u.getDepartment(), u.getExternalUserId());
+    }
+
     private AdminUserResponse toResponse(User u) {
         String fullName = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
                 (u.getLastName() != null ? u.getLastName() : "")).trim();
@@ -98,7 +111,8 @@ public class AdminService {
                                 l.getLogId(), l.getType().name(), l.getStatus().name(),
                                 l.getReceivedAt(), l.getProcessedAt(),
                                 l.getUser() != null ? l.getUser().getEmail() : null,
-                                l.getModuleFormation() != null ? l.getModuleFormation().getTitle() : null)));
+                                l.getModuleFormation() != null ? l.getModuleFormation().getTitle() : null,
+                                l.getErrorMessage())));
     }
 
     // Stats utilisateurs et stats intégrations sont séparées : le dashboard les charge

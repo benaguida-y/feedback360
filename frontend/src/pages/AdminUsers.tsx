@@ -11,7 +11,7 @@ import PageHeader from "../components/PageHeader";
 import Pagination from "../components/Pagination";
 import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
-import { useSort } from "../useSort";
+import { useListParams } from "../useListParams";
 
 interface AdminUser {
     userId: number;
@@ -35,8 +35,6 @@ interface Page<T> { content: T[]; page: number; size: number; totalElements: num
 export default function AdminUsers() {
     const { t } = useTranslation();
     const [users, setUsers] = useState<AdminUser[]>([]);
-    const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [total, setTotal] = useState(0);
     const [listError, setListError] = useState("");
@@ -44,15 +42,13 @@ export default function AdminUsers() {
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<UserStats | null>(null);
 
-    const [filterRole, setFilterRole] = useState("");
-    const [filterStatus, setFilterStatus] = useState("");
-    const [search, setSearch] = useState("");
-    const { sort, toggle } = useSort();
+    const { page, setPage, size, setSize, search, setSearch, sort, toggle, get, set } = useListParams();
+    const filterRole = get("role");
+    const setFilterRole = (v: string) => set("role", v);
+    const filterStatus = get("status");
+    const setFilterStatus = (v: string) => set("status", v);
 
     if (getRole() !== "ADMIN") return <Navigate to="/" replace />;
-
-    // Un changement de filtre/recherche/tri ramène à la 1ʳᵉ page.
-    useEffect(() => { setPage(0); }, [filterRole, filterStatus, search, sort]);
 
     useEffect(() => {
         setLoading(true);
@@ -187,14 +183,17 @@ export default function AdminUsers() {
                                 </div>
                             </td>
                             <td className="table-cell">
-                                {u.activated ? (
-                                    <button onClick={() => toggleActive(u)} disabled={busyId === u.userId}
-                                            className={`btn-toggle ${u.active ? "btn-toggle-danger" : "btn-toggle-success"}`}>
-                                        {busyId === u.userId ? "…" : u.active ? t("adminUsers.deactivate") : t("adminUsers.activate")}
-                                    </button>
-                                ) : (
-                                    <span className="cell-faint">—</span>
-                                )}
+                                <div className="row-center-3">
+                                    <Link to={`/admin/users/${u.userId}`} className="btn-action">{t("common.view")}</Link>
+                                    {u.activated ? (
+                                        <button onClick={() => toggleActive(u)} disabled={busyId === u.userId}
+                                                className={`btn-toggle ${u.active ? "btn-toggle-danger" : "btn-toggle-success"}`}>
+                                            {busyId === u.userId ? "…" : u.active ? t("adminUsers.deactivate") : t("adminUsers.activate")}
+                                        </button>
+                                    ) : (
+                                        <span className="cell-faint">—</span>
+                                    )}
+                                </div>
                             </td>
                         </tr>
                     ))}

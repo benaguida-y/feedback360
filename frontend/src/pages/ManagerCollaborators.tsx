@@ -11,7 +11,9 @@ import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
 import Donut from "../components/Donut";
 import { useTranslation } from "react-i18next";
-import { useSort } from "../useSort";
+import { useListParams } from "../useListParams";
+import ChartSkeleton from "../components/ChartSkeleton";
+import StatCardSkeleton from "../components/StatCardSkeleton";
 
 
 interface Collab {
@@ -30,21 +32,18 @@ interface TeamSummary { total: number; done: number; inProgress: number; none: n
 export default function ManagerCollaborators() {
     const role = getRole();
     const [rows, setRows] = useState<Collab[]>([]);
-    const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [total, setTotal] = useState(0);
-    const [search, setSearch] = useState("");
-    const [score, setScore] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [summary, setSummary] = useState<TeamSummary | null>(null);
     const { t } = useTranslation();
-    const { sort, toggle } = useSort();
+    const { page, setPage, size, setSize, search, setSearch, sort, toggle, get, set } = useListParams();
+    const score = get("score");
+    const setScore = (v: string) => set("score", v);
 
     if (role !== "MANAGER" && role !== "ADMIN") return <Navigate to="/" replace />;
 
-    useEffect(() => { setPage(0); }, [search, score, sort, size]);
 
     useEffect(() => {
         setLoading(true);
@@ -67,7 +66,7 @@ export default function ManagerCollaborators() {
     useEffect(() => {
         client.get<TeamSummary>("/management/collaborators/summary")
             .then((r) => setSummary(r.data))
-            .catch(() => {});
+            .catch(() => setSummary({ total: 0, done: 0, inProgress: 0, none: 0, avgProgress: 0 }));
     }, []);
 
     const totalCollabs = summary?.total ?? 0;
@@ -101,7 +100,18 @@ export default function ManagerCollaborators() {
 
             {error && <p className="error-line">{error}</p>}
 
-            {totalCollabs > 0 && (
+            {summary === null ? (
+                <div className="charts-duo">
+                    <ChartSkeleton />
+                    <div className="col-gap-4">
+                        <div className="grid-2col">
+                            <StatCardSkeleton />
+                            <StatCardSkeleton />
+                        </div>
+                        <ChartSkeleton />
+                    </div>
+                </div>
+            ) : totalCollabs > 0 && (
                 <div className="charts-duo">
                     {/* Donut : où en est l'équipe */}
                     <Donut title={t("managerCollaborators.teamTitle")} data={teamData} emptyLabel={t("common.noData")} />

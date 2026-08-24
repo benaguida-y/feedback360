@@ -70,6 +70,7 @@ public class ReminderService {
             feedbackRepository.save(feedback);
         } catch (RuntimeException e) {
             log.setStatus(LogStatus.FAILURE);
+            log.setErrorMessage(e.getMessage());
             log.setProcessedAt(Instant.now());
             integrationLogRepository.save(log);
             throw e;

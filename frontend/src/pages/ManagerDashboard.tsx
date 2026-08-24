@@ -7,6 +7,8 @@ import PageHeader from "../components/PageHeader.tsx";
 import { useTranslation } from "react-i18next";
 import FeedbackCharts from "../components/FeedbackCharts.tsx";
 import DashboardBarChart from "../components/DashboardBarChart.tsx";
+import StatCardSkeleton from "../components/StatCardSkeleton";
+import ChartSkeleton from "../components/ChartSkeleton";
 
 interface Summary {
     total: number;
@@ -62,7 +64,33 @@ export default function ManagerDashboard() {
             .catch(() => {});
     }, []);
 
-    if (loading) return <p className="loading-text">{t("common.loading")}</p>;
+    if (loading) return (
+        <div>
+            <PageHeader title={t("common.overview")} subtitle={t("managerDashboard.subtitle")} />
+
+            <h3 className="section-title dash-head">{t("managerDashboard.sectionFeedbacks")}</h3>
+            <div className="grid-stats-4">
+                {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
+            </div>
+
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionIndicators")}</h3>
+            <div className="grid-2col">
+                {Array.from({ length: 2 }).map((_, i) => <StatCardSkeleton key={i} />)}
+            </div>
+
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionHighlights")}</h3>
+            <div className="grid-highlights">
+                <ChartSkeleton />
+                <ChartSkeleton />
+            </div>
+
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionCharts")}</h3>
+            <div className="charts-split">
+                <ChartSkeleton />
+                <div className="charts-split-main"><ChartSkeleton /></div>
+            </div>
+        </div>
+    );
     if (error) return <p className="error-text">{error}</p>;
 
     const avg = stats!.averageScore;

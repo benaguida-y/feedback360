@@ -530,3 +530,7 @@ aside[class*="border"] {
 
 /* FeedbackDetail — étoile de note */
 .detail-star { @apply text-xl; }
+
+/* Chart Skeleton */
+.chart-skeleton-title { @apply mb-3 h-4 w-40; }
+.chart-skeleton-body { @apply h-64 w-full; }

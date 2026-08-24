@@ -45,6 +45,7 @@ public final class ApiPaths {
     public static final String ADMIN_LOGS = "/logs";
     public static final String ADMIN_PATTERN = ADMIN + "/**";
     public static final String ADMIN_USERS = "/users";
+    public static final String ADMIN_USER_BY_ID = "/users/{userId}";
     public static final String ADMIN_STATS_USERS = "/stats/users";
     public static final String ADMIN_STATS_INTEGRATIONS = "/stats/integrations";
     public static final String ADMIN_USER_STATUS = "/users/{userId}/status";

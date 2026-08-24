@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import client from "../api/client";
 import StatCard from "../components/StatCard";
+import StatCardSkeleton from "../components/StatCardSkeleton";
 import NavCard from "../components/NavCard.tsx";
 import PageHeader from "../components/PageHeader.tsx";
 import { useTranslation } from "react-i18next";
@@ -41,7 +42,16 @@ export default function AdminDashboard() {
             <PageHeader title={t("common.overview")} subtitle={t("adminDashboard.subtitle")} />
 
             <h3 className="section-title dash-head">{t("adminDashboard.users")}</h3>
-            <Section loading={!users && !usersError} error={usersError}>
+            <Section loading={!users && !usersError} error={usersError} skeleton={
+                <>
+                    <div className="grid-stats-4">
+                        {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
+                    </div>
+                    <div className="grid-stats-3-mt">
+                        {Array.from({ length: 3 }).map((_, i) => <StatCardSkeleton key={i} />)}
+                    </div>
+                </>
+            }>
                 {users && (
                     <>
                         <div className="grid-stats-4">
@@ -60,7 +70,11 @@ export default function AdminDashboard() {
             </Section>
 
             <h3 className="section-title dash-head-next">{t("adminDashboard.integrations")}</h3>
-            <Section loading={!integrations && !integrationsError} error={integrationsError}>
+            <Section loading={!integrations && !integrationsError} error={integrationsError} skeleton={
+                <div className="grid-stats-3">
+                    {Array.from({ length: 3 }).map((_, i) => <StatCardSkeleton key={i} />)}
+                </div>
+            }>
                 {integrations && (
                     <div className="grid-stats-3">
                         <StatCard label={t("adminDashboard.callsReceived")} value={integrations.totalWebhookCalls} />
@@ -78,10 +92,10 @@ export default function AdminDashboard() {
     );
 }
 
-// Enveloppe une section : affiche son erreur ou son chargement sans toucher aux autres.
-function Section({ loading, error, children }: { loading: boolean; error: boolean; children: ReactNode }) {
+// Enveloppe une section : erreur -> message, chargement -> skeletons, sinon le contenu réel.
+function Section({ loading, error, skeleton, children }: { loading: boolean; error: boolean; skeleton: ReactNode; children: ReactNode }) {
     const { t } = useTranslation();
     if (error) return <p className="error-line">{t("common.statsError")}</p>;
-    if (loading) return <p className="loading-text">{t("common.loading")}</p>;
+    if (loading) return <>{skeleton}</>;
     return <>{children}</>;
 }

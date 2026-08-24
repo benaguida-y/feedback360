@@ -56,6 +56,11 @@ public class AdminController {
         return adminService.setUserActive(userId, request.active());
     }
 
+    @GetMapping(ApiPaths.ADMIN_USER_BY_ID)
+    public AdminUserDetailResponse user(@PathVariable Long userId) {
+        return adminService.getUser(userId);
+    }
+
     @GetMapping(ApiPaths.ADMIN_REMINDER_SETTINGS)
     public ReminderSettingsResponse reminderSettings() {
         return ReminderSettingsResponse.from(reminderSettingsService.get());

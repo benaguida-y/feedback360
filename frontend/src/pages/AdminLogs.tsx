@@ -9,7 +9,7 @@ import Pagination from "../components/Pagination";
 import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
 import { useTranslation } from "react-i18next";
-import { useSort } from "../useSort";
+import { useListParams } from "../useListParams";
 
 interface Log {
     logId: number;
@@ -19,6 +19,7 @@ interface Log {
     processedAt: string | null;
     userEmail: string | null;
     moduleTitle: string | null;
+    errorMessage: string | null;
 }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
 
@@ -34,20 +35,18 @@ function statusBadge(status: string) {
 export default function AdminLogs() {
     const role = getRole();
     const [logs, setLogs] = useState<Log[]>([]);
-    const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
-    const [type, setType] = useState("");
-    const [status, setStatus] = useState("");
-    const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const { t, i18n } = useTranslation();
-    const { sort, toggle } = useSort();
+    const { page, setPage, size, setSize, search, setSearch, sort, toggle, get, set } = useListParams();
+    const type = get("type");
+    const setType = (v: string) => set("type", v);
+    const status = get("status");
+    const setStatus = (v: string) => set("status", v);
 
     if (role !== "ADMIN") return <Navigate to="/" replace />;
 
-    useEffect(() => { setPage(0); }, [type, status, search, sort, size]);
 
     useEffect(() => {
         setLoading(true);
@@ -96,7 +95,7 @@ export default function AdminLogs() {
             </div>
 
             <Card>
-                <Table columns={[{ label: t("common.type"), sort: "type" }, { label: t("common.status"), sort: "status" }, { label: t("adminLogs.receivedAt"), sort: "receivedAt" }, { label: t("adminLogs.processedAt"), sort: "processedAt" }, { label: t("common.user"), sort: "user.email" }, { label: t("common.module"), sort: "moduleFormation.title" }]}
+                <Table columns={[{ label: t("common.type"), sort: "type" }, { label: t("common.status"), sort: "status" }, { label: t("adminLogs.receivedAt"), sort: "receivedAt" }, { label: t("adminLogs.processedAt"), sort: "processedAt" }, { label: t("common.user"), sort: "user.email" }, { label: t("common.module"), sort: "moduleFormation.title" }, t("adminLogs.error", { defaultValue: "Erreur" })]}
                        loading={loading} sort={sort} onSort={toggle}
                        isEmpty={logs.length === 0} emptyLabel={t("adminLogs.empty")}>
                     {logs.map((l) => (
@@ -109,6 +108,7 @@ export default function AdminLogs() {
                             <td className="table-cell cell-muted">{fmt(l.processedAt)}</td>
                             <td className="table-cell cell-default">{l.userEmail ?? "—"}</td>
                             <td className="table-cell cell-default">{l.moduleTitle ?? "—"}</td>
+                            <td className="table-cell cell-negative">{l.errorMessage ?? "—"}</td>
                         </tr>
                     ))}
                 </Table>

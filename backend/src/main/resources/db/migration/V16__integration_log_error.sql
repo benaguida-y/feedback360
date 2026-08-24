@@ -1,0 +1,1 @@
+ALTER TABLE integration_log ADD COLUMN error_message TEXT;
