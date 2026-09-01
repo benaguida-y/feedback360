@@ -54,4 +54,4 @@ feedback360:
     base-url: http://localhost:5175
     ttl-days: 14
   mail:
-    from: ${MAIL_USERNAME:no-reply@feedback360.local}
+    from: "Capgemini Feedback360 <${MAIL_USERNAME:no-reply@feedback360.local}>"

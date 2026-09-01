@@ -27,6 +27,7 @@ public class EmailService {
     private static final String INTRO_NEW_FEEDBACK = "mail/new-feedback.html";
     private static final String INTRO_REMINDER = "mail/reminder.html";
     private static final String INTRO_REMINDER_ACTIVATION = "mail/reminder-activation.html";
+    private static final String INTRO_PASSWORD_RESET = "mail/password-reset.html";
     private static final String STYLES = "mail/email.css";
 
     private final JavaMailSender mailSender;
@@ -63,6 +64,13 @@ public class EmailService {
         String intro = loadTemplate(INTRO_REMINDER_ACTIVATION).replace("{{module}}", moduleTitle != null ? moduleTitle : "");
         String subject = "Rappel : votre avis sur « " + moduleTitle + " » — Feedback360";
         send(user, link, subject, "Un feedback vous attend toujours", intro, "Activer mon compte");
+    }
+
+    // Mot de passe oublié : lien pour choisir un nouveau mot de passe.
+    public void sendPasswordResetEmail(User user, String link) {
+        String intro = loadTemplate(INTRO_PASSWORD_RESET);
+        send(user, link, "Réinitialisation de votre mot de passe — Feedback360",
+                "Réinitialisation du mot de passe", intro, "Réinitialiser mon mot de passe");
     }
 
     // Envoi générique (multipart HTML + logo inline).

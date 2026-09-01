@@ -22,6 +22,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtEncoder jwtEncoder;
+    private final MagicLinkService magicLinkService;
+    private final EmailService emailService;
 
     @Transactional
     public void activate(String token, String rawPassword) {
@@ -39,6 +41,38 @@ public class AuthService {
         }
 
         user.setPasswordHash(passwordEncoder.encode(rawPassword)); // store the hash
+        userRepository.save(user);
+    }
+
+    // Mot de passe oublié : envoie un lien de réinitialisation SEULEMENT si l'e-mail
+    // existe, mais reste silencieux dans tous les cas (anti-énumération de comptes).
+    @Transactional(readOnly = true)
+    public void requestPasswordReset(String email) {
+        userRepository.findByEmail(email).ifPresent(user -> {
+            String link = magicLinkService.createResetUrl(user);
+            emailService.sendPasswordResetEmail(user, link);
+        });
+    }
+
+    // Réinitialisation effective : jeton de scope "reset". Contrairement à l'activation,
+    // on ÉCRASE le mot de passe existant (pas de garde-fou « déjà activé »).
+    @Transactional
+    public void resetPassword(String token, String rawPassword) {
+        Jwt jwt = jwtDecoder.decode(token);
+        if (!"account:reset".equals(jwt.getClaimAsString("scope"))) {
+            throw new IllegalArgumentException("Wrong token scope");
+        }
+        Long userId = Long.valueOf(jwt.getSubject());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Le nouveau mot de passe doit differer de l'actuel.
+        if (user.getPasswordHash() != null
+                && passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
+            throw new IllegalArgumentException("Le nouveau mot de passe doit etre different de l'ancien");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(rawPassword));
         userRepository.save(user);
     }
 

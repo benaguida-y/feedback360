@@ -18,6 +18,7 @@ import java.time.Instant;
 public class MagicLinkService {
 
     private static final String ACTIVATION_SCOPE = "account:activate"; // définir le mot de passe
+    private static final String RESET_SCOPE = "account:reset";         // réinitialiser le mot de passe
     private static final String ACTIVATION_PATH = "/activate";
     private static final String LOGIN_PATH = "/login";
 
@@ -46,6 +47,13 @@ public class MagicLinkService {
     // feedback à remplir une fois connecté (plus de connexion automatique).
     public String createLoginUrl(User user, Long feedbackId) {
         return "%s%s?next=/feedback/%d".formatted(properties.baseUrl(), LOGIN_PATH, feedbackId);
+    }
+
+    // Mot de passe oublié : lien vers la page "choisir un mot de passe" en mode reset
+    // (jeton de scope dédié, qui autorise l'écrasement d'un mot de passe existant).
+    public String createResetUrl(User user) {
+        String token = signToken(user, RESET_SCOPE);
+        return "%s%s?token=%s&mode=reset".formatted(properties.baseUrl(), ACTIVATION_PATH, token);
     }
 
     private String signToken(User user, String scope) {

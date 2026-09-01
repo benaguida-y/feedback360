@@ -230,6 +230,9 @@ aside[class*="border"] {
 .auth-alert-error { @apply rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-300; }
 .auth-alert-success { @apply flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-300; }
 
+/* Lien "mot de passe oublié" sous le champ mot de passe */
+.auth-forgot { @apply -mt-2 mb-4 text-right text-sm; }
+
 /* Bouton pleine largeur (auth) */
 .btn-block { @apply flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-3 font-semibold text-white transition hover:bg-brand-dark disabled:opacity-60; }
 .arrow-slide { @apply h-4 w-4 transition-transform; }

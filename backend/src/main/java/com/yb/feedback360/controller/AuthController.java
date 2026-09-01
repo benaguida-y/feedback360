@@ -2,6 +2,7 @@ package com.yb.feedback360.controller;
 
 import com.yb.feedback360.constant.ApiPaths;
 import com.yb.feedback360.dto.request.ActivateRequest;
+import com.yb.feedback360.dto.request.ForgotPasswordRequest;
 import com.yb.feedback360.dto.request.LoginRequest;
 import com.yb.feedback360.dto.request.MagicLoginRequest;
 import com.yb.feedback360.service.AuthService;
@@ -25,6 +26,18 @@ public class AuthController {
     @PostMapping(ApiPaths.ACTIVATE)
     public ResponseEntity<Void> activateUser(@Valid @RequestBody ActivateRequest request) {
         authService.activate(request.token(), request.password());
+        return ResponseEntity.noContent().build(); // 204
+    }
+
+    @PostMapping(ApiPaths.FORGOT_PASSWORD)
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.requestPasswordReset(request.email());
+        return ResponseEntity.noContent().build(); // 204 — toujours, meme si l'email n'existe pas
+    }
+
+    @PostMapping(ApiPaths.RESET_PASSWORD)
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ActivateRequest request) {
+        authService.resetPassword(request.token(), request.password());
         return ResponseEntity.noContent().build(); // 204
     }
 

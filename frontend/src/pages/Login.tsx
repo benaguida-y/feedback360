@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import client from "../api/client";
 import { getRole, setToken } from "../auth";
 import BrandPanel from "../components/BrandPanel";
@@ -66,6 +66,10 @@ export default function Login() {
 
                     <FormField label={t("login.password")} icon={Lock} type="password" value={password}
                                onChange={setPassword} placeholder="••••••••" />
+
+                    <p className="auth-forgot">
+                        <Link to="/forgot-password" className="link-brand">{t("login.forgotPassword")}</Link>
+                    </p>
 
                     {error && <ErrorBanner message={error} />}
 

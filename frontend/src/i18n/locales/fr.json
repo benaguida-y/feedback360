@@ -217,7 +217,23 @@
     "signIn": "Se connecter",
     "loggingIn": "Connexion…",
     "footer": "Accès réservé — contactez votre administrateur en cas de problème.",
-    "error": "Email ou mot de passe incorrect."
+    "error": "Email ou mot de passe incorrect.",
+    "forgotPassword": "Mot de passe oublié ?"
+  },
+  "forgotPassword": {
+    "title": "Mot de passe oublié",
+    "subtitle": "Entrez votre e-mail : si un compte existe, vous recevrez un lien de réinitialisation.",
+    "submit": "Envoyer le lien",
+    "sending": "Envoi…",
+    "sent": "Si un compte existe pour cet e-mail, un lien de réinitialisation vient d'être envoyé.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "resetPassword": {
+    "title": "Réinitialiser votre mot de passe",
+    "subtitle": "Choisissez un nouveau mot de passe pour votre compte.",
+    "submit": "Réinitialiser",
+    "submitting": "Réinitialisation…",
+    "success": "Mot de passe réinitialisé ✔ Redirection vers la connexion…"
   },
   "activate": {
     "title": "Activez votre compte",

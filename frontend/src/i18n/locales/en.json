@@ -217,7 +217,23 @@
     "signIn": "Sign in",
     "loggingIn": "Signing in…",
     "footer": "Restricted access — contact your administrator if you have any issue.",
-    "error": "Incorrect email or password."
+    "error": "Incorrect email or password.",
+    "forgotPassword": "Forgot password?"
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "subtitle": "Enter your email: if an account exists, you'll receive a reset link.",
+    "submit": "Send the link",
+    "sending": "Sending…",
+    "sent": "If an account exists for this email, a reset link has just been sent.",
+    "backToLogin": "Back to sign in"
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "subtitle": "Choose a new password for your account.",
+    "submit": "Reset",
+    "submitting": "Resetting…",
+    "success": "Password reset ✔ Redirecting to sign in…"
   },
   "activate": {
     "title": "Activate your account",
