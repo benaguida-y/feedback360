@@ -6,7 +6,8 @@
     "modules": "Modules",
     "administration": "Administration",
     "reminders": "Reminders",
-    "supervision": "Supervision"
+    "supervision": "Supervision",
+    "insights": "Feedback insights"
   },
   "common": {
     "all": "All",
@@ -142,6 +143,22 @@
     "title": "Module breakdown",
     "subtitle": "Response rate and average rating, module by module.",
     "loadError": "Unable to load module breakdown."
+  },
+  "insights": {
+    "title": "Feedback insights",
+    "subtitle": "AI summary of comments, per module.",
+    "pickModule": "Pick a module…",
+    "generate": "Generate summary",
+    "generating": "Analyzing…",
+    "summary": "Summary",
+    "sentiment": "Sentiment",
+    "positive": "Positive",
+    "neutral": "Neutral",
+    "negative": "Negative",
+    "basedOn": "Based on {{n}} comment(s)",
+    "unavailable": "Insights unavailable right now.",
+    "loadError": "Unable to load modules.",
+    "error": "Unable to generate the summary."
   },
   "collaboratorFeedbacks": {
     "title": "My feedback",

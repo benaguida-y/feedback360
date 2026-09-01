@@ -148,4 +148,14 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             """)
     List<Double> findScoresForDistribution(@Param("status") FeedbackStatus status,
                                            @Param("search") String search);
+
+    @Query("""
+            select f.comment from Feedback f
+            where f.moduleFormation.moduleId = :moduleId
+              and f.status = :submitted
+              and f.comment is not null
+              and trim(f.comment) <> ''
+            """)
+    List<String> findCommentsByModule(@Param("moduleId") Long moduleId,
+                                      @Param("submitted") FeedbackStatus submitted);
 }
