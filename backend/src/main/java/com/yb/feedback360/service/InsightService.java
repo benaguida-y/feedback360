@@ -54,7 +54,7 @@ public class InsightService {
             "ses", "mon", "ma", "mes", "ton", "ta", "tes", "leur", "leurs", "nous", "vous", "ils",
             "elles", "elle", "cela", "fait", "faire", "etre", "avoir", "mais", "donc", "car", "aussi",
             "comme", "tout", "toute", "tous", "toutes", "meme", "peu", "ici", "module",
-            "formation", "cours", "session", "vraiment", "assez", "chaque");
+            "formation", "cours", "session", "vraiment", "assez", "chaque", "cetait", "etaient");
 
     private final FeedbackRepository feedbackRepository;
     private final ModuleFormationRepository moduleFormationRepository;
@@ -102,58 +102,103 @@ public class InsightService {
     }
 
     // ---------------------------------------------------------------------
-    // ANALYSE LOCALE : sentiment par lexique + themes par frequence de mots.
+    // ANALYSE LOCALE : sentiment par lexique + themes forts/faibles par frequence.
     // Aucun appel externe -> fonctionne partout, sans cle ni reseau.
     // ---------------------------------------------------------------------
     private ModuleInsightsResponse analyzeLocally(List<String> comments) {
         int positive = 0, negative = 0, neutral = 0;
-        Map<String, Integer> wordCounts = new HashMap<>();
+        Map<String, Integer> allWords = new HashMap<>();
+        Map<String, Integer> posWords = new HashMap<>();
+        Map<String, Integer> negWords = new HashMap<>();
 
         for (String comment : comments) {
             int score = 0;
+            List<String> meaningful = new ArrayList<>();
             for (String token : tokenize(comment)) {
                 if (POSITIVE.contains(token)) score++;
-                if (NEGATIVE.contains(token)) score--;
-                if (token.length() >= 4 && !STOPWORDS.contains(token)
-                        && !POSITIVE.contains(token) && !NEGATIVE.contains(token)) {
-                    wordCounts.merge(token, 1, Integer::sum);
+                else if (NEGATIVE.contains(token)) score--;
+                else if (token.length() >= 4 && !STOPWORDS.contains(token)) {
+                    meaningful.add(token);
+                    allWords.merge(token, 1, Integer::sum);
                 }
+            }
+            Map<String, Integer> bucket = score > 0 ? posWords : (score < 0 ? negWords : null);
+            if (bucket != null) {
+                for (String w : meaningful) bucket.merge(w, 1, Integer::sum);
             }
             if (score > 0) positive++;
             else if (score < 0) negative++;
             else neutral++;
         }
 
-        List<String> themes = wordCounts.entrySet().stream()
-                .filter(e -> e.getValue() >= 2)                 // au moins 2 occurrences
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .limit(5)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+        List<String> themes = topWords(allWords, 5, 2);
+        if (themes.isEmpty()) themes = topWords(allWords, 5, 1);
+        List<String> strengths = topWords(posWords, 3, 1);
+        List<String> improvements = topWords(negWords, 3, 1);
 
-        String summary = buildSummary(comments.size(), positive, neutral, negative, themes);
+        String summary = buildSummary(comments.size(), positive, neutral, negative, strengths, improvements);
         return new ModuleInsightsResponse(true, comments.size(), summary,
                 new SentimentBreakdown(positive, neutral, negative), themes);
     }
 
-    private String buildSummary(int total, int pos, int neu, int neg, List<String> themes) {
+    private List<String> topWords(Map<String, Integer> counts, int limit, int min) {
+        return counts.entrySet().stream()
+                .filter(e -> e.getValue() >= min)
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(limit)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    private String buildSummary(int total, int pos, int neu, int neg,
+                                List<String> strengths, List<String> improvements) {
+        int posPct = pct(pos, total), neuPct = pct(neu, total), negPct = pct(neg, total);
+
         String tone;
-        if (pos >= neg * 2 && pos > neu) tone = "des retours majoritairement positifs";
-        else if (neg >= pos * 2 && neg > neu) tone = "des retours plutot critiques";
-        else if (neu >= pos && neu >= neg) tone = "des retours nuances (avis partages)";
-        else tone = "des retours globalement equilibres";
+        if (pos >= neg * 2 && pos >= neu) tone = "une perception globalement positive";
+        else if (neg >= pos * 2 && neg >= neu) tone = "une perception plutôt critique";
+        else if (neu > pos && neu > neg) tone = "des avis partagés, sans tendance nette";
+        else tone = "des retours contrastés";
 
         StringBuilder sb = new StringBuilder();
-        sb.append(total).append(" commentaire").append(total > 1 ? "s" : "")
-                .append(" analyse").append(total > 1 ? "s" : "")
-                .append(" : ").append(tone).append(" (")
-                .append(pos).append(" positif").append(pos > 1 ? "s" : "").append(", ")
-                .append(neu).append(" neutre").append(neu > 1 ? "s" : "").append(", ")
-                .append(neg).append(" negatif").append(neg > 1 ? "s" : "").append(").");
-        if (!themes.isEmpty()) {
-            sb.append(" Themes recurrents : ").append(String.join(", ", themes)).append(".");
+        sb.append("Sur ").append(total).append(" commentaire").append(total > 1 ? "s" : "")
+                .append(" analysé").append(total > 1 ? "s" : "")
+                .append(", les retours traduisent ").append(tone)
+                .append(" (").append(posPct).append(" % positifs, ")
+                .append(neuPct).append(" % neutres, ").append(negPct).append(" % négatifs). ");
+
+        if (!strengths.isEmpty()) {
+            sb.append("Les collaborateurs saluent particulièrement ")
+                    .append(joinNatural(strengths)).append(". ");
+        } else if (pos > 0) {
+            sb.append("Une partie des collaborateurs exprime sa satisfaction. ");
+        }
+
+        if (!improvements.isEmpty()) {
+            sb.append("À l'inverse, plusieurs retours pointent ")
+                    .append(joinNatural(improvements))
+                    .append(improvements.size() > 1 ? " comme axes d'amélioration. " : " comme axe d'amélioration. ");
+        } else if (neg > 0) {
+            sb.append("Quelques avis plus réservés méritent une attention particulière. ");
+        }
+
+        if (pos >= neg * 2 && pos >= neu) {
+            sb.append("Dans l'ensemble, le module est bien reçu et peut être maintenu en l'état.");
+        } else if (neg >= pos) {
+            sb.append("Il serait pertinent de revoir ces points pour renforcer la satisfaction des participants.");
+        } else {
+            sb.append("Un suivi ciblé sur ces thèmes permettrait de consolider l'appréciation du module.");
         }
         return sb.toString();
+    }
+
+    private int pct(int part, int total) {
+        return total == 0 ? 0 : Math.round(part * 100f / total);
+    }
+
+    private String joinNatural(List<String> items) {
+        if (items.size() == 1) return items.get(0);
+        return String.join(", ", items.subList(0, items.size() - 1)) + " et " + items.get(items.size() - 1);
     }
 
     // Minuscule + retrait des accents + split sur tout ce qui n'est pas lettre.
