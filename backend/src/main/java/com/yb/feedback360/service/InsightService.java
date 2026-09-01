@@ -85,12 +85,25 @@ public class InsightService {
                         Map.of("role", "system", "content", SYSTEM_PROMPT),
                         Map.of("role", "user", "content", userContent)));
 
-        Map<String, Object> resp = rest.post()
-                .uri("/chat/completions")
-                .header("Authorization", "Bearer " + apiKey)
-                .body(body)
-                .retrieve()
-                .body(Map.class);
+        String raw;
+        try {
+            raw = rest.post()
+                    .uri("/chat/completions")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .header("Content-Type", "application/json")
+                    .body(MAPPER.writeValueAsString(body))   // requete serialisee par NOTRE mapper
+                    .retrieve()
+                    .body(String.class);                     // reponse lue en texte brut
+        } catch (Exception e) {
+            throw new RuntimeException("Appel Groq echoue", e);
+        }
+
+        Map<String, Object> resp;
+        try {
+            resp = MAPPER.readValue(raw, Map.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Reponse Groq illisible : " + raw, e);
+        }
 
         List<Map<String, Object>> choices = (List<Map<String, Object>>) resp.get("choices");
         String content = (String) ((Map<String, Object>) choices.get(0).get("message")).get("content");
