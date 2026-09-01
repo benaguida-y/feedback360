@@ -8,6 +8,7 @@ import com.yb.feedback360.dto.response.SentimentBreakdown;
 import com.yb.feedback360.repository.FeedbackRepository;
 import com.yb.feedback360.repository.ModuleFormationRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -35,17 +36,20 @@ public class InsightService {
     private final RestClient rest;
     private final String apiKey;
     private final String model;
+    private final String completionsUrl;   // URL ABSOLUE (pas de baseUrl -> pas de piege de chemin)
 
     public InsightService(FeedbackRepository feedbackRepository,
                           ModuleFormationRepository moduleFormationRepository,
                           @Value("${groq.api-key:}") String apiKey,
-                          @Value("${groq.model:llama-3.3-70b-versatile}") String model,
+                          @Value("${groq.model:openai/gpt-oss-20b}") String model,
                           @Value("${groq.base-url:https://api.groq.com/openai/v1}") String baseUrl) {
         this.feedbackRepository = feedbackRepository;
         this.moduleFormationRepository = moduleFormationRepository;
         this.apiKey = apiKey;
         this.model = model;
-        this.rest = RestClient.builder().baseUrl(baseUrl).build();
+        String base = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
+        this.completionsUrl = base + "/chat/completions";
+        this.rest = RestClient.builder().build();   // pas de baseUrl : on passe l'URL complete
     }
 
     // Liste des modules (id + titre) pour le selecteur de la page.
@@ -69,6 +73,7 @@ public class InsightService {
             return callGroq(comments);
         } catch (RuntimeException e) {
             // Isolation : si l'IA echoue (rate limit, reseau...), on ne casse rien.
+            System.out.println("[INSIGHTS] Appel Groq echoue : " + e.getMessage());
             return new ModuleInsightsResponse(false, comments.size(), null, null, List.of());
         }
     }
@@ -85,17 +90,31 @@ public class InsightService {
                         Map.of("role", "system", "content", SYSTEM_PROMPT),
                         Map.of("role", "user", "content", userContent)));
 
-        String raw;
+        String payload;
         try {
-            raw = rest.post()
-                    .uri("/chat/completions")
+            payload = MAPPER.writeValueAsString(body);
+        } catch (Exception e) {
+            throw new RuntimeException("Serialisation requete Groq echouee", e);
+        }
+
+        ResponseEntity<String> response;
+        try {
+            response = rest.post()
+                    .uri(completionsUrl)                       // URL absolue complete
                     .header("Authorization", "Bearer " + apiKey)
                     .header("Content-Type", "application/json")
-                    .body(MAPPER.writeValueAsString(body))   // requete serialisee par NOTRE mapper
+                    .body(payload)                             // requete serialisee par NOTRE mapper
                     .retrieve()
-                    .body(String.class);                     // reponse lue en texte brut
+                    .toEntity(String.class);                   // reponse + statut
         } catch (Exception e) {
-            throw new RuntimeException("Appel Groq echoue", e);
+            throw new RuntimeException("Appel Groq echoue (" + completionsUrl + ") : " + e.getMessage(), e);
+        }
+
+        String raw = response.getBody();
+        System.out.println("[INSIGHTS] Groq status=" + response.getStatusCode()
+                + " bodyLen=" + (raw == null ? "null" : raw.length()));
+        if (raw == null || raw.isBlank()) {
+            throw new RuntimeException("Reponse Groq vide (status " + response.getStatusCode() + ")");
         }
 
         Map<String, Object> resp;
