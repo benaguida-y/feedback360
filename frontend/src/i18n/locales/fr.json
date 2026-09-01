@@ -93,6 +93,11 @@
     "byRole": "Répartition par rôle",
     "byStatus": "Répartition par statut"
   },
+  "adminUserDetail": {
+    "title": "Fiche utilisateur",
+    "department": "Département",
+    "externalId": "ID externe"
+  },
   "adminLogs": {
     "title": "Supervision",
     "subtitle": "Journal des appels d'intégration reçus (webhook).",
@@ -102,6 +107,7 @@
     "processedAt": "Traité le",
     "empty": "Aucun appel enregistré.",
     "loadError": "Impossible de charger les logs.",
+    "error": "Erreur",
     "logStatus": {
       "SUCCESS": "Succès",
       "FAILURE": "Échec",
@@ -211,13 +217,29 @@
     "signIn": "Se connecter",
     "loggingIn": "Connexion…",
     "footer": "Accès réservé — contactez votre administrateur en cas de problème.",
-    "error": "Email ou mot de passe incorrect."
+    "error": "Email ou mot de passe incorrect.",
+    "forgotPassword": "Mot de passe oublié ?"
+  },
+  "forgotPassword": {
+    "title": "Mot de passe oublié",
+    "subtitle": "Entrez votre e-mail : si un compte existe, vous recevrez un lien de réinitialisation.",
+    "submit": "Envoyer le lien",
+    "sending": "Envoi…",
+    "sent": "Si un compte existe pour cet e-mail, un lien de réinitialisation vient d'être envoyé.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "resetPassword": {
+    "title": "Réinitialiser votre mot de passe",
+    "subtitle": "Choisissez un nouveau mot de passe pour votre compte.",
+    "submit": "Réinitialiser",
+    "submitting": "Réinitialisation…",
+    "success": "Mot de passe réinitialisé ✔ Redirection vers la connexion…"
   },
   "activate": {
     "title": "Activez votre compte",
     "subtitle": "Choisissez un mot de passe pour accéder à votre espace.",
-    "newPassword": "Nouveau mot de passe",
-    "confirmPassword": "Confirmer le mot de passe",
+    "newPassword": "Mot de passe",
+    "confirmPassword": "Confirmer mot de passe",
     "submit": "Activer mon compte",
     "activating": "Activation…",
     "success": "Mot de passe défini ✔ Redirection vers la connexion…",

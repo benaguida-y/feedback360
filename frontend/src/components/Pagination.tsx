@@ -28,15 +28,15 @@ export default function Pagination({ page, totalPages, onChange, size, onSizeCha
                 <div className="pagination-controls">
                     <button onClick={() => onChange(page - 1)} disabled={page === 0} aria-label={t("common.previous")} className="pagination-btn">
                         <ChevronLeft className="icon-sm" />
-                        {t("common.previous")}
+                        <span className="pg-label">{t("common.previous")}</span>
                     </button>
                     <span className="pagination-info">
-                        {t("common.page")}
+                        <span className="pg-label">{t("common.page")}</span>
                         <span className="pagination-page">{page + 1}</span>
                         / {totalPages}
                     </span>
                     <button onClick={() => onChange(page + 1)} disabled={page >= totalPages - 1} aria-label={t("common.next")} className="pagination-btn">
-                        {t("common.next")}
+                        <span className="pg-label">{t("common.next")}</span>
                         <ChevronRight className="icon-sm" />
                     </button>
                 </div>

@@ -11,7 +11,8 @@ import Table from "../components/Table";
 import RatingStars from "../components/RatingStars";
 import ModuleParticipationChart from "../components/ModuleParticipationChart";
 import { useTranslation } from "react-i18next";
-import { useSort } from "../useSort";
+import { useListParams } from "../useListParams";
+import ChartSkeleton from "../components/ChartSkeleton";
 
 interface ModuleStats { moduleTitle: string; submittedCount: number; notSubmittedCount: number; inProgressCount: number; averageScore: number | null; }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
@@ -19,21 +20,18 @@ interface Page<T> { content: T[]; page: number; size: number; totalElements: num
 export default function ManagerModuleStats() {
     const role = getRole();
     const [modules, setModules] = useState<ModuleStats[]>([]);
-    const [page, setPage] = useState(0);
-    const [size, setSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
     const [total, setTotal] = useState(0);
-    const [search, setSearch] = useState("");
-    const [score, setScore] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [allModules, setAllModules] = useState<ModuleStats[]>([]);
+    const [allModules, setAllModules] = useState<ModuleStats[] | null>(null);
     const { t } = useTranslation();
-    const { sort, toggle } = useSort();
+    const { page, setPage, size, setSize, search, setSearch, sort, toggle, get, set } = useListParams();
+    const score = get("score");
+    const setScore = (v: string) => set("score", v);
 
     if (role !== "MANAGER" && role !== "ADMIN") return <Navigate to="/" replace />;
 
-    useEffect(() => { setPage(0); }, [search, score, sort, size]);
 
     useEffect(() => {
         setLoading(true);
@@ -42,7 +40,7 @@ export default function ManagerModuleStats() {
             if (search.trim()) params.set("search", search.trim());
             if (score) params.set("score", score);
             if (sort) params.set("sort", sort);
-            params.set("page", String(page));
+            params.set("page", String(page + 1));
             params.set("size", String(size));
             client.get<Page<ModuleStats>>(`/management/modules?${params.toString()}`)
                 .then((r) => { setModules(r.data.content); setTotalPages(r.data.totalPages); setTotal(r.data.totalElements); })
@@ -56,10 +54,10 @@ export default function ManagerModuleStats() {
     useEffect(() => {
         client.get<{ perModule: ModuleStats[] }>("/management/feedbacks/stats")
             .then((r) => setAllModules(r.data.perModule))
-            .catch(() => {});
+            .catch(() => setAllModules([]));
     }, []);
 
-    const participationData = [...allModules]
+    const participationData = [...(allModules ?? [])]
         .sort((a, b) => (b.submittedCount + b.inProgressCount + b.notSubmittedCount) - (a.submittedCount + a.inProgressCount + a.notSubmittedCount))
         .map((m) => ({ module: m.moduleTitle, submitted: m.submittedCount, inProgress: m.inProgressCount, notSubmitted: m.notSubmittedCount }));
 
@@ -71,7 +69,9 @@ export default function ManagerModuleStats() {
 
             {error && <p className="error-line">{error}</p>}
 
-            {participationData.length > 0 && (
+            {allModules === null ? (
+                <div className="chart-block"><ChartSkeleton /></div>
+            ) : participationData.length > 0 && (
                 <div className="chart-block">
                     <ModuleParticipationChart data={participationData} emptyLabel={t("common.noData")} />
                 </div>

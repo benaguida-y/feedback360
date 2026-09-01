@@ -18,6 +18,8 @@ public final class ApiPaths {
     public static final String LOGIN = "/login";
     public static final String MAGIC_LOGIN = "/magic-login";
     public static final String ACTIVATE = "/activate";
+    public static final String FORGOT_PASSWORD = "/forgot-password";
+    public static final String RESET_PASSWORD = "/reset-password";
     public static final String MODULE_COMPLETED = "/module-completed";
     public static final String BY_ID = "/{feedbackId}";
 
@@ -36,6 +38,7 @@ public final class ApiPaths {
     public static final String MANAGEMENT_FEEDBACK_REMIND = "/feedbacks/{feedbackId}/remind";
     public static final String MANAGEMENT_FEEDBACKS_RATING = "/feedbacks/rating-distribution";
     public static final String MANAGEMENT_COLLABORATORS = "/collaborators";
+    public static final String MANAGEMENT_COLLABORATORS_SUMMARY = "/collaborators/summary";
     public static final String MANAGEMENT_COLLABORATOR_BY_ID = "/collaborators/{userId}";
     public static final String MANAGEMENT_MODULES = "/modules";
 
@@ -44,6 +47,7 @@ public final class ApiPaths {
     public static final String ADMIN_LOGS = "/logs";
     public static final String ADMIN_PATTERN = ADMIN + "/**";
     public static final String ADMIN_USERS = "/users";
+    public static final String ADMIN_USER_BY_ID = "/users/{userId}";
     public static final String ADMIN_STATS_USERS = "/stats/users";
     public static final String ADMIN_STATS_INTEGRATIONS = "/stats/integrations";
     public static final String ADMIN_USER_STATUS = "/users/{userId}/status";

@@ -93,6 +93,11 @@
     "byRole": "Users by role",
     "byStatus": "Users by status"
   },
+  "adminUserDetail": {
+    "title": "User profile",
+    "department": "Department",
+    "externalId": "External ID"
+  },
   "adminLogs": {
     "title": "Supervision",
     "subtitle": "Log of received integration calls (webhook).",
@@ -102,6 +107,7 @@
     "processedAt": "Processed at",
     "empty": "No calls recorded.",
     "loadError": "Unable to load logs.",
+    "error": "Error",
     "logStatus": {
       "SUCCESS": "Success",
       "FAILURE": "Failure",
@@ -211,12 +217,28 @@
     "signIn": "Sign in",
     "loggingIn": "Signing in…",
     "footer": "Restricted access — contact your administrator if you have any issue.",
-    "error": "Incorrect email or password."
+    "error": "Incorrect email or password.",
+    "forgotPassword": "Forgot password?"
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "subtitle": "Enter your email: if an account exists, you'll receive a reset link.",
+    "submit": "Send the link",
+    "sending": "Sending…",
+    "sent": "If an account exists for this email, a reset link has just been sent.",
+    "backToLogin": "Back to sign in"
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "subtitle": "Choose a new password for your account.",
+    "submit": "Reset",
+    "submitting": "Resetting…",
+    "success": "Password reset ✔ Redirecting to sign in…"
   },
   "activate": {
     "title": "Activate your account",
     "subtitle": "Choose a password to access your space.",
-    "newPassword": "New password",
+    "newPassword": "Password",
     "confirmPassword": "Confirm password",
     "submit": "Activate my account",
     "activating": "Activating…",

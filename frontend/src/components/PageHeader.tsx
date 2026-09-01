@@ -14,7 +14,7 @@ export default function PageHeader({ title, subtitle, backTo, action }: {
                 <h2 className="page-title">{title}</h2>
                 {subtitle && <p className="page-subtitle">{subtitle}</p>}
             </div>
-            {action}
+            {action && <div className="page-header-action">{action}</div>}
         </div>
     );
 }

@@ -18,23 +18,42 @@ import java.time.Instant;
 public class MagicLinkService {
 
     private static final String ACTIVATION_SCOPE = "account:activate"; // définir le mot de passe
-    private static final String LOGIN_SCOPE = "account:login";         // connexion directe
+    private static final String RESET_SCOPE = "account:reset";         // réinitialiser le mot de passe
     private static final String ACTIVATION_PATH = "/activate";
-    private static final String LOGIN_PATH = "/magic-login";
+    private static final String LOGIN_PATH = "/login";
 
     private final JwtEncoder jwtEncoder;
     private final MagicLinkProperties properties;
 
-    // Compte jamais activé : lien vers la page "définir mon mot de passe".
+    // Compte jamais activé, sans feedback ciblé (création manuelle par un admin) :
+    // lien vers la page "définir mon mot de passe".
     public String createActivationUrl(User user) {
-        String token = signToken(user, ACTIVATION_SCOPE);
-        return "%s%s?token=%s".formatted(properties.baseUrl(), ACTIVATION_PATH, token);
+        return buildActivationUrl(user, null);
     }
 
-    // Compte déjà activé : lien de connexion directe vers le nouveau feedback à remplir.
+    // Compte jamais activé, invité pour un feedback précis : après avoir défini son mot
+    // de passe, le collaborateur passe par la connexion puis arrive sur ce feedback.
+    public String createActivationUrl(User user, Long feedbackId) {
+        return buildActivationUrl(user, feedbackId);
+    }
+
+    private String buildActivationUrl(User user, Long feedbackId) {
+        String token = signToken(user, ACTIVATION_SCOPE);
+        String url = "%s%s?token=%s".formatted(properties.baseUrl(), ACTIVATION_PATH, token);
+        return feedbackId == null ? url : "%s&next=/feedback/%d".formatted(url, feedbackId);
+    }
+
+    // Compte déjà activé : lien vers la page de connexion, puis redirection vers le
+    // feedback à remplir une fois connecté (plus de connexion automatique).
     public String createLoginUrl(User user, Long feedbackId) {
-        String token = signToken(user, LOGIN_SCOPE);
-        return "%s%s?token=%s&next=/feedback/%d".formatted(properties.baseUrl(), LOGIN_PATH, token, feedbackId);
+        return "%s%s?next=/feedback/%d".formatted(properties.baseUrl(), LOGIN_PATH, feedbackId);
+    }
+
+    // Mot de passe oublié : lien vers la page "choisir un mot de passe" en mode reset
+    // (jeton de scope dédié, qui autorise l'écrasement d'un mot de passe existant).
+    public String createResetUrl(User user) {
+        String token = signToken(user, RESET_SCOPE);
+        return "%s%s?token=%s&mode=reset".formatted(properties.baseUrl(), ACTIVATION_PATH, token);
     }
 
     private String signToken(User user, String scope) {

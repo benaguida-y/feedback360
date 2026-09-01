@@ -49,7 +49,7 @@ public class ModuleCompletionFacade {
                     .map(ConstraintViolation::getMessage)
                     .sorted()
                     .collect(Collectors.joining("; "));
-            saveLog(log, LogStatus.FAILURE, null);
+            saveLog(log, LogStatus.FAILURE, null, error);
             return ModuleCompletionResult.failure(email, error);
         }
 
@@ -61,7 +61,7 @@ public class ModuleCompletionFacade {
             String link;
             if (user.getPasswordHash() == null) {
                 // 1re fois : le collaborateur doit définir son mot de passe.
-                link = magicLinkService.createActivationUrl(user);
+                link = magicLinkService.createActivationUrl(user, feedback.getFeedbackId());
                 emailService.sendActivationEmail(user, link, moduleTitle);
             } else {
                 // Compte déjà activé : connexion directe vers le nouveau feedback.
@@ -69,19 +69,20 @@ public class ModuleCompletionFacade {
                 emailService.sendNewFeedbackEmail(user, link, moduleTitle);
             }
 
-            saveLog(log, LogStatus.SUCCESS, feedback);
+            saveLog(log, LogStatus.SUCCESS, feedback, null);
             return ModuleCompletionResult.success(
                     email, feedback.getFeedbackId(), feedback.getStatus().name(), link);
         } catch (Exception e) {
             String error = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
-            saveLog(log, LogStatus.FAILURE, null);
+            saveLog(log, LogStatus.FAILURE, null, error);
             return ModuleCompletionResult.failure(email, error);
         }
     }
 
     // Finalise et enregistre le log (le feedback est null en cas d'échec).
-    private void saveLog(IntegrationLog log, LogStatus status, Feedback feedback) {
+    private void saveLog(IntegrationLog log, LogStatus status, Feedback feedback, String error) {
         log.setStatus(status);
+        log.setErrorMessage(error);
         log.setProcessedAt(Instant.now());
         if (feedback != null) {
             log.setUser(feedback.getUser());

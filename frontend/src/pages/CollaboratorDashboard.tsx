@@ -9,6 +9,7 @@ import Table from "../components/Table";
 import { FeedbackAction } from "./CollaboratorFeedbacks";
 import {ArrowRight} from "lucide-react";
 import { useTranslation } from "react-i18next";
+import StatCardSkeleton from "../components/StatCardSkeleton";
 
 interface Summary { total: number; submitted: number; notSubmitted: number; inProgress: number; }
 interface Feedback { feedbackId: number; status: string; moduleTitle: string; createdAt: string; globalScore: number | null; }
@@ -36,14 +37,18 @@ export default function CollaboratorDashboard() {
 
     return (
         <div>
-            <PageHeader title={t("collaboratorDashboard.title")} subtitle={t("collaboratorDashboard.subtitle")} />
+            <PageHeader title={t("collaboratorDashboard.title")} subtitle={t("collaboratorDashboard.subtitle")}/>
 
-            {summary && (
+            {summary ? (
                 <div className="grid-stats-4">
-                    <StatCard label={t("common.total")} value={summary.total} />
-                    <StatCard label={t("status.SUBMITTED")} value={summary.submitted} accent="accent-emerald" />
-                    <StatCard label={t("status.NOT_SUBMITTED")} value={summary.notSubmitted} accent="accent-amber" />
-                    <StatCard label={t("status.IN_PROGRESS")} value={summary.inProgress} accent="accent-sky" />
+                    <StatCard label={t("common.total")} value={summary.total}/>
+                    <StatCard label={t("status.SUBMITTED")} value={summary.submitted} accent="accent-emerald"/>
+                    <StatCard label={t("status.NOT_SUBMITTED")} value={summary.notSubmitted} accent="accent-amber"/>
+                    <StatCard label={t("status.IN_PROGRESS")} value={summary.inProgress} accent="accent-sky"/>
+                </div>
+            ) : (
+                <div className="grid-stats-4">
+                    {Array.from({length: 4}).map((_, i) => <StatCardSkeleton key={i}/>)}
                 </div>
             )}
 
@@ -51,21 +56,22 @@ export default function CollaboratorDashboard() {
                 <h3 className="section-title">{t("collaboratorDashboard.recent")}</h3>
                 <Link to="/feedbacks" className="btn-see-all">
                     {t("common.viewAll")}
-                    <ArrowRight className="see-all-arrow" />
+                    <ArrowRight className="see-all-arrow"/>
                 </Link>
             </div>
 
             <Card className="recent-list">
-                <Table columns={[t("common.module"), t("common.status"), t("common.score"), t("common.date"), t("common.action")]}
-                       loading={loading}
-                       isEmpty={recent.length === 0} emptyLabel={t("common.noFeedback")}>
+                <Table
+                    columns={[t("common.module"), t("common.status"), t("common.score"), t("common.date"), t("common.action")]}
+                    loading={loading}
+                    isEmpty={recent.length === 0} emptyLabel={t("common.noFeedback")}>
                     {recent.map((f) => (
                         <tr key={f.feedbackId} className="table-row">
                             <td className="table-cell cell-strong">{f.moduleTitle}</td>
-                            <td className="table-cell"><StatusBadge status={f.status} /></td>
+                            <td className="table-cell"><StatusBadge status={f.status}/></td>
                             <td className="table-cell cell-default">{f.globalScore != null ? `${f.globalScore} / 5` : "—"}</td>
                             <td className="table-cell cell-muted">{new Date(f.createdAt).toLocaleDateString(i18n.language === "en" ? "en-GB" : "fr-FR")}</td>
-                            <td className="table-cell"><FeedbackAction f={f} /></td>
+                            <td className="table-cell"><FeedbackAction f={f}/></td>
                         </tr>
                     ))}
                 </Table>

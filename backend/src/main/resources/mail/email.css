@@ -62,8 +62,7 @@ a { color: #0070ad; }
 .email-intro { font-size: 15px; line-height: 1.7; color: #475569; }
 
 .email-btn-cell { padding: 24px 44px 8px; }
-.email-btn { display: inline-block; background-color: #0070ad; border-radius: 8px; padding: 14px 38px; font-size: 15px; font-weight: 600; color: #ffffff; text-decoration: none; }
-
+a.email-btn { display: inline-block; background-color: #0070ad; border-radius: 8px; padding: 14px 38px; font-size: 15px; font-weight: 600; color: #ffffff !important; text-decoration: none; }
 .email-fallback { padding: 16px 44px 26px; }
 .email-fallback-label { margin: 0; font-size: 12px; line-height: 1.5; color: #94a3b8; }
 .email-fallback-link { margin: 6px 0 0; font-size: 12px; line-height: 1.5; word-break: break-all; }

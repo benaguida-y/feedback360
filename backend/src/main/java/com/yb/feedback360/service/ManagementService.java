@@ -231,4 +231,27 @@ public class ManagementService {
         for (long c : counts) list.add(c);
         return new RatingDistributionResponse(list);
     }
+
+    // Agrégats de l'équipe (donut + KPIs) calculés côté serveur sur TOUS les
+    // collaborateurs — plus besoin de tout charger côté navigateur (size=1000).
+    @Transactional(readOnly = true)
+    public CollaboratorsSummaryResponse getCollaboratorsSummary() {
+        List<CollaboratorProgressResponse> all = feedbackRepository
+                .collaboratorProgress(FeedbackStatus.SUBMITTED, FeedbackStatus.NOT_SUBMITTED, null, Pageable.unpaged())
+                .getContent();
+
+        long total = all.size();
+        long done = all.stream().filter(c -> percent(c) == 100).count();
+        long none = all.stream().filter(c -> percent(c) == 0).count();
+        long inProgress = total - done - none;
+        int avgProgress = total == 0 ? 0
+                : (int) Math.round(all.stream().mapToLong(this::percent).average().orElse(0));
+
+        return new CollaboratorsSummaryResponse(total, done, inProgress, none, avgProgress);
+    }
+
+    // % de feedbacks soumis d'un collaborateur (déjà calculé par la requête), null -> 0.
+    private long percent(CollaboratorProgressResponse c) {
+        return c.submittedPercent() == null ? 0 : c.submittedPercent();
+    }
 }

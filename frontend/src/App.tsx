@@ -16,6 +16,8 @@ import AdminCreateUser from "./pages/AdminCreateUser.tsx";
 import AdminReminders from "./pages/AdminReminders.tsx";
 import CollaboratorFeedbacks from "./pages/CollaboratorFeedbacks.tsx";
 import MagicLogin from "./pages/MagicLogin.tsx";
+import ForgotPassword from "./pages/ForgotPassword.tsx";
+import AdminUserDetail from "./pages/AdminUserDetail.tsx";
 
 export default function App() {
     return (
@@ -24,6 +26,7 @@ export default function App() {
 
             <Route path="/login" element={<Login />} />
             <Route path="/activate" element={<Activate />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/magic-login" element={<MagicLogin />} />
 
             <Route path="/feedbacks" element={<ProtectedRoute><CollaboratorFeedbacks /></ProtectedRoute>} />
@@ -31,6 +34,7 @@ export default function App() {
             <Route path="/feedback/:feedbackId/detail" element={<ProtectedRoute><FeedbackDetail /></ProtectedRoute>} />
 
             <Route path="/admin/users" element={<ProtectedRoute><AdminUsers /></ProtectedRoute>} />
+            <Route path="/admin/users/:userId" element={<ProtectedRoute><AdminUserDetail /></ProtectedRoute>} />
             <Route path="/admin/users/new" element={<ProtectedRoute><AdminCreateUser /></ProtectedRoute>} />
             <Route path="/admin/logs" element={<ProtectedRoute><AdminLogs /></ProtectedRoute>} />
             <Route path="/admin/reminders" element={<ProtectedRoute><AdminReminders /></ProtectedRoute>} />

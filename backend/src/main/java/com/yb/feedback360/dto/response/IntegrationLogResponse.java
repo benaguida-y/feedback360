@@ -9,5 +9,6 @@ public record IntegrationLogResponse(
         Instant receivedAt,
         Instant processedAt,
         String userEmail,
-        String moduleTitle
+        String moduleTitle,
+        String errorMessage
 ) {}

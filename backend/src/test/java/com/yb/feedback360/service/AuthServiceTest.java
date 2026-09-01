@@ -43,6 +43,10 @@ class AuthServiceTest {
     PasswordEncoder passwordEncoder;
     @Mock
     JwtEncoder jwtEncoder;
+    @Mock
+    MagicLinkService magicLinkService;
+    @Mock
+    EmailService emailService;
 
     @InjectMocks
     AuthService authService;
@@ -153,5 +157,65 @@ class AuthServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> authService.activate("tok", "newpass"));
         verify(userRepository, never()).save(any());
+    }
+
+    // --- reset password ------------------------------------------------------
+
+    /**
+     * Jeton de scope "reset" : le nouveau mot de passe est hashe et ECRASE l'ancien
+     * (contrairement a l'activation, aucun garde-fou "deja active").
+     */
+    @Test
+    void resetPassword_hashesAndSaves_whenScopeReset() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwtDecoder.decode("tok")).thenReturn(jwt);
+        when(jwt.getClaimAsString("scope")).thenReturn("account:reset");
+        when(jwt.getSubject()).thenReturn("1");
+
+        User user = userWithPassword(1L, "a@x.com", "old-hash"); // a deja un mot de passe
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newpass")).thenReturn("hashed-new");
+
+        authService.resetPassword("tok", "newpass");
+
+        assertEquals("hashed-new", user.getPasswordHash());
+        verify(userRepository).save(user);
+    }
+
+    /**
+     * Un jeton d'activation ne doit pas pouvoir servir a reinitialiser -> 400, rien sauve.
+     */
+    @Test
+    void resetPassword_throwsIllegalArgument_whenWrongScope() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwtDecoder.decode("tok")).thenReturn(jwt);
+        when(jwt.getClaimAsString("scope")).thenReturn("account:activate"); // mauvais scope
+
+        assertThrows(IllegalArgumentException.class, () -> authService.resetPassword("tok", "newpass"));
+        verify(userRepository, never()).save(any());
+    }
+
+    // --- request password reset (mot de passe oublie) ------------------------
+
+    /** E-mail connu : on genere un lien et on envoie l'e-mail de reinitialisation. */
+    @Test
+    void requestPasswordReset_sendsEmail_whenUserExists() {
+        User user = userWithPassword(1L, "a@x.com", "hash");
+        when(userRepository.findByEmail("a@x.com")).thenReturn(Optional.of(user));
+        when(magicLinkService.createResetUrl(user)).thenReturn("http://link");
+
+        authService.requestPasswordReset("a@x.com");
+
+        verify(emailService).sendPasswordResetEmail(user, "http://link");
+    }
+
+    /** E-mail inconnu : silencieux (anti-enumeration) -> aucun e-mail envoye. */
+    @Test
+    void requestPasswordReset_silent_whenUserMissing() {
+        when(userRepository.findByEmail("missing@x.com")).thenReturn(Optional.empty());
+
+        authService.requestPasswordReset("missing@x.com");
+
+        verify(emailService, never()).sendPasswordResetEmail(any(), any());
     }
 }

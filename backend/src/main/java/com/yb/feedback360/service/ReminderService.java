@@ -57,7 +57,7 @@ public class ReminderService {
         try {
             if (user.getPasswordHash() == null) {
                 // Jamais activé : rappel au ton « relance » mais lien d'activation (mot de passe).
-                String link = magicLinkService.createActivationUrl(user);
+                String link = magicLinkService.createActivationUrl(user, feedback.getFeedbackId());
                 emailService.sendActivationReminderEmail(user, link, moduleTitle);
             } else {
                 // Compte activé : rappel avec lien de connexion directe vers le feedback à remplir.
@@ -70,6 +70,7 @@ public class ReminderService {
             feedbackRepository.save(feedback);
         } catch (RuntimeException e) {
             log.setStatus(LogStatus.FAILURE);
+            log.setErrorMessage(e.getMessage());
             log.setProcessedAt(Instant.now());
             integrationLogRepository.save(log);
             throw e;
