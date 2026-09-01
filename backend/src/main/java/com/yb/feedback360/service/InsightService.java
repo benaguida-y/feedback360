@@ -12,9 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.text.Normalizer;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class InsightService {
@@ -31,12 +31,37 @@ public class InsightService {
         Le total positive+neutral+negative doit egaler le nombre de commentaires fournis. Maximum 5 themes.
         """;
 
+    // Lexiques FR (accents retires pour matcher le texte normalise).
+    private static final Set<String> POSITIVE = Set.of(
+            "clair", "claire", "excellent", "excellente", "super", "bien", "utile", "interessant",
+            "interessante", "pertinent", "pertinente", "efficace", "bon", "bonne", "apprecie",
+            "appreciee", "top", "parfait", "parfaite", "genial", "geniale", "enrichissant",
+            "enrichissante", "complet", "complete", "pedagogue", "pedagogique", "qualite",
+            "recommande", "satisfait", "satisfaite", "agreable", "dynamique", "motivant",
+            "passionnant", "structure", "structuree", "concret", "concrete", "pratique", "fluide");
+
+    private static final Set<String> NEGATIVE = Set.of(
+            "trop", "ennuyeux", "ennuyeuse", "confus", "confuse", "difficile", "complique",
+            "compliquee", "manque", "insuffisant", "insuffisante", "decevant", "decevante",
+            "decu", "decue", "mauvais", "mauvaise", "faible", "lent", "lente", "inutile",
+            "dommage", "probleme", "bug", "incomprehensible", "superficiel", "superficielle",
+            "brouillon", "charge", "chargee", "dense", "fatigant", "fatigante", "rapide", "court");
+
+    private static final Set<String> STOPWORDS = Set.of(
+            "le", "la", "les", "un", "une", "des", "de", "du", "et", "ou", "au", "aux", "en", "dans",
+            "sur", "pour", "par", "avec", "sans", "ce", "cet", "cette", "ces", "qui", "que", "quoi",
+            "dont", "est", "sont", "etait", "ete", "tres", "plus", "moins", "mal", "son", "sa",
+            "ses", "mon", "ma", "mes", "ton", "ta", "tes", "leur", "leurs", "nous", "vous", "ils",
+            "elles", "elle", "cela", "fait", "faire", "etre", "avoir", "mais", "donc", "car", "aussi",
+            "comme", "tout", "toute", "tous", "toutes", "meme", "peu", "ici", "module",
+            "formation", "cours", "session", "vraiment", "assez", "chaque");
+
     private final FeedbackRepository feedbackRepository;
     private final ModuleFormationRepository moduleFormationRepository;
     private final RestClient rest;
     private final String apiKey;
     private final String model;
-    private final String completionsUrl;   // URL ABSOLUE (pas de baseUrl -> pas de piege de chemin)
+    private final String completionsUrl;
 
     public InsightService(FeedbackRepository feedbackRepository,
                           ModuleFormationRepository moduleFormationRepository,
@@ -49,10 +74,9 @@ public class InsightService {
         this.model = model;
         String base = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
         this.completionsUrl = base + "/chat/completions";
-        this.rest = RestClient.builder().build();   // pas de baseUrl : on passe l'URL complete
+        this.rest = RestClient.builder().build();
     }
 
-    // Liste des modules (id + titre) pour le selecteur de la page.
     public List<ModuleOptionResponse> moduleOptions() {
         return moduleFormationRepository.findAll().stream()
                 .map(m -> new ModuleOptionResponse(m.getModuleId(), m.getTitle()))
@@ -66,18 +90,84 @@ public class InsightService {
             return new ModuleInsightsResponse(true, 0, "Aucun commentaire soumis pour ce module.",
                     new SentimentBreakdown(0, 0, 0), List.of());
         }
-        if (apiKey == null || apiKey.isBlank()) {
-            return mock(comments);              // pas de cle -> synthese simulee
+        // Si une cle Groq est configuree ET joignable, on tente l'IA ; sinon analyse locale.
+        if (apiKey != null && !apiKey.isBlank()) {
+            try {
+                return callGroq(comments);
+            } catch (RuntimeException e) {
+                System.out.println("[INSIGHTS] Groq indisponible, bascule analyse locale : " + e.getMessage());
+            }
         }
-        try {
-            return callGroq(comments);
-        } catch (RuntimeException e) {
-            // Isolation : si l'IA echoue (rate limit, reseau...), on ne casse rien.
-            System.out.println("[INSIGHTS] Appel Groq echoue : " + e.getMessage());
-            return new ModuleInsightsResponse(false, comments.size(), null, null, List.of());
-        }
+        return analyzeLocally(comments);
     }
 
+    // ---------------------------------------------------------------------
+    // ANALYSE LOCALE : sentiment par lexique + themes par frequence de mots.
+    // Aucun appel externe -> fonctionne partout, sans cle ni reseau.
+    // ---------------------------------------------------------------------
+    private ModuleInsightsResponse analyzeLocally(List<String> comments) {
+        int positive = 0, negative = 0, neutral = 0;
+        Map<String, Integer> wordCounts = new HashMap<>();
+
+        for (String comment : comments) {
+            int score = 0;
+            for (String token : tokenize(comment)) {
+                if (POSITIVE.contains(token)) score++;
+                if (NEGATIVE.contains(token)) score--;
+                if (token.length() >= 4 && !STOPWORDS.contains(token)
+                        && !POSITIVE.contains(token) && !NEGATIVE.contains(token)) {
+                    wordCounts.merge(token, 1, Integer::sum);
+                }
+            }
+            if (score > 0) positive++;
+            else if (score < 0) negative++;
+            else neutral++;
+        }
+
+        List<String> themes = wordCounts.entrySet().stream()
+                .filter(e -> e.getValue() >= 2)                 // au moins 2 occurrences
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(5)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        String summary = buildSummary(comments.size(), positive, neutral, negative, themes);
+        return new ModuleInsightsResponse(true, comments.size(), summary,
+                new SentimentBreakdown(positive, neutral, negative), themes);
+    }
+
+    private String buildSummary(int total, int pos, int neu, int neg, List<String> themes) {
+        String tone;
+        if (pos >= neg * 2 && pos > neu) tone = "des retours majoritairement positifs";
+        else if (neg >= pos * 2 && neg > neu) tone = "des retours plutot critiques";
+        else if (neu >= pos && neu >= neg) tone = "des retours nuances (avis partages)";
+        else tone = "des retours globalement equilibres";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(total).append(" commentaire").append(total > 1 ? "s" : "")
+                .append(" analyse").append(total > 1 ? "s" : "")
+                .append(" : ").append(tone).append(" (")
+                .append(pos).append(" positif").append(pos > 1 ? "s" : "").append(", ")
+                .append(neu).append(" neutre").append(neu > 1 ? "s" : "").append(", ")
+                .append(neg).append(" negatif").append(neg > 1 ? "s" : "").append(").");
+        if (!themes.isEmpty()) {
+            sb.append(" Themes recurrents : ").append(String.join(", ", themes)).append(".");
+        }
+        return sb.toString();
+    }
+
+    // Minuscule + retrait des accents + split sur tout ce qui n'est pas lettre.
+    private List<String> tokenize(String text) {
+        String normalized = Normalizer.normalize(text.toLowerCase(Locale.FRENCH), Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return Arrays.stream(normalized.split("[^a-z]+"))
+                .filter(t -> !t.isBlank())
+                .toList();
+    }
+
+    // ---------------------------------------------------------------------
+    // Appel Groq (utilise seulement si une cle est presente et le reseau ouvert).
+    // ---------------------------------------------------------------------
     @SuppressWarnings("unchecked")
     private ModuleInsightsResponse callGroq(List<String> comments) {
         String userContent = "Commentaires (" + comments.size() + ") :\n- " + String.join("\n- ", comments);
@@ -100,19 +190,17 @@ public class InsightService {
         ResponseEntity<String> response;
         try {
             response = rest.post()
-                    .uri(completionsUrl)                       // URL absolue complete
+                    .uri(completionsUrl)
                     .header("Authorization", "Bearer " + apiKey)
                     .header("Content-Type", "application/json")
-                    .body(payload)                             // requete serialisee par NOTRE mapper
+                    .body(payload)
                     .retrieve()
-                    .toEntity(String.class);                   // reponse + statut
+                    .toEntity(String.class);
         } catch (Exception e) {
             throw new RuntimeException("Appel Groq echoue (" + completionsUrl + ") : " + e.getMessage(), e);
         }
 
         String raw = response.getBody();
-        System.out.println("[INSIGHTS] Groq status=" + response.getStatusCode()
-                + " bodyLen=" + (raw == null ? "null" : raw.length()));
         if (raw == null || raw.isBlank()) {
             throw new RuntimeException("Reponse Groq vide (status " + response.getStatusCode() + ")");
         }
@@ -145,17 +233,5 @@ public class InsightService {
 
     private int toInt(Object o) {
         return o instanceof Number n ? n.intValue() : 0;
-    }
-
-    // Synthese simulee quand aucune cle Groq n'est configuree (demo/offline).
-    private ModuleInsightsResponse mock(List<String> comments) {
-        int n = comments.size();
-        int pos = (int) Math.round(n * 0.6);
-        int neg = (int) Math.round(n * 0.15);
-        return new ModuleInsightsResponse(true, n,
-                "(Démo) Retours globalement positifs : contenu clair et formateur apprécié ; "
-                        + "quelques remarques sur le rythme et le besoin de plus d'exemples pratiques.",
-                new SentimentBreakdown(pos, n - pos - neg, neg),
-                List.of("Contenu clair", "Rythme", "Plus d'exemples", "Bon formateur"));
     }
 }
