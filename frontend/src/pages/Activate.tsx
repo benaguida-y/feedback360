@@ -12,6 +12,11 @@ export default function Activate() {
     const { t } = useTranslation();
     const [searchParams] = useSearchParams();
     const token = searchParams.get("token") ?? "";
+    // Feedback ciblé par le lien e-mail, transmis à la page de connexion après activation.
+    const nextRaw = searchParams.get("next") ?? "";
+    const next = nextRaw.startsWith("/") && !nextRaw.startsWith("//") ? nextRaw : "";
+    // Mode "reset" (mot de passe oublié) : meme page, mais on ecrase le mot de passe existant.
+    const isReset = searchParams.get("mode") === "reset";
 
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
@@ -26,11 +31,17 @@ export default function Activate() {
         if (password !== confirm) { setError(t("activate.passwordMismatch")); return; }
         setLoading(true);
         try {
-            await client.post("/auth/activate", { token, password });
+            await client.post(isReset ? "/auth/reset-password" : "/auth/activate", { token, password });
             setSuccess(true);
-            setTimeout(() => navigate("/login"), 1200); // petite pause pour lire le message
-        } catch {
-            setError(t("activate.linkInvalid"));
+            // Après le mot de passe : page de connexion (en gardant le feedback ciblé).
+            const target = next ? `/login?next=${encodeURIComponent(next)}` : "/login";
+            setTimeout(() => navigate(target), 1200); // petite pause pour lire le message
+        } catch (err: any) {
+            // 400 = erreur de validation (ex. « mot de passe identique ») -> on montre le
+            // message exact du backend ; sinon (jeton invalide/expiré) -> message générique.
+            const status = err?.response?.status;
+            const message = err?.response?.data?.message;
+            setError(status === 400 && message ? message : t("activate.linkInvalid"));
             setLoading(false);
         }
     }
@@ -40,7 +51,7 @@ export default function Activate() {
             <BrandPanel />
 
             <div className="auth-form-col">
-                <div className="w-full max-w-sm">
+                <div className="auth-form">
                     <img src="/logo.png" alt="Feedback360" className="auth-logo" />
 
                     {!token ? (
@@ -49,13 +60,13 @@ export default function Activate() {
                         </div>
                     ) : success ? (
                         <div className="auth-alert-success">
-                            <CheckCircle2 className="h-5 w-5 flex-none" />
-                            {t("activate.success")}
+                            <CheckCircle2 className="auth-alert-icon" />
+                            {isReset ? t("resetPassword.success") : t("activate.success")}
                         </div>
                     ) : (
                         <>
-                            <h2 className="auth-title">{t("activate.title")}</h2>
-                            <p className="auth-subtitle">{t("activate.subtitle")}</p>
+                            <h2 className="auth-title">{isReset ? t("resetPassword.title") : t("activate.title")}</h2>
+                            <p className="auth-subtitle">{isReset ? t("resetPassword.subtitle") : t("activate.subtitle")}</p>
 
                             <form onSubmit={handleSubmit}>
                                 {/* Mot de passe */}
@@ -69,7 +80,9 @@ export default function Activate() {
                                 {error && <ErrorBanner message={error} />}
 
                                 <button type="submit" disabled={loading} className="btn-block">
-                                    {loading ? t("activate.activating") : t("activate.submit")}
+                                    {loading
+                                        ? (isReset ? t("resetPassword.submitting") : t("activate.activating"))
+                                        : (isReset ? t("resetPassword.submit") : t("activate.submit"))}
                                 </button>
                             </form>
                         </>

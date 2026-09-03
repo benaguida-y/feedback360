@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import client from "../api/client";
 import StatCard from "../components/StatCard";
+import StatCardSkeleton from "../components/StatCardSkeleton";
 import NavCard from "../components/NavCard.tsx";
 import PageHeader from "../components/PageHeader.tsx";
 import { useTranslation } from "react-i18next";
 
-interface AdminStats {
+interface UserStats {
     totalUsers: number;
     admins: number;
     managers: number;
@@ -13,6 +14,8 @@ interface AdminStats {
     activeUsers: number;
     inactiveUsers: number;
     pendingActivation: number;
+}
+interface IntegrationStats {
     totalWebhookCalls: number;
     webhookSuccess: number;
     webhookFailure: number;
@@ -20,46 +23,79 @@ interface AdminStats {
 
 export default function AdminDashboard() {
     const { t } = useTranslation();
-    const [s, setS] = useState<AdminStats | null>(null);
-    const [error, setError] = useState("");
+
+    // Chaque bloc a son propre état : une erreur sur l'un n'empêche pas l'autre de s'afficher.
+    const [users, setUsers] = useState<UserStats | null>(null);
+    const [usersError, setUsersError] = useState(false);
+    const [integrations, setIntegrations] = useState<IntegrationStats | null>(null);
+    const [integrationsError, setIntegrationsError] = useState(false);
 
     useEffect(() => {
-        client.get<AdminStats>("/admin/stats")
-            .then((r) => setS(r.data))
-            .catch(() => setError(t("common.statsError")));
+        client.get<UserStats>("/admin/stats/users")
+            .then((r) => setUsers(r.data)).catch(() => setUsersError(true));
+        client.get<IntegrationStats>("/admin/stats/integrations")
+            .then((r) => setIntegrations(r.data)).catch(() => setIntegrationsError(true));
     }, []);
-
-    if (error) return <p className="error-text">{error}</p>;
-    if (!s) return <p className="loading-text">{t("common.loading")}</p>;
 
     return (
         <div>
             <PageHeader title={t("common.overview")} subtitle={t("adminDashboard.subtitle")} />
 
-            <h3 className="section-title mb-3">{t("adminDashboard.users")}</h3>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                <StatCard label={t("common.total")} value={s.totalUsers} />
-                <StatCard label={t("adminDashboard.admins")} value={s.admins} accent="accent-red" />
-                <StatCard label={t("adminDashboard.managers")} value={s.managers} accent="accent-sky" />
-                <StatCard label={t("nav.collaborators")} value={s.collaborators} accent="accent-muted" />
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                <StatCard label={t("adminDashboard.activeUsers")} value={s.activeUsers} accent="accent-emerald" />
-                <StatCard label={t("adminDashboard.inactiveUsers")} value={s.inactiveUsers} accent="accent-red" />
-                <StatCard label={t("common.pendingActivation")} value={s.pendingActivation} accent="accent-amber" />
-            </div>
+            <h3 className="section-title dash-head">{t("adminDashboard.users")}</h3>
+            <Section loading={!users && !usersError} error={usersError} skeleton={
+                <>
+                    <div className="grid-stats-4">
+                        {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
+                    </div>
+                    <div className="grid-stats-3-mt">
+                        {Array.from({ length: 3 }).map((_, i) => <StatCardSkeleton key={i} />)}
+                    </div>
+                </>
+            }>
+                {users && (
+                    <>
+                        <div className="grid-stats-4">
+                            <StatCard label={t("common.total")} value={users.totalUsers} />
+                            <StatCard label={t("adminDashboard.admins")} value={users.admins} accent="accent-red" />
+                            <StatCard label={t("adminDashboard.managers")} value={users.managers} accent="accent-sky" />
+                            <StatCard label={t("nav.collaborators")} value={users.collaborators} accent="accent-muted" />
+                        </div>
+                        <div className="grid-stats-3-mt">
+                            <StatCard label={t("adminDashboard.activeUsers")} value={users.activeUsers} accent="accent-emerald" />
+                            <StatCard label={t("adminDashboard.inactiveUsers")} value={users.inactiveUsers} accent="accent-red" />
+                            <StatCard label={t("common.pendingActivation")} value={users.pendingActivation} accent="accent-amber" />
+                        </div>
+                    </>
+                )}
+            </Section>
 
-            <h3 className="section-title mt-8 mb-3">{t("adminDashboard.integrations")}</h3>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                <StatCard label={t("adminDashboard.callsReceived")} value={s.totalWebhookCalls} />
-                <StatCard label={t("adminDashboard.successes")} value={s.webhookSuccess} accent="accent-emerald" />
-                <StatCard label={t("adminDashboard.failures")} value={s.webhookFailure} accent="accent-red" />
-            </div>
+            <h3 className="section-title dash-head-next">{t("adminDashboard.integrations")}</h3>
+            <Section loading={!integrations && !integrationsError} error={integrationsError} skeleton={
+                <div className="grid-stats-3">
+                    {Array.from({ length: 3 }).map((_, i) => <StatCardSkeleton key={i} />)}
+                </div>
+            }>
+                {integrations && (
+                    <div className="grid-stats-3">
+                        <StatCard label={t("adminDashboard.callsReceived")} value={integrations.totalWebhookCalls} />
+                        <StatCard label={t("adminDashboard.successes")} value={integrations.webhookSuccess} accent="accent-emerald" />
+                        <StatCard label={t("adminDashboard.failures")} value={integrations.webhookFailure} accent="accent-red" />
+                    </div>
+                )}
+            </Section>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="grid-nav-mt">
                 <NavCard to="/admin/users" title={t("adminDashboard.navUsers")} subtitle={t("adminDashboard.navUsersSub")} />
                 <NavCard to="/admin/logs" title={t("adminLogs.title")} subtitle={t("adminDashboard.navLogsSub")} />
             </div>
         </div>
     );
+}
+
+// Enveloppe une section : erreur -> message, chargement -> skeletons, sinon le contenu réel.
+function Section({ loading, error, skeleton, children }: { loading: boolean; error: boolean; skeleton: ReactNode; children: ReactNode }) {
+    const { t } = useTranslation();
+    if (error) return <p className="error-line">{t("common.statsError")}</p>;
+    if (loading) return <>{skeleton}</>;
+    return <>{children}</>;
 }

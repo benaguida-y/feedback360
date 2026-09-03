@@ -19,6 +19,16 @@ spring:
     enabled: true            # Flyway owns the schema, runs migrations at startup
     baseline-on-migrate: true
 
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true   # tout champ JSON hors-contrat -> 400 (au lieu d'être ignoré)
+
+  # Pagination 1-based côté API : ?page=1 = première page (Spring reconvertit en 0 en interne)
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -44,4 +54,4 @@ feedback360:
     base-url: http://localhost:5175
     ttl-days: 14
   mail:
-    from: ${MAIL_USERNAME:no-reply@feedback360.local}
+    from: "Capgemini Feedback360 <${MAIL_USERNAME:no-reply@feedback360.local}>"

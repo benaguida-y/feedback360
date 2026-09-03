@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +41,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
                 m.title,
                 sum(case when f.status = :submitted then 1 else 0 end),
                 sum(case when f.status = :notSubmitted then 1 else 0 end),
+                sum(case when f.status = :inProgress then 1 else 0 end),
                 avg(case when f.status = :submitted then f.globalScore else null end))
             from Feedback f join f.moduleFormation m
             where (:search is null or lower(m.title) like :search)
@@ -53,6 +55,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             """)
     Page<ModuleStatsResponse> moduleStats(@Param("submitted") FeedbackStatus submitted,
                                           @Param("notSubmitted") FeedbackStatus notSubmitted,
+                                          @Param("inProgress") FeedbackStatus inProgress,
                                           @Param("search") String search,
                                           Pageable pageable);
 
@@ -92,14 +95,15 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
               join f.user u
               join f.moduleFormation m
             where (:status is null or f.status = :status)
+              and (:score is null or (:score = 0 and f.globalScore is null) or f.globalScore = :score)
               and (:search is null
                    or lower(m.title)     like :search
                    or lower(u.firstName) like :search
                    or lower(u.lastName)  like :search
                    or lower(u.email)     like :search)
-            order by f.createdAt desc
             """)
     Page<Feedback> searchFeedbacks(@Param("status") FeedbackStatus status,
+                                   @Param("score") Integer score,
                                    @Param("search") String search,
                                    Pageable pageable);
 
@@ -107,12 +111,41 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             select f from Feedback f join f.moduleFormation m
             where f.user.userId = :userId
               and (:status is null or f.status = :status)
+              and (:score is null or (:score = 0 and f.globalScore is null) or f.globalScore = :score)
               and (:search is null or lower(m.title) like :search)
-            order by f.createdAt desc
             """)
     Page<Feedback> findUserFeedbacks(@Param("userId") Long userId,
                                      @Param("status") FeedbackStatus status,
+                                     @Param("score") Integer score,
                                      @Param("search") String search,
                                      Pageable pageable);
 
+    // Feedbacks non soumis, sous le plafond de relances, dont le dernier contact
+    // (dernière relance, sinon création) est plus vieux que le seuil → à relancer.
+    @Query("""
+            select f from Feedback f
+              join fetch f.user
+              join fetch f.moduleFormation
+            where f.status <> :submitted
+              and f.reminderCount < :maxReminders
+              and coalesce(f.lastRemindedAt, f.createdAt) <= :cutoff
+            """)
+    List<Feedback> findDueForReminder(@Param("submitted") FeedbackStatus submitted,
+                                      @Param("maxReminders") int maxReminders,
+                                      @Param("cutoff") Instant cutoff);
+
+    @Query("""
+            select f.globalScore from Feedback f
+              join f.user u
+              join f.moduleFormation m
+            where (:status is null or f.status = :status)
+              and f.globalScore is not null
+              and (:search is null
+                   or lower(m.title)     like :search
+                   or lower(u.firstName) like :search
+                   or lower(u.lastName)  like :search
+                   or lower(u.email)     like :search)
+            """)
+    List<Double> findScoresForDistribution(@Param("status") FeedbackStatus status,
+                                           @Param("search") String search);
 }

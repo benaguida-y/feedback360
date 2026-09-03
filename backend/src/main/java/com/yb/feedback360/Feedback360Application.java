@@ -5,8 +5,10 @@ import com.yb.feedback360.config.MailProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+@EnableScheduling
 @EnableConfigurationProperties({MagicLinkProperties.class, MailProperties.class})
 public class Feedback360Application {
 

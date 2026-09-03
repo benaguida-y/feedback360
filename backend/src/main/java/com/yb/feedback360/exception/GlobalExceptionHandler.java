@@ -1,5 +1,6 @@
 package com.yb.feedback360.exception;
 
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,10 @@ public class GlobalExceptionHandler {
     // body that isn't valid JSON or can't be parsed into the DTO (e.g. empty number) -> 400
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, Object>> handleUnreadable(HttpMessageNotReadableException ex) {
+        // Champ hors-contrat (ignoreUnknown = false) : on le nomme explicitement.
+        if (ex.getMostSpecificCause() instanceof UnrecognizedPropertyException upe) {
+            return build(HttpStatus.BAD_REQUEST, "Unknown field: " + upe.getPropertyName());
+        }
         return build(HttpStatus.BAD_REQUEST, "Malformed or unreadable request body");
     }
 

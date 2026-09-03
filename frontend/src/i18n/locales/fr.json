@@ -5,6 +5,7 @@
     "collaborators": "Collaborateurs",
     "modules": "Modules",
     "administration": "Administration",
+    "reminders": "Relances",
     "supervision": "Supervision"
   },
   "common": {
@@ -47,12 +48,30 @@
     "viewAll": "Voir tout",
     "overview": "Vue d'ensemble",
     "statsError": "Impossible de charger les statistiques.",
-    "back": "Retour au tableau de bord"
+    "back": "Retour",
+    "perPage": "{{n}} par page",
+    "allScores": "Toutes les notes",
+    "noRating": "Sans note"
   },
   "status": {
     "SUBMITTED": "Soumis",
     "NOT_SUBMITTED": "En attente",
     "IN_PROGRESS": "En cours"
+  },
+  "charts": {
+    "statusTitle": "Répartition des feedbacks",
+    "scoreTitle": "Note moyenne par module",
+    "topCollaborators": "Collaborateurs les plus actifs",
+    "moduleSubmissions": "Feedbacks soumis par module",
+    "moduleParticipation": "Top 10 — soumis vs non soumis",
+    "ratingDistribution": "Distribution des notes"
+  },
+  "relance": {
+    "action": "Relancer",
+    "sending": "Envoi…",
+    "sent": "Relancé",
+    "error": "Échec",
+    "tooltip": "Renvoyer l'e-mail d'invitation au feedback"
   },
   "search": {
     "module": "Rechercher un module…",
@@ -70,7 +89,14 @@
     "activate": "Activer",
     "deactivate": "Désactiver",
     "loadError": "Impossible de charger les utilisateurs.",
-    "statusError": "Changement de statut impossible."
+    "statusError": "Changement de statut impossible.",
+    "byRole": "Répartition par rôle",
+    "byStatus": "Répartition par statut"
+  },
+  "adminUserDetail": {
+    "title": "Fiche utilisateur",
+    "department": "Département",
+    "externalId": "ID externe"
   },
   "adminLogs": {
     "title": "Supervision",
@@ -81,6 +107,7 @@
     "processedAt": "Traité le",
     "empty": "Aucun appel enregistré.",
     "loadError": "Impossible de charger les logs.",
+    "error": "Erreur",
     "logStatus": {
       "SUCCESS": "Succès",
       "FAILURE": "Échec",
@@ -97,7 +124,19 @@
     "progress": "Progression",
     "empty": "Aucun collaborateur.",
     "loadError": "Impossible de charger les collaborateurs.",
-    "submittedCount": "{{submitted}} / {{total}} soumis"
+    "submittedCount": "{{submitted}} / {{total}} soumis",
+    "avgProgress": "Progression moyenne",
+    "completed": "Terminé (100 %)",
+    "notStarted": "Non démarré (0 %)",
+    "progressDistribution": "Répartition par progression",
+    "teamTitle": "Où en est l'équipe",
+    "teamDone": "Terminé",
+    "teamInProgress": "En cours",
+    "teamNone": "Rien soumis",
+    "legendTitle": "Comment lire ce graphe",
+    "teamDoneHelp": "collaborateurs ayant soumis tous leurs feedbacks",
+    "teamInProgressHelp": "collaborateurs ayant soumis une partie de leurs feedbacks",
+    "teamNoneHelp": "collaborateurs n'ayant encore rien soumis"
   },
   "managerModules": {
     "title": "Détail par module",
@@ -115,6 +154,11 @@
   },
   "managerDashboard": {
     "subtitle": "Indicateurs globaux des feedbacks.",
+    "sectionFeedbacks": "Feedbacks",
+    "sectionIndicators": "Indicateurs clés",
+    "sectionHighlights": "Points forts",
+    "sectionCharts": "Graphiques",
+    "sectionAccess": "Accès rapides",
     "submissionRate": "Taux de soumission",
     "topCollaborator": "Collaborateur le plus actif",
     "feedbacksSubmitted": "{{n}} feedback(s) soumis",
@@ -133,7 +177,7 @@
     "managers": "Managers",
     "activeUsers": "Actifs",
     "inactiveUsers": "Désactivés",
-    "integrations": "Intégrations (webhook)",
+    "integrations": "Intégrations",
     "callsReceived": "Appels reçus",
     "successes": "Succès",
     "failures": "Échecs",
@@ -146,6 +190,25 @@
     "modulesFeedbacks": "Modules & feedbacks",
     "empty": "Aucun module."
   },
+  "adminReminders": {
+    "title": "Relances automatiques",
+    "subtitle": "Renvoi automatique des invitations aux feedbacks non soumis.",
+    "autoLabel": "Activer la relance automatique",
+    "autoHelp": "Le système renvoie l'e-mail d'invitation aux collaborateurs qui n'ont pas encore donné leur feedback.",
+    "delayLabel": "Délai avant relance (jours)",
+    "delayHelp": "Temps d'attente depuis la dernière sollicitation avant de relancer.",
+    "maxLabel": "Nombre maximum de relances",
+    "maxHelp": "Au-delà, le système arrête d'insister pour un même feedback.",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Réglages enregistrés",
+    "loadError": "Impossible de charger les réglages.",
+    "saveError": "Impossible d'enregistrer les réglages.",
+    "howTitle": "Comment ça marche",
+    "how1": "Une vérification a lieu chaque jour ; seuls les feedbacks non soumis sont concernés.",
+    "how2": "Un feedback est relancé lorsque le délai est écoulé depuis le dernier e-mail (ou depuis sa création).",
+    "how3": "Le manager peut aussi relancer manuellement depuis la liste des feedbacks."
+  },
   "login": {
     "welcome": "Bon retour !",
     "subtitle": "Connectez-vous pour accéder à votre espace.",
@@ -154,13 +217,29 @@
     "signIn": "Se connecter",
     "loggingIn": "Connexion…",
     "footer": "Accès réservé — contactez votre administrateur en cas de problème.",
-    "error": "Email ou mot de passe incorrect."
+    "error": "Email ou mot de passe incorrect.",
+    "forgotPassword": "Mot de passe oublié ?"
+  },
+  "forgotPassword": {
+    "title": "Mot de passe oublié",
+    "subtitle": "Entrez votre e-mail : si un compte existe, vous recevrez un lien de réinitialisation.",
+    "submit": "Envoyer le lien",
+    "sending": "Envoi…",
+    "sent": "Si un compte existe pour cet e-mail, un lien de réinitialisation vient d'être envoyé.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "resetPassword": {
+    "title": "Réinitialiser votre mot de passe",
+    "subtitle": "Choisissez un nouveau mot de passe pour votre compte.",
+    "submit": "Réinitialiser",
+    "submitting": "Réinitialisation…",
+    "success": "Mot de passe réinitialisé ✔ Redirection vers la connexion…"
   },
   "activate": {
     "title": "Activez votre compte",
     "subtitle": "Choisissez un mot de passe pour accéder à votre espace.",
-    "newPassword": "Nouveau mot de passe",
-    "confirmPassword": "Confirmer le mot de passe",
+    "newPassword": "Mot de passe",
+    "confirmPassword": "Confirmer mot de passe",
     "submit": "Activer mon compte",
     "activating": "Activation…",
     "success": "Mot de passe défini ✔ Redirection vers la connexion…",
@@ -178,8 +257,10 @@
     "emailTaken": "Cet email est déjà utilisé.",
     "createError": "Création impossible (vérifiez les champs).",
     "created": "Compte créé ✔ Un e-mail d'activation a été envoyé.",
+    "createdTitle": "Compte créé !",
+    "createdText": "Un e-mail d'activation a été envoyé au collaborateur.",
     "linkLabel": "Lien :",
-    "backToList": "← Retour à la liste",
+    "backToList": "Retour à la liste",
     "howItWorks": "Comment ça marche",
     "step1": "Vous créez le compte avec l'email et le rôle.",
     "step2": "Un email d'activation est envoyé automatiquement.",

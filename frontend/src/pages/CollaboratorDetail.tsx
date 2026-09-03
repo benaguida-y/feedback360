@@ -40,7 +40,7 @@ export default function CollaboratorDetail() {
                         subtitle={detail?.email}
                         backTo="/management/collaborators" />
 
-            <h3 className="section-title mb-3">{t("collaboratorDetail.modulesFeedbacks")}</h3>
+            <h3 className="section-title dash-head">{t("collaboratorDetail.modulesFeedbacks")}</h3>
             <Card>
                 <Table columns={[t("common.module"), t("common.status"), t("common.score"), t("common.date"), t("common.action")]}
                        loading={loading}

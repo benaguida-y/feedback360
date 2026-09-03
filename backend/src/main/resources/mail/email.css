@@ -1,15 +1,74 @@
-body { font-family: Arial, sans-serif; color: #2b2b2b; }
-.wrap { max-width: 480px; }
-.title { margin: 0 0 12px; }
-.btn-wrap { margin: 24px 0; }
-.btn {
-    display: inline-block;
-    background: #0070ad;
-    color: #ffffff !important;
-    padding: 12px 20px;
-    border-radius: 6px;
-    text-decoration: none;
+/* Police de l'app (clients compatibles ; sinon repli sur la pile) */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
+
+/* --- Resets compatibilité clients --- */
+body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+body { margin: 0 !important; padding: 0 !important; width: 100% !important;
+    background-color: #f7f9fb;
+    font-family: 'Ubuntu', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+
+/* --- Module mis en avant : callout façon accent Capgemini --- */
+.module-title {
+    display: block;
+    margin: 16px 0 18px;
+    padding: 14px 18px;
+    background-color: #eef6fb;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #005180;
 }
-.muted { font-size: 12px; color: #777777; }
-.module-title { font-size: 16px; font-weight: bold; color: #0070ad; margin: 6px 0 16px; }
-.logo { height: 48px; margin-bottom: 24px; }
+
+/* --- Paragraphes de l'intro --- */
+.intro p { margin: 0 0 14px; }
+
+/* --- Liens & survol du bouton (brand-dark, comme l'app) --- */
+a { color: #0070ad; }
+
+
+/* --- Mobile --- */
+@media only screen and (max-width: 620px) {
+    .card { width: 100% !important; border-radius: 12px !important; }
+    .px   { padding-left: 22px !important; padding-right: 22px !important; }
+    .title { font-size: 21px !important; }
+}
+
+/* --- Verrouillage clair (évite l'inversion cassée en dark mode) --- */
+@media (prefers-color-scheme: dark) {
+    body  { background-color: #f7f9fb !important; }
+    .card { background-color: #ffffff !important; }
+}
+
+/* Structure e-mail */
+.email-body { margin: 0; padding: 0; background-color: #f7f9fb; font-family: 'Ubuntu','Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+.preheader { display: none; max-height: 0; overflow: hidden; opacity: 0; mso-hide: all; }
+.email-bg { background-color: #f7f9fb; border-collapse: collapse; }
+.email-wrap { padding: 40px 16px; }
+.email-card { width: 600px; max-width: 600px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 30px rgba(15,23,42,0.07); border-collapse: collapse; }
+
+.email-accent { height: 6px; line-height: 6px; font-size: 0; background-color: #0070ad; background-image: linear-gradient(90deg,#0070ad 0%,#12abdb 100%); }
+
+.email-header { padding: 30px 40px 26px; background-color: #0070ad; background-image: linear-gradient(135deg,#1d365a 0%,#0070ad 55%,#12abdb 130%); }
+.email-logo { height: 48px; display: block; margin: 0 auto 16px; border: 0; outline: none; }
+.email-tagline { margin: 0; font-size: 20px; line-height: 1.35; font-weight: 700; color: #ffffff; }
+.email-tagline-soft { color: rgba(255,255,255,0.72); }
+
+.email-content { padding: 32px 44px 4px; color: #1e293b; }
+.email-title { margin: 0 0 18px; font-size: 23px; line-height: 1.3; font-weight: 700; color: #0f172a; }
+.email-greeting { margin: 0 0 14px; font-size: 15px; line-height: 1.7; color: #475569; }
+.email-intro { font-size: 15px; line-height: 1.7; color: #475569; }
+
+.email-btn-cell { padding: 24px 44px 8px; }
+a.email-btn { display: inline-block; background-color: #0070ad; border-radius: 8px; padding: 14px 38px; font-size: 15px; font-weight: 600; color: #ffffff !important; text-decoration: none; }
+.email-fallback { padding: 16px 44px 26px; }
+.email-fallback-label { margin: 0; font-size: 12px; line-height: 1.5; color: #94a3b8; }
+.email-fallback-link { margin: 6px 0 0; font-size: 12px; line-height: 1.5; word-break: break-all; }
+.email-link { color: #0070ad; text-decoration: underline; }
+
+.email-footer { padding: 22px 44px 30px; background-color: #f7f9fb; border-top: 1px solid #eef2f6; }
+.email-brand { margin: 0 0 6px; font-size: 14px; font-weight: 700; color: #0070ad; }
+.email-footer-text { margin: 0 0 4px; font-size: 12px; line-height: 1.6; color: #94a3b8; }
+.email-footer-muted { margin: 0; font-size: 12px; line-height: 1.6; color: #b3bdc9; }

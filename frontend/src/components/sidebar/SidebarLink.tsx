@@ -8,11 +8,11 @@ export default function SidebarLink({ to, end, label, icon, collapsed }: {
     return (
         <NavLink to={to} end={end} title={collapsed ? label : undefined}
                  className={({ isActive }) =>
-                     `sidebar-link ${collapsed ? "justify-center px-0" : "gap-3 px-[22px]"} ${
+                     `sidebar-link ${collapsed ? "sidebar-link-collapsed" : "sidebar-link-expanded"} ${
                          isActive ? "sidebar-link-active" : "sidebar-link-idle"
                      }`}>
             {icon}
-            <span className={`flex-1 text-left ${labelClass(collapsed)}`}>{label}</span>
+            <span className={`sidebar-link-label ${labelClass(collapsed)}`}>{label}</span>
         </NavLink>
     );
 }

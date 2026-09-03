@@ -28,6 +28,12 @@ public class Feedback {
     @Column(nullable = false)
     private Instant createdAt;
 
+    // Relances : nombre d'e-mails de rappel déjà envoyés et date du dernier.
+    @Column(nullable = false)
+    private int reminderCount = 0;
+
+    private Instant lastRemindedAt;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

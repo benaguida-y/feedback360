@@ -48,14 +48,14 @@ export default function FeedbackDetail() {
                         backTo="/"
             />
 
-            <div className="card max-w-2xl px-5">
+            <div className="card detail-card">
                 <dl className="detail-list">
                     <Row label={t("common.status")}><StatusBadge status={detail.status} /></Row>
 
                     {detail.collaboratorName && (
                         <Row label={t("common.collaborator")}>
                             <span className="cell-strong">{detail.collaboratorName}</span>
-                            <span className="ml-2 text-faint">{detail.collaboratorEmail}</span>
+                            <span className="text-faint detail-inline">{detail.collaboratorEmail}</span>
                         </Row>
                     )}
 
@@ -67,11 +67,11 @@ export default function FeedbackDetail() {
 
                     <Row label={t("common.globalScore")}>
                         {score != null ? (
-                            <span className="flex items-center">
+                            <span className="detail-row">
                                 {[1, 2, 3, 4, 5].map((n) => (
-                                    <span key={n} className={`text-xl ${n <= Math.round(score) ? "star-filled" : "star-empty"}`}>★</span>
+                                    <span key={n} className={`detail-star ${n <= Math.round(score) ? "star-filled" : "star-empty"}`}>★</span>
                                 ))}
-                                <span className="ml-3 cell-muted">{score} / 5</span>
+                                <span className="cell-muted detail-row-note">{score} / 5</span>
                             </span>
                         ) : (
                             <span className="text-faint">{t("feedbackDetail.notRated")}</span>
@@ -80,9 +80,9 @@ export default function FeedbackDetail() {
                 </dl>
 
                 <div className="detail-comment">
-                    <p className="mb-2 text-sm font-medium cell-muted">{t("common.comment")}</p>
+                    <p className="cell-muted detail-comment-label">{t("common.comment")}</p>
                     {detail.comment?.trim()
-                        ? <p className="whitespace-pre-wrap detail-value">{detail.comment}</p>
+                        ? <p className="detail-value pre-wrap">{detail.comment}</p>
                         : <p className="text-faint">{t("feedbackDetail.noComment")}</p>}
                 </div>
             </div>
@@ -93,7 +93,7 @@ export default function FeedbackDetail() {
 // Une ligne « libellé / valeur » de la fiche.
 function Row({ label, children }: { label: string; children: ReactNode }) {
     return (
-        <div className="flex items-center gap-6 py-4">
+        <div className="detail-stars">
             <dt className="detail-label">{label}</dt>
             <dd className="detail-value">{children}</dd>
         </div>

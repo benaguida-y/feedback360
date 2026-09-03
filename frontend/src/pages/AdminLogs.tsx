@@ -9,6 +9,7 @@ import Pagination from "../components/Pagination";
 import SearchInput from "../components/SearchInput";
 import Table from "../components/Table";
 import { useTranslation } from "react-i18next";
+import { useListParams } from "../useListParams";
 
 interface Log {
     logId: number;
@@ -18,10 +19,9 @@ interface Log {
     processedAt: string | null;
     userEmail: string | null;
     moduleTitle: string | null;
+    errorMessage: string | null;
 }
 interface Page<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; }
-
-const SIZE = 10;
 
 function statusBadge(status: string) {
     switch (status) {
@@ -35,18 +35,18 @@ function statusBadge(status: string) {
 export default function AdminLogs() {
     const role = getRole();
     const [logs, setLogs] = useState<Log[]>([]);
-    const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
-    const [type, setType] = useState("");
-    const [status, setStatus] = useState("");
-    const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const { t, i18n } = useTranslation();
+    const { page, setPage, size, setSize, search, setSearch, sort, toggle, get, set } = useListParams();
+    const type = get("type");
+    const setType = (v: string) => set("type", v);
+    const status = get("status");
+    const setStatus = (v: string) => set("status", v);
 
     if (role !== "ADMIN") return <Navigate to="/" replace />;
 
-    useEffect(() => { setPage(0); }, [type, status, search]);
 
     useEffect(() => {
         setLoading(true);
@@ -55,15 +55,16 @@ export default function AdminLogs() {
             if (type) params.set("type", type);
             if (status) params.set("status", status);
             if (search.trim()) params.set("search", search.trim());
-            params.set("page", String(page));
-            params.set("size", String(SIZE));
+            if (sort) params.set("sort", sort);
+            params.set("page", String(page + 1));
+            params.set("size", String(size));
             client.get<Page<Log>>(`/admin/logs?${params.toString()}`)
                 .then((r) => { setLogs(r.data.content); setTotalPages(r.data.totalPages); })
                 .catch(() => setError(t("adminLogs.loadError")))
                 .finally(() => setLoading(false));
         }, 300);
         return () => clearTimeout(timer);
-    }, [type, status, search, page]);
+    }, [type, status, search, page, sort, size]);
 
     const fmt = (d: string | null) =>
         (d ? new Date(d).toLocaleString(i18n.language === "en" ? "en-GB" : "fr-FR") : "—");
@@ -88,14 +89,14 @@ export default function AdminLogs() {
                     <option value="FAILURE">{t("adminLogs.logStatus.FAILURE")}</option>
                     <option value="IN_PROGRESS">{t("adminLogs.logStatus.IN_PROGRESS")}</option>
                 </select>
-                <div className="ml-auto">
+                <div className="filter-bar-search">
                     <SearchInput value={search} onChange={setSearch} placeholder={t("search.emailModule")} />
                 </div>
             </div>
 
             <Card>
-                <Table columns={[t("common.type"), t("common.status"), t("adminLogs.receivedAt"), t("adminLogs.processedAt"), t("common.user"), t("common.module")]}
-                       loading={loading}
+                <Table columns={[{ label: t("common.type"), sort: "type" }, { label: t("common.status"), sort: "status" }, { label: t("adminLogs.receivedAt"), sort: "receivedAt" }, { label: t("adminLogs.processedAt"), sort: "processedAt" }, { label: t("common.user"), sort: "user.email" }, { label: t("common.module"), sort: "moduleFormation.title" }, t("adminLogs.error", { defaultValue: "Erreur" })]}
+                       loading={loading} sort={sort} onSort={toggle}
                        isEmpty={logs.length === 0} emptyLabel={t("adminLogs.empty")}>
                     {logs.map((l) => (
                         <tr key={l.logId} className="table-row">
@@ -107,12 +108,13 @@ export default function AdminLogs() {
                             <td className="table-cell cell-muted">{fmt(l.processedAt)}</td>
                             <td className="table-cell cell-default">{l.userEmail ?? "—"}</td>
                             <td className="table-cell cell-default">{l.moduleTitle ?? "—"}</td>
+                            <td className="table-cell cell-negative">{l.errorMessage ?? "—"}</td>
                         </tr>
                     ))}
                 </Table>
             </Card>
 
-            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} size={size} onSizeChange={setSize} />
         </Layout>
     );
 }

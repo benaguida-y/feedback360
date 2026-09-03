@@ -7,6 +7,7 @@ public record ModuleStatsResponse(
         String moduleTitle,
         Long submittedCount,
         Long notSubmittedCount,
+        Long inProgressCount,
         Double averageScore
 ) {
 }

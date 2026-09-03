@@ -12,6 +12,7 @@ import com.yb.feedback360.service.FeedbackService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -28,10 +29,11 @@ public class FeedbackController {
     @GetMapping
     public PageResponse<FeedbackSummaryResponse> myFeedbacks(@AuthenticationPrincipal Jwt jwt,
                                                              @RequestParam(required = false) FeedbackStatus status,
+                                                             @RequestParam(required = false) Integer score,
                                                              @RequestParam(required = false) String search,
-                                                             @PageableDefault(size = 10) Pageable pageable) {
+                                                             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Long userId = Long.valueOf(jwt.getSubject());
-        return feedbackService.getFeedbackForUser(userId, status, search, pageable);
+        return feedbackService.getFeedbackForUser(userId, status, score, search, pageable);
     }
 
     @GetMapping(ApiPaths.BY_ID)

@@ -8,5 +8,6 @@ public record ManagementFeedbackSummaryResponse(
         String moduleTitle,
         Instant createdAt,
         Double globalScore,
-        String collaboratorName
+        String collaboratorName,
+        String collaboratorEmail
 ) {}

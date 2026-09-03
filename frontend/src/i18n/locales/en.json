@@ -5,6 +5,7 @@
     "collaborators": "Collaborators",
     "modules": "Modules",
     "administration": "Administration",
+    "reminders": "Reminders",
     "supervision": "Supervision"
   },
   "common": {
@@ -47,12 +48,30 @@
     "viewAll": "View all",
     "overview": "Overview",
     "statsError": "Unable to load statistics.",
-    "back": "Back to dashboard"
+    "back": "Back",
+    "perPage": "{{n}} per page",
+    "allScores": "All ratings",
+    "noRating": "No rating"
   },
   "status": {
     "SUBMITTED": "Submitted",
     "NOT_SUBMITTED": "Pending",
     "IN_PROGRESS": "In progress"
+  },
+  "charts": {
+    "statusTitle": "Feedback breakdown",
+    "scoreTitle": "Average rating per module",
+    "topCollaborators": "Most active collaborators",
+    "moduleSubmissions": "Submitted feedback per module",
+    "moduleParticipation": "Top 10 — submitted vs pending",
+    "ratingDistribution": "Rating distribution"
+  },
+  "relance": {
+    "action": "Remind",
+    "sending": "Sending…",
+    "sent": "Reminded",
+    "error": "Failed",
+    "tooltip": "Resend the feedback invitation email"
   },
   "search": {
     "module": "Search for a module…",
@@ -70,7 +89,14 @@
     "activate": "Activate",
     "deactivate": "Deactivate",
     "loadError": "Unable to load users.",
-    "statusError": "Unable to change status."
+    "statusError": "Unable to change status.",
+    "byRole": "Users by role",
+    "byStatus": "Users by status"
+  },
+  "adminUserDetail": {
+    "title": "User profile",
+    "department": "Department",
+    "externalId": "External ID"
   },
   "adminLogs": {
     "title": "Supervision",
@@ -81,6 +107,7 @@
     "processedAt": "Processed at",
     "empty": "No calls recorded.",
     "loadError": "Unable to load logs.",
+    "error": "Error",
     "logStatus": {
       "SUCCESS": "Success",
       "FAILURE": "Failure",
@@ -97,7 +124,19 @@
     "progress": "Progress",
     "empty": "No collaborators.",
     "loadError": "Unable to load collaborators.",
-    "submittedCount": "{{submitted}} / {{total}} submitted"
+    "submittedCount": "{{submitted}} / {{total}} submitted",
+    "avgProgress": "Average progress",
+    "completed": "Completed (100%)",
+    "notStarted": "Not started (0%)",
+    "progressDistribution": "Progress distribution",
+    "teamTitle": "Team progress",
+    "teamDone": "Completed",
+    "teamInProgress": "In progress",
+    "teamNone": "Nothing submitted",
+    "legendTitle": "How to read this chart",
+    "teamDoneHelp": "collaborators who submitted all their feedback",
+    "teamInProgressHelp": "collaborators who submitted some of their feedback",
+    "teamNoneHelp": "collaborators who haven't submitted anything yet"
   },
   "managerModules": {
     "title": "Module breakdown",
@@ -115,6 +154,11 @@
   },
   "managerDashboard": {
     "subtitle": "Global feedback indicators.",
+    "sectionFeedbacks": "Feedback",
+    "sectionIndicators": "Key indicators",
+    "sectionHighlights": "Highlights",
+    "sectionCharts": "Charts",
+    "sectionAccess": "Quick access",
     "submissionRate": "Submission rate",
     "topCollaborator": "Most active collaborator",
     "feedbacksSubmitted": "{{n}} feedback(s) submitted",
@@ -133,7 +177,7 @@
     "managers": "Managers",
     "activeUsers": "Active",
     "inactiveUsers": "Disabled",
-    "integrations": "Integrations (webhook)",
+    "integrations": "Integrations",
     "callsReceived": "Calls received",
     "successes": "Successful",
     "failures": "Failed",
@@ -146,6 +190,25 @@
     "modulesFeedbacks": "Modules & feedback",
     "empty": "No modules."
   },
+  "adminReminders": {
+    "title": "Automatic reminders",
+    "subtitle": "Automatically resend invitations for pending feedback.",
+    "autoLabel": "Enable automatic reminders",
+    "autoHelp": "The system resends the invitation email to collaborators who haven't submitted their feedback yet.",
+    "delayLabel": "Delay before reminder (days)",
+    "delayHelp": "Time to wait since the last contact before sending a reminder.",
+    "maxLabel": "Maximum number of reminders",
+    "maxHelp": "Beyond this, the system stops reminding for a given feedback.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Settings saved",
+    "loadError": "Unable to load settings.",
+    "saveError": "Unable to save settings.",
+    "howTitle": "How it works",
+    "how1": "A check runs every day; only pending feedback is considered.",
+    "how2": "A feedback is reminded once the delay has passed since the last email (or since it was created).",
+    "how3": "Managers can also send a reminder manually from the feedback list."
+  },
   "login": {
     "welcome": "Welcome back!",
     "subtitle": "Sign in to access your space.",
@@ -154,12 +217,28 @@
     "signIn": "Sign in",
     "loggingIn": "Signing in…",
     "footer": "Restricted access — contact your administrator if you have any issue.",
-    "error": "Incorrect email or password."
+    "error": "Incorrect email or password.",
+    "forgotPassword": "Forgot password?"
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "subtitle": "Enter your email: if an account exists, you'll receive a reset link.",
+    "submit": "Send the link",
+    "sending": "Sending…",
+    "sent": "If an account exists for this email, a reset link has just been sent.",
+    "backToLogin": "Back to sign in"
+  },
+  "resetPassword": {
+    "title": "Reset your password",
+    "subtitle": "Choose a new password for your account.",
+    "submit": "Reset",
+    "submitting": "Resetting…",
+    "success": "Password reset ✔ Redirecting to sign in…"
   },
   "activate": {
     "title": "Activate your account",
     "subtitle": "Choose a password to access your space.",
-    "newPassword": "New password",
+    "newPassword": "Password",
     "confirmPassword": "Confirm password",
     "submit": "Activate my account",
     "activating": "Activating…",
@@ -178,8 +257,10 @@
     "emailTaken": "This email is already in use.",
     "createError": "Unable to create (check the fields).",
     "created": "Account created ✔ An activation email has been sent.",
+    "createdTitle": "Account created!",
+    "createdText": "An activation email has been sent to the user.",
     "linkLabel": "Link:",
-    "backToList": "← Back to list",
+    "backToList": "Back to list",
     "howItWorks": "How it works",
     "step1": "You create the account with the email and role.",
     "step2": "An activation email is sent automatically.",

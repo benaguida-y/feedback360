@@ -76,6 +76,19 @@ public class AdminService {
         return toResponse(userRepository.save(user));
     }
 
+    @Transactional(readOnly = true)
+    public AdminUserDetailResponse getUser(Long userId) {
+        User u = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        String fullName = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
+                (u.getLastName() != null ? u.getLastName() : "")).trim();
+        if (fullName.isBlank()) fullName = u.getEmail();
+        return new AdminUserDetailResponse(
+                u.getUserId(), u.getEmail(), fullName, u.getRole().getName(),
+                u.isActive(), u.getPasswordHash() != null,
+                u.getDepartment(), u.getExternalUserId());
+    }
+
     private AdminUserResponse toResponse(User u) {
         String fullName = ((u.getFirstName() != null ? u.getFirstName() : "") + " " +
                 (u.getLastName() != null ? u.getLastName() : "")).trim();
@@ -98,11 +111,14 @@ public class AdminService {
                                 l.getLogId(), l.getType().name(), l.getStatus().name(),
                                 l.getReceivedAt(), l.getProcessedAt(),
                                 l.getUser() != null ? l.getUser().getEmail() : null,
-                                l.getModuleFormation() != null ? l.getModuleFormation().getTitle() : null)));
+                                l.getModuleFormation() != null ? l.getModuleFormation().getTitle() : null,
+                                l.getErrorMessage())));
     }
 
+    // Stats utilisateurs et stats intégrations sont séparées : le dashboard les charge
+    // indépendamment, pour qu'une panne sur l'une ne fasse pas tomber l'autre.
     @Transactional(readOnly = true)
-    public AdminStatsResponse getStats() {
+    public AdminUserStatsResponse getUserStats() {
         long total = userRepository.count();
         long admins = userRepository.countByRole_Name("ADMIN");
         long managers = userRepository.countByRole_Name("MANAGER");
@@ -111,12 +127,16 @@ public class AdminService {
         long inactive = userRepository.countByActive(false);
         long pending = userRepository.countByPasswordHashIsNull();
 
+        return new AdminUserStatsResponse(total, admins, managers, collaborators, active, inactive, pending);
+    }
+
+    @Transactional(readOnly = true)
+    public AdminIntegrationStatsResponse getIntegrationStats() {
         long calls = integrationLogRepository.count();
         long success = integrationLogRepository.countByStatus(LogStatus.SUCCESS);
         long failure = integrationLogRepository.countByStatus(LogStatus.FAILURE);
 
-        return new AdminStatsResponse(total, admins, managers, collaborators,
-                active, inactive, pending, calls, success, failure);
+        return new AdminIntegrationStatsResponse(calls, success, failure);
     }
 
 }

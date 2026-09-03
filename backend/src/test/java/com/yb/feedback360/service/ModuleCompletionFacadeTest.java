@@ -83,7 +83,7 @@ class ModuleCompletionFacadeTest {
         ModuleCompletedRequest request = requestForEmail("a@x.com");
         when(validator.validate(request)).thenReturn(Set.of());          // no violations
         when(moduleCompletionService.handleModuleCompleted(request)).thenReturn(savedFeedback());
-        when(magicLinkService.createActivationUrl(any())).thenReturn("http://link");
+        when(magicLinkService.createActivationUrl(any(), any())).thenReturn("http://link");
 
         List<ModuleCompletionResult> results = facade.process(List.of(request));
 
@@ -150,7 +150,7 @@ class ModuleCompletionFacadeTest {
         when(validator.validate(bad)).thenReturn(Set.of(violation));
 
         when(moduleCompletionService.handleModuleCompleted(good)).thenReturn(savedFeedback());
-        when(magicLinkService.createActivationUrl(any())).thenReturn("http://link");
+        when(magicLinkService.createActivationUrl(any(), any())).thenReturn("http://link");
 
         List<ModuleCompletionResult> results = facade.process(List.of(good, bad));
 

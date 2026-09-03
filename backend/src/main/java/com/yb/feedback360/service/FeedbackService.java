@@ -25,11 +25,11 @@ public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
 
     @Transactional(readOnly = true)
-    public PageResponse<FeedbackSummaryResponse> getFeedbackForUser(Long userId, FeedbackStatus status, String search, Pageable pageable) {
+    public PageResponse<FeedbackSummaryResponse> getFeedbackForUser(Long userId, FeedbackStatus status, Integer score, String search, Pageable pageable) {
         String searchParam = (search == null || search.isBlank())
                 ? null : "%" + search.trim().toLowerCase() + "%";
         return PageResponse.from(
-                feedbackRepository.findUserFeedbacks(userId, status, searchParam, pageable)
+                feedbackRepository.findUserFeedbacks(userId, status, score, searchParam, pageable)
                         .map(FeedbackSummaryResponse::from));
     }
 

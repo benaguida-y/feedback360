@@ -40,7 +40,7 @@ export default function Header() {
                     title={dark ? t("header.switchToLight") : t("header.switchToDark")}
                     aria-label={dark ? t("header.switchToLight") : t("header.switchToDark")}
                     className="theme-toggle">
-                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {dark ? <Sun className="icon-sm" /> : <Moon className="icon-sm" />}
             </button>
         </header>
     );

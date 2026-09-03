@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import client from "../api/client";
 import StatCard from "../components/StatCard";
 import NavCard from "../components/NavCard.tsx";
-import { Medal, Star } from 'lucide-react';
+import { Medal, Star } from "lucide-react";
 import PageHeader from "../components/PageHeader.tsx";
 import { useTranslation } from "react-i18next";
+import FeedbackCharts from "../components/FeedbackCharts.tsx";
+import DashboardBarChart from "../components/DashboardBarChart.tsx";
+import StatCardSkeleton from "../components/StatCardSkeleton";
+import ChartSkeleton from "../components/ChartSkeleton";
 
 interface Summary {
     total: number;
@@ -12,9 +16,17 @@ interface Summary {
     notSubmitted: number;
     inProgress: number;
 }
+interface ModuleStat {
+    moduleTitle: string;
+    submittedCount: number;
+    notSubmittedCount: number;
+    inProgressCount: number;
+    averageScore: number | null;
+}
 interface Stats {
     submissionRatePercent: number;
     averageScore: number | null;
+    perModule: ModuleStat[];
 }
 interface Highlights {
     topCollaboratorName: string | null;
@@ -22,6 +34,8 @@ interface Highlights {
     bestModuleTitle: string | null;
     bestModuleAverage: number | null;
 }
+interface Collab { fullName: string; submitted: number; }
+interface Page<T> { content: T[]; }
 
 export default function ManagerDashboard() {
     const { t } = useTranslation();
@@ -30,6 +44,7 @@ export default function ManagerDashboard() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [highlights, setHighlights] = useState<Highlights | null>(null);
+    const [collabs, setCollabs] = useState<Collab[]>([]);
 
     useEffect(() => {
         Promise.all([
@@ -42,50 +57,114 @@ export default function ManagerDashboard() {
             .finally(() => setLoading(false));
     }, []);
 
-    if (loading) return <p className="loading-text">{t("common.loading")}</p>;
+    // Collaborateurs (graphe « plus actifs ») — chargé à part, n'impacte pas le reste.
+    useEffect(() => {
+        client.get<Page<Collab>>("/management/collaborators?size=100")
+            .then((r) => setCollabs(r.data.content))
+            .catch(() => {});
+    }, []);
+
+    if (loading) return (
+        <div>
+            <PageHeader title={t("common.overview")} subtitle={t("managerDashboard.subtitle")} />
+
+            <h3 className="section-title dash-head">{t("managerDashboard.sectionFeedbacks")}</h3>
+            <div className="grid-stats-4">
+                {Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)}
+            </div>
+
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionIndicators")}</h3>
+            <div className="grid-2col">
+                {Array.from({ length: 2 }).map((_, i) => <StatCardSkeleton key={i} />)}
+            </div>
+
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionHighlights")}</h3>
+            <div className="grid-highlights">
+                <ChartSkeleton />
+                <ChartSkeleton />
+            </div>
+
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionCharts")}</h3>
+            <div className="charts-split">
+                <ChartSkeleton />
+                <div className="charts-split-main"><ChartSkeleton /></div>
+            </div>
+        </div>
+    );
     if (error) return <p className="error-text">{error}</p>;
 
     const avg = stats!.averageScore;
     const rate = stats!.submissionRatePercent;
 
+    const topCollabs = [...collabs]
+        .sort((a, b) => b.submitted - a.submitted)
+        .slice(0, 6)
+        .map((c) => ({ label: c.fullName, value: c.submitted }));
+
+    const moduleScores = [...stats!.perModule]
+        .filter((m) => m.averageScore != null)
+        .map((m) => ({ label: m.moduleTitle, value: Number(m.averageScore!.toFixed(1)) }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, 6);
+
     return (
         <div>
             <PageHeader title={t("common.overview")} subtitle={t("managerDashboard.subtitle")} />
 
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <h3 className="section-title dash-head">{t("managerDashboard.sectionFeedbacks")}</h3>
+            <div className="grid-stats-4">
                 <StatCard label={t("common.total")} value={summary!.total} />
                 <StatCard label={t("status.SUBMITTED")} value={summary!.submitted} accent="accent-emerald" />
                 <StatCard label={t("status.NOT_SUBMITTED")} value={summary!.notSubmitted} accent="accent-amber" />
                 <StatCard label={t("status.IN_PROGRESS")} value={summary!.inProgress} accent="accent-sky" />
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-4">
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionIndicators")}</h3>
+            <div className="grid-2col">
                 <StatCard label={t("common.averageScore")} value={avg != null ? `${avg.toFixed(1)} / 5` : "—"} accent="accent-brand" />
                 <StatCard label={t("managerDashboard.submissionRate")} value={`${rate} %`} accent="accent-emerald" />
             </div>
 
-            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionHighlights")}</h3>
+            <div className="grid-highlights">
+                {/* Collaborateur le plus actif + son graphe (même carte) */}
                 <HighlightCard
                     label={t("managerDashboard.topCollaborator")}
                     value={highlights?.topCollaboratorName ?? "—"}
                     sub={highlights?.topCollaboratorCount ? t("managerDashboard.feedbacksSubmitted", { n: highlights.topCollaboratorCount }) : t("managerDashboard.noSubmission")}
                     icon=<Medal/>
-                />
+                >
+                    <DashboardBarChart bare
+                                       title={t("charts.topCollaborators")}
+                                       data={topCollabs}
+                                       valueFormat={(v) => String(v)}
+                                       emptyLabel={t("common.noData")}
+                    />
+                </HighlightCard>
+
+                {/* Module le mieux noté + son graphe (même carte) */}
                 <HighlightCard
                     label={t("managerDashboard.bestModule")}
                     value={highlights?.bestModuleTitle ?? "—"}
                     sub={highlights?.bestModuleAverage != null ? t("managerDashboard.averageOf", { avg: highlights.bestModuleAverage.toFixed(1) }) : t("managerDashboard.noRating")}
                     icon=<Star/>
-                />
+                >
+                    <DashboardBarChart bare
+                                       title={t("charts.scoreTitle")}
+                                       data={moduleScores}
+                                       domainMax={5}
+                                       valueFormat={(v) => v.toFixed(1)}
+                                       emptyLabel={t("common.noData")}
+                    />
+                </HighlightCard>
             </div>
 
-            {/* Emplacement des futurs graphiques */}
-            <div className="chart-placeholder">
-                {t("managerDashboard.chartsSoon")}
-            </div>
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionCharts")}</h3>
+            <FeedbackCharts summary={summary!} perModule={stats!.perModule} />
 
             {/* Accès aux vues détaillées */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <h3 className="section-title dash-head-next">{t("managerDashboard.sectionAccess")}</h3>
+            <div className="grid-cards-2">
                 <NavCard to="/management/feedbacks" title={t("managerFeedbacks.title")} subtitle={t("managerDashboard.navFeedbacksSub")} />
                 <NavCard to="/management/modules" title={t("managerModules.title")} subtitle={t("managerDashboard.navModulesSub")} />
             </div>
@@ -93,15 +172,21 @@ export default function ManagerDashboard() {
     );
 }
 
-function HighlightCard({ label, value, sub, icon }: { label: string; value: string; sub: string; icon?: any }) {
+// Carte « point fort » : en-tête (icône + infos) + graphe optionnel dans la MÊME carte.
+function HighlightCard({ label, value, sub, icon, children }: {
+    label: string; value: string; sub: string; icon?: any; children?: ReactNode;
+}) {
     return (
-        <div className="highlight-card">
-            <span className="highlight-icon">{icon}</span>
-            <div className="min-w-0">
-                <p className="highlight-label">{label}</p>
-                <p className="highlight-value">{value}</p>
-                <p className="highlight-sub">{sub}</p>
+        <div className="highlight-card highlight-card-col">
+            <div className="highlight-head">
+                <span className="highlight-icon">{icon}</span>
+                <div className="highlight-info">
+                    <p className="highlight-label">{label}</p>
+                    <p className="highlight-value">{value}</p>
+                    <p className="highlight-sub">{sub}</p>
+                </div>
             </div>
+            {children && <div className="full-w">{children}</div>}
         </div>
     );
 }
