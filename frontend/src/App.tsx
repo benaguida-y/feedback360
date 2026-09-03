@@ -18,6 +18,7 @@ import CollaboratorFeedbacks from "./pages/CollaboratorFeedbacks.tsx";
 import MagicLogin from "./pages/MagicLogin.tsx";
 import ForgotPassword from "./pages/ForgotPassword.tsx";
 import AdminUserDetail from "./pages/AdminUserDetail.tsx";
+import Insights from "./pages/Insights.tsx";
 
 export default function App() {
     return (
@@ -41,6 +42,7 @@ export default function App() {
 
             <Route path="/management/feedbacks" element={<ProtectedRoute><ManagerFeedbacks /></ProtectedRoute>} />
             <Route path="/management/modules" element={<ProtectedRoute><ManagerModuleStats /></ProtectedRoute>} />
+                <Route path="/management/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
             <Route path="/management/collaborators" element={<ProtectedRoute><ManagerCollaborators /></ProtectedRoute>} />
             <Route path="/management/collaborators/:userId" element={<ProtectedRoute><CollaboratorDetail /></ProtectedRoute>} />
 

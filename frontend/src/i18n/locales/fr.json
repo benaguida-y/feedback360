@@ -6,7 +6,8 @@
     "modules": "Modules",
     "administration": "Administration",
     "reminders": "Relances",
-    "supervision": "Supervision"
+    "supervision": "Supervision",
+    "insights": "Analyse des retours"
   },
   "common": {
     "all": "Tous",
@@ -142,6 +143,22 @@
     "title": "Détail par module",
     "subtitle": "Taux de retour et note moyenne, module par module.",
     "loadError": "Impossible de charger le détail par module."
+  },
+  "insights": {
+    "title": "Analyse des retours",
+    "subtitle": "Synthèse IA des commentaires, par module.",
+    "pickModule": "Choisir un module…",
+    "generate": "Générer la synthèse",
+    "generating": "Analyse en cours…",
+    "summary": "Résumé",
+    "sentiment": "Sentiment",
+    "positive": "Positif",
+    "neutral": "Neutre",
+    "negative": "Négatif",
+    "basedOn": "D'après {{n}} commentaire(s)",
+    "unavailable": "Synthèse indisponible pour le moment.",
+    "loadError": "Impossible de charger les modules.",
+    "error": "Impossible de générer la synthèse."
   },
   "collaboratorFeedbacks": {
     "title": "Mes feedbacks",

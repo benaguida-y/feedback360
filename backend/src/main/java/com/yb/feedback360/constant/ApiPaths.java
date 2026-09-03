@@ -41,6 +41,8 @@ public final class ApiPaths {
     public static final String MANAGEMENT_COLLABORATORS_SUMMARY = "/collaborators/summary";
     public static final String MANAGEMENT_COLLABORATOR_BY_ID = "/collaborators/{userId}";
     public static final String MANAGEMENT_MODULES = "/modules";
+    public static final String MANAGEMENT_MODULES_OPTIONS = "/modules/options";
+    public static final String MANAGEMENT_MODULE_INSIGHTS = "/modules/{moduleId}/insights";
 
     // Admin user & config management
     public static final String ADMIN = "/api/admin";

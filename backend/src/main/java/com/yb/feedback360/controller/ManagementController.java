@@ -3,6 +3,7 @@ package com.yb.feedback360.controller;
 import com.yb.feedback360.constant.ApiPaths;
 import com.yb.feedback360.domain.enums.FeedbackStatus;
 import com.yb.feedback360.dto.response.*;
+import com.yb.feedback360.service.InsightService;
 import com.yb.feedback360.service.ManagementService;
 import com.yb.feedback360.service.ReminderService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ManagementController {
 
     private final ManagementService managementService;
     private final ReminderService reminderService;
+    private final InsightService insightService;
 
     @GetMapping(ApiPaths.MANAGEMENT_FEEDBACKS_SUMMARY)
     public DashboardSummaryResponse globalSummary() {
@@ -88,5 +90,15 @@ public class ManagementController {
     public RatingDistributionResponse ratingDistribution(@RequestParam(required = false) FeedbackStatus status,
                                                          @RequestParam(required = false) String search) {
         return managementService.getRatingDistribution(status, search);
+    }
+
+    @GetMapping(ApiPaths.MANAGEMENT_MODULES_OPTIONS)
+    public List<ModuleOptionResponse> moduleOptions() {
+        return insightService.moduleOptions();
+    }
+
+    @GetMapping(ApiPaths.MANAGEMENT_MODULE_INSIGHTS)
+    public ModuleInsightsResponse moduleInsights(@PathVariable Long moduleId) {
+        return insightService.forModule(moduleId);
     }
 }
